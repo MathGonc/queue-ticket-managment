@@ -12,8 +12,37 @@
     <main>
       <div class="ticket">
         <h2>Senha</h2>
-        <h2 id="ticket"></h2>
+        <h2 id="ticket">N0000</h2>
       </div>
     </main>
+
+    <script>
+      const vTicket = document.querySelector("#pass");
+      let ticketNormal = 0;
+      let ticketPref = 0;
+      let lastTicket = "N";
+
+      window.addEventListener("keydown", function (e) {
+        if (e.key == "n" || e.key == "N") {
+          ticketNormal++;
+        } else if (e.key == "p" || e.key == "P") {
+          ticketPref++;
+          lastTicket = "P";
+        }
+
+        console.log(
+          "Senha normal = " + ticketNormal + " senha pref:" + ticketPref
+        );
+        showTicket();
+      });
+
+      function showTicket() {
+        if (lastTicket == "N") {
+          vTicket.innerHTML = "N" + ticketNormal;
+        } else {
+          vTicket.innerHTML = "P" + ticketPref;
+        }
+      }
+    </script>
   </body>
 </html>
