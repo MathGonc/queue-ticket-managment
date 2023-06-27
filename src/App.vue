@@ -1,0 +1,32 @@
+<template>
+  <div id="app">
+    <h1>Página Inicial</h1>
+    <button @click="goToMonitor">MONITOR</button>
+    <button @click="goToAdmin">ADMIN</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "App",
+  methods: {
+    goToMonitor() {
+      window.location.href = "./monitor.html";
+    },
+    goToAdmin() {
+      window.location.href = "./admin.html";
+    },
+  },
+};
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
