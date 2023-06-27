@@ -1,17 +1,24 @@
-# ticket queue management
+# queue-ticket-managment
 
-## to do:
+## Project setup
+```
+npm install
+```
 
-### Pages: index, monitor & admin
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-> INDEX:
->
-> > Selecionar entre monitor e admin
+### Compiles and minifies for production
+```
+npm run build
+```
 
-> MONITOR:
->
-> > Em destaque, ultima senha/mesa chamada, em secundario, penultima senha/mesa chamada
+### Lints and fixes files
+```
+npm run lint
+```
 
-> ADMIN:
->
-> > Botão de chamar a proxima senha, e indicador de que mesa é para ser preenchido
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

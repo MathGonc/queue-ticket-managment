@@ -1,0 +1,1 @@
+Para executar "vue" sem as restrições do windows: set-executionpolicy RemoteSignedvue 
