@@ -1,9 +1,17 @@
-# ticket
+# ticket queue management
 
 ## to do:
 
-> create a admin file to control tickets
+### Pages: index, monitor & admin
 
-> create a client file to view monitor tickets
+> INDEX:
+>
+> > Selecionar entre monitor e admin
 
-> admin panel is sync in all compuers is opened
+> MONITOR:
+>
+> > Em destaque, ultima senha/mesa chamada, em secundario, penultima senha/mesa chamada
+
+> ADMIN:
+>
+> > Botão de chamar a proxima senha, e indicador de que mesa é para ser preenchido

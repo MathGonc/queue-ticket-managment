@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=], initial-scale=1.0" />
+    <title>Chamada de senhas</title>
+  </head>
+  <body>
+    <header>
+      <h1>Chamada de senhas</h1>
+    </header>
+    <main>
+      <div class="ticket">
+        <h2>Senha</h2>
+        <h2 id="ticket">N0000</h2>
+      </div>
+    </main>
+
+    <script>
+      const vTicket = document.querySelector("#ticket");
+      let ticketNormal = localStorage.getItem("ticketNormal");
+      let ticketPref = localStorage.getItem("ticketPref");
+      let lastTicket = localStorage.getItem("lastTicket");
+      let audio = new Audio("../sounds/audio.mp3");
+
+      if (!ticketNormal) ticketNormal = 0;
+
+      if (!ticketPref) ticketPref = 0;
+
+      if (!lastTicket) lastTicket = 0;
+
+      showTicket();
+      window.addEventListener("keydown", function (e) {
+        if (e.key == "n" || e.key == "N") {
+          ticketNormal++;
+          lastTicket = "N";
+          audio.play();
+        } else if (e.key == "p" || e.key == "P") {
+          ticketPref++;
+          lastTicket = "P";
+          audio.play();
+        } else if (e.key == "r" || e.key == "R") {
+          ticketPref++;
+          lastTicket = "N";
+          ticketNormal = 0;
+          ticketPref = 0;
+        }
+
+        console.log(
+          "Senha normal = " + ticketNormal + " senha pref:" + ticketPref
+        );
+
+        localStorage.setItem("ticketNormal", ticketNormal);
+        localStorage.setItem("ticketPref", ticketPref);
+        localStorage.setItem("lastTicket", lastTicket);
+        showTicket();
+      });
+
+      function showTicket() {
+        if (lastTicket == "N") {
+          vTicket.innerHTML =
+            "N" +
+            parseInt(ticketNormal).toLocaleString("pt-br", {
+              minimumIntegerDigits: 3,
+            });
+        } else {
+          vTicket.innerHTML =
+            "P" +
+            parseInt(ticketPref).toLocaleString("pt-br", {
+              minimumIntegerDigits: 3,
+            });
+        }
+      }
+    </script>
+  </body>
+</html>
