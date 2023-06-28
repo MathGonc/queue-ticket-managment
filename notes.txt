@@ -1,8 +1,9 @@
 > Para executar "vue" sem as restrições do windows: set-executionpolicy RemoteSignedvue 
 > Abrir google chrome com console: "runtimeArgs": ["--auto-open-devtools-for-tabs"]
-
+> Caso de erro com Nodemon: npm install -g nodemon
 
 > A fazer:
+monitor = ao receber uma atualização de ticket, tocar o som e atualizar a pagina
 
 > Opcional:
 MongoDB
