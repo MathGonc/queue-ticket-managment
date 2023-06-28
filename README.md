@@ -13,7 +13,12 @@ Cors
 Nodemon
 ```
 
-## Project setup
+## To do:
+
+-   [x] Atualização em tempo real de todos os monitores abertos
+-   [ ] MongoDB
+
+## Project setup:
 
 ```
 cd client > npm install

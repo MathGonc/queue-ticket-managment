@@ -1,7 +1,18 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+const socketIO = require("socket.io");
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:8080", // Especifique a origem permitida para o CORS
+    methods: ["GET", "POST"], // Especifique os métodos permitidos
+    allowedHeaders: ["my-custom-header"], // Especifique os cabeçalhos personalizados permitidos
+    credentials: true, // Habilitar o envio de cookies de autenticação (se aplicável)
+  },
+});
 
 app.use(cors());
 app.use(express.json());
@@ -12,6 +23,28 @@ let data = {
   lastTicket: "1111",
   lastTable: "1111",
 };
+
+// Conecte-se ao cliente
+io.on("connection", (socket) => {
+  console.log("Novo cliente conectado");
+
+  // Envie a atualização atual para o cliente recém-conectado
+  socket.emit("updateCurrentTicket", data.currentTicket);
+
+  // Receba uma nova atualização do cliente
+  socket.on("newUpdate", (newTicket) => {
+    // Atualize a variável currentTicket com a nova atualização
+    data.currentTicket = newTicket;
+
+    // Envie a nova atualização para todos os clientes conectados, incluindo o cliente que enviou a atualização
+    io.emit("updateCurrentTicket", data.currentTicket);
+  });
+
+  // Quando o cliente se desconectar
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado");
+  });
+});
 
 // Defina uma rota para fornecer os dados das variáveis
 
@@ -44,6 +77,6 @@ app.put("/api/data", (req, res) => {
 
 // Inicie o servidor na porta desejada
 const port = 3030;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Servidor Express rodando na porta ${port}`);
 });
