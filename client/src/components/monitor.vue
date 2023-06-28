@@ -17,6 +17,7 @@ export default {
     return {};
   },
   mounted() {
+    this.$store.dispatch("fetchVariables");
     window.addEventListener("keydown", this.handleKeyPress);
   },
   beforeUnmount() {
@@ -34,6 +35,7 @@ export default {
     },
     callNextPassword() {
       this.$store.dispatch("updateCurrentTicket");
+      this.$store.dispatch("updateVariables");
     },
   },
   computed: {

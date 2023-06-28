@@ -1,1 +1,2 @@
-Para executar "vue" sem as restrições do windows: set-executionpolicy RemoteSignedvue 
+> Para executar "vue" sem as restrições do windows: set-executionpolicy RemoteSignedvue 
+> Abrir google chrome com console: "runtimeArgs": ["--auto-open-devtools-for-tabs"]

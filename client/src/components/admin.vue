@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     callNextPassword() {
-      this.$store.dispatch("updateCurrentTicket");
+      this.$store.dispatch("fetchVariables");
     },
   },
 };

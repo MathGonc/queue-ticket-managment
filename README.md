@@ -1,5 +1,18 @@
 # queue-ticket-managment
 
+## Tecnologias utilizadas:
+
+```
+Javascript
+Vue
+Vue-Router
+Vuex
+Axios
+ExpressJS
+Cors
+Nodemon
+```
+
 ## Project setup
 
 ```
