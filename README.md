@@ -38,6 +38,7 @@ cd server > npm install
 
 ```
 cd client > npm run serve
+
 cd server > nodemon server.js
 ```
 
