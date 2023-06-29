@@ -10,18 +10,16 @@
 
 <script>
 import { mapState } from "vuex";
-
 import io from "socket.io-client";
+import { SERVER_URL } from "../main.js";
 
 export default {
     name: "monitor_page",
     data() {
-        return {
-            socket: null,
-        };
+        return {};
     },
     mounted() {
-        this.socket = io("http://localhost:3030");
+        this.socket = io(`${SERVER_URL}`);
 
         // Receba a atualização do currentTicket
         this.socket.on("updateCurrentTicket", () => {
@@ -29,7 +27,7 @@ export default {
             this.updateMonitor();
         });
 
-        this.$store.dispatch("fetchVariables");
+        this.$store.dispatch("getVariablesAPI");
         window.addEventListener("keydown", this.handleKeyPress);
     },
     beforeUnmount() {
@@ -37,7 +35,10 @@ export default {
     },
     methods: {
         updateMonitor() {
-            this.$store.dispatch("fetchVariables");
+            // Reproduzir som
+            const audio = new Audio(require("@/assets/sound.wav"));
+            audio.play();
+            this.$store.dispatch("getVariablesAPI");
         },
         updatelastTicket() {
             this.lastTicket = this.currentTicket;

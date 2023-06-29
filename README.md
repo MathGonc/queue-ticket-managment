@@ -41,3 +41,5 @@ npm run build
 ```
 npm run lint
 ```
+
+> Chrome: para utilizar o som do monitor, clique em _permitir_ nas opções de Som da pagina
