@@ -12,8 +12,6 @@
 >
 > OBS: Para utilizar o som de notificação, entre nas **configurações da pagina** e clique em **permitir** nas opções de Som.
 
-#
-
 ## **Tecnologias utilizadas:**
 
 ```
@@ -28,15 +26,11 @@ Cors
 Nodemon
 ```
 
-#
-
 ## **Project setup:**
 
 ```
 cd client > npm install
-```
 
-```
 cd server > npm install
 ```
 
