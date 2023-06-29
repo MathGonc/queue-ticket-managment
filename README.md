@@ -37,7 +37,8 @@ cd server > npm install
 ### Compiles and hot-reloads for development
 
 ```
-npm run serve
+cd client > npm run serve
+cd server > nodemon server.js
 ```
 
 ### Compiles and minifies for production
