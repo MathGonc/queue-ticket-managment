@@ -4,13 +4,15 @@
 
 > O gerenciador de fila é separado em três paginas:
 >
-> > Monitor: exibe duas senhas e seus respectivos guichês, a ultima e a penultima;
+> > Monitor: Exibe duas senhas(a ultima e a penultima) e seus respectivos guichês;
 >
-> > Admin: utilizado pelo guichê, usado para chamar a proxima senha;
+> > Admin: Utilizado pelo guichê, usado para chamar a proxima senha;
 >
-> > Config: configurações do aplicativo.
+> > Config: Configurações do aplicativo.
 >
-> OBS: Para utilizar o som do monitor, entre nas **configurações da pagina** e clique em **permitir** nas opções de Som.
+> OBS: Para utilizar o som de notificação, entre nas **configurações da pagina** e clique em **permitir** nas opções de Som.
+
+#
 
 ## **Tecnologias utilizadas:**
 
@@ -25,6 +27,8 @@ Socket.IO
 Cors
 Nodemon
 ```
+
+#
 
 ## **Project setup:**
 
