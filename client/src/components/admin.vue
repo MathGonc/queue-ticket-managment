@@ -1,8 +1,8 @@
 <template>
     <div class="admin">
-        <h2>Painel de Administração - Guichê: {{ adminTable }}</h2>
+        <h2>Painel de Administração - Guichê: {{ myTable }}</h2>
         <label for="counter">Digite o número do guichê:</label>
-        <input type="text" id="counter" v-model="adminTable" />
+        <input type="number" id="counter" min="00" max="99" v-model="myTable" />
         <button @click="callNextPassword" class="btn">
             Chamar Próxima Senha
         </button>
@@ -10,17 +10,34 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+import io from "socket.io-client";
+import config from "../../config.js";
+
 export default {
     name: "admin_page",
     data() {
         return {
-            adminTable: "00",
+            myTable: "00",
         };
+    },
+    mounted() {
+        this.socket = io(config.url_server);
     },
     methods: {
         callNextPassword() {
-            this.$store.dispatch("fetchVariables");
+            this.$store.dispatch("updateCurrentTicket", this.myTable);
+            this.$store.dispatch("updateVariables");
+            this.socket.emit("newUpdate", this.currentTicket);
         },
+    },
+    computed: {
+        ...mapState([
+            "currentTicket",
+            "currentTable",
+            "lastTicket",
+            "lastTable",
+        ]),
     },
 };
 </script>

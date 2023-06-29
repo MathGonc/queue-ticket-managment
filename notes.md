@@ -4,8 +4,8 @@
 
 -   [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
 -   [x] **Monitor:** Som ao atualizar a pagina
--   [ ] **Admin:** Limite de guichês entre 00 e 99
--   [ ] **Admin:** Botão para chamar nova senha (bloquear botao por 10 segundos apos clicar)
+-   [x] **Admin:** Limite de guichês entre 00 e 99
+-   [x] **Admin:** Botão para chamar nova senha (bloquear botao por 10 segundos apos clicar)
 -   [ ] **Admin:** Botao para chamar senha novamente
 -   [ ] **Config:** Criar pagina
 -   [ ] **Config:** Botão para trocar a senha atual

@@ -1,13 +1,13 @@
 import { createStore } from "vuex";
 import axios from "axios";
-import { API_BASE_URL } from "./src/main.js";
+import config from "./config.js";
 
 export default createStore({
     state: {
-        currentTicket: "423432",
-        currentTable: "324324",
-        lastTicket: "324234",
-        lastTable: "234324",
+        currentTicket: "000",
+        currentTable: "00",
+        lastTicket: "000",
+        lastTable: "00",
     },
 
     mutations: {
@@ -23,19 +23,24 @@ export default createStore({
         setLastTable(state, table) {
             state.lastTable = table;
         },
-        incrementCurrentTicket(state) {
+        incrementCurrentTicket(state, userTable) {
+            state.lastTicket = state.currentTicket;
+            state.lastTable = state.currentTable;
+
             const ticketNumber = parseInt(state.currentTicket);
             const nextTicketNumber = ticketNumber + 1;
+            const nextTableNumber = parseInt(userTable);
             state.currentTicket = nextTicketNumber.toString().padStart(3, "0");
+            state.currentTable = nextTableNumber.toString().padStart(2, "0");
         },
     },
     actions: {
-        updateCurrentTicket({ commit }) {
-            commit("incrementCurrentTicket");
+        updateCurrentTicket({ commit }, userTable) {
+            commit("incrementCurrentTicket", userTable);
         },
         getVariablesAPI({ commit }) {
             return axios
-                .get(`${API_BASE_URL}`) // Ajuste a URL se necessário
+                .get(`${config.url_server_api}`) // Ajuste a URL se necessário
                 .then((response) => {
                     const {
                         currentTicket,
@@ -67,7 +72,7 @@ export default createStore({
 
             // Envie uma requisição PUT ou POST para a API com os dados atualizados
             return axios
-                .put(`${API_BASE_URL}/data`, updatedData)
+                .put(`${config.url_server_api}/updateVariables`, updatedData)
                 .then(() => {
                     console.log("Variáveis atualizadas no backend");
                 })
