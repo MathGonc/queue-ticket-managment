@@ -1,6 +1,6 @@
-# queue-ticket-managment
+# **queue-ticket-managment**
 
-## Tecnologias utilizadas:
+## **Tecnologias utilizadas:**
 
 ```
 Javascript
@@ -9,16 +9,12 @@ Vue-Router
 Vuex
 Axios
 ExpressJS
+Socket.IO
 Cors
 Nodemon
 ```
 
-## To do:
-
--   [x] Atualização em tempo real de todos os monitores abertos
--   [ ] MongoDB
-
-## Project setup:
+## **Project setup:**
 
 ```
 cd client > npm install
@@ -45,7 +41,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
