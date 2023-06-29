@@ -3,7 +3,7 @@
 ## **To do:**
 
 -   [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
--   [ ] **Monitor:** Som ao atualizar a pagina
+-   [x] **Monitor:** Som ao atualizar a pagina
 -   [ ] **Admin:** Limite de guichês entre 00 e 99
 -   [ ] **Admin:** Botão para chamar nova senha
 -   [ ] **Config:** Criar pagina
@@ -12,9 +12,10 @@
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
 -   [ ] Inserir **Topbar**
 -   [ ] Inserir **Bottombar**
--   [ ] Estilização
+-   [ ] **Monitor:** Relogio no canto superior da janela
+-   [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 -   [ ] **MongoDB**
--   [ ] Separação de branch entre **main**(para o portfolio) e **DPU**(para o trabalho)
+-   [ ] Armazenamento de usuarios para restrição de acesso ao **Admin** e **Config**
 
 ## **Tricks:**
 
