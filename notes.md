@@ -6,14 +6,14 @@
 -   [x] **Monitor:** Som ao atualizar a pagina
 -   [x] **Admin:** Limite de guichês entre 00 e 99
 -   [x] **Admin:** Botão para chamar nova senha (bloquear botao por 10 segundos apos clicar)
--   [ ] **Admin:** Botao para chamar senha novamente
--   [ ] **Config:** Criar pagina
--   [ ] **Config:** Botão para trocar a senha atual
--   [ ] **Config:** Botão para resetar todas as senhas
+-   [x] **Config:** Criar pagina
+-   [x] **Config:** Botão para trocar a senha atual
+-   [ ] **Monitor:** Piscar numero ao trocar a senha
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
 -   [ ] Inserir **Topbar**
 -   [ ] Inserir **Bottombar**
 -   [ ] **Monitor:** Relogio no canto superior da janela
+-   [ ] **Admin:** Botao para chamar senha novamente
 -   [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 -   [ ] **MongoDB**
 -   [ ] Armazenamento de usuarios para restrição de acesso ao **Admin** e **Config**

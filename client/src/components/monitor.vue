@@ -14,28 +14,19 @@ import io from "socket.io-client";
 import config from "../../config.js";
 
 export default {
-    name: "monitor_page",
+    name: "page_monitor",
     data() {
         return {};
     },
     mounted() {
         this.socket = io(config.url_server);
-
-        // Receba a atualização do currentTicket
-        this.socket.on("updateCurrentTicket", () => {
-            // Atualize a interface do usuário com a nova atualização
-            this.updateMonitor();
-        });
-
-        this.$store.dispatch("getVariablesAPI");
-    },
-    methods: {
-        updateMonitor() {
-            //const audio = new Audio(require("@/assets/sound.wav"));
-            //audio.play();
+        this.socket.on("updatedGlobalCurrentTicket", () => {
+            const audio = new Audio(require("@/assets/sound.wav"));
+            audio.play();
             this.$store.dispatch("getVariablesAPI");
-        },
+        });
     },
+    methods: {},
     computed: {
         ...mapState([
             "currentTicket",

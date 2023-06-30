@@ -23,20 +23,23 @@ export default createStore({
         setLastTable(state, table) {
             state.lastTable = table;
         },
-        incrementCurrentTicket(state, userTable) {
-            state.lastTicket = state.currentTicket;
-            state.lastTable = state.currentTable;
+        changeCurrentTicket(state, data) {
+            console.log(data);
+            if (state.lastTicket !== state.currentTicket) {
+                state.lastTicket = state.currentTicket;
+                state.lastTable = state.currentTable;
+            }
 
-            const ticketNumber = parseInt(state.currentTicket);
-            const nextTicketNumber = ticketNumber + 1;
-            const nextTableNumber = parseInt(userTable);
+            const nextTicketNumber = data.newTicket;
+            const nextTableNumber = data.newTable;
             state.currentTicket = nextTicketNumber.toString().padStart(3, "0");
             state.currentTable = nextTableNumber.toString().padStart(2, "0");
         },
     },
     actions: {
-        updateCurrentTicket({ commit }, userTable) {
-            commit("incrementCurrentTicket", userTable);
+        updatedGlobalCurrentTicket({ commit }, data) {
+            console.log(data);
+            commit("changeCurrentTicket", data);
         },
         getVariablesAPI({ commit }) {
             return axios
