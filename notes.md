@@ -12,7 +12,7 @@
 -   [ ] **Monitor:** Piscar numero ao trocar a senha (em vermelho e preto)
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
 -   [ ] **Monitor:** Leitura de senha em voz alta
--   [ ] **Config:** Checkbox para ativar/desativar _som de notificação_ e _leitura da senha por voz_
+-   [ ] **Config:** toggle para ativar/desativar _som de notificação_ e _leitura da senha por voz_
 -   [ ] Inserir **Topbar** (logo centralizada)
 -   [ ] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
 -   [ ] Inserir **CSS** (fundo cinza claro, bordas cinza escuro)
