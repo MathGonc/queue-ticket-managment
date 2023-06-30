@@ -1,10 +1,10 @@
 <template>
     <div class="index">
-        <img src="../assets/logo.png" alt="Logo" class="logo" />
         <h1>{{ msg }}</h1>
         <div class="buttons">
+            <button @click="goToAdmin" class="btn">Atendente</button>
+            <button @click="goToSorting" class="btn">Triagem</button>
             <button @click="goToMonitor" class="btn">Monitor</button>
-            <button @click="goToAdmin" class="btn">Admin</button>
             <button @click="goToConfig" class="btn">Config</button>
         </div>
     </div>
@@ -17,11 +17,14 @@ export default {
         msg: String,
     },
     methods: {
-        goToMonitor() {
-            this.$router.push("/monitor");
-        },
         goToAdmin() {
             this.$router.push("/admin");
+        },
+        goToSorting() {
+            this.$router.push("/sorting");
+        },
+        goToMonitor() {
+            this.$router.push("/monitor");
         },
         goToConfig() {
             this.$router.push("/config");

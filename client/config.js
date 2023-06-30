@@ -1,7 +1,14 @@
 const config = {
-    url_server: "http://localhost:3030",
-    url_server_api: "http://localhost:3030/api",
-    url_client: "http://localhost:8080",
+    port_server: "3030",
+    port_client: "8081",
+    url: `http://localhost`,
+    url_server: ``,
+    url_server_api: ``,
+    url_client: ``,
 };
+
+config.url_server = `${config.url}:${config.port_server}`;
+config.url_server_api = `${config.url}:${config.port_server}/api`;
+config.url_client = `${config.url}:${config.port_client}`;
 
 export default config;

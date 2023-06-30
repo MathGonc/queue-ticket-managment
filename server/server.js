@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:8080", // Especifique a origem permitida para o CORS
+        origin: "http://localhost:8081", // Especifique a origem permitida para o CORS
         methods: ["GET", "POST"], // Especifique os métodos permitidos
         allowedHeaders: ["my-custom-header"], // Especifique os cabeçalhos personalizados permitidos
         credentials: true, // Habilitar o envio de cookies de autenticação (se aplicável)
@@ -21,6 +21,9 @@ let data = {
     currentTable: "00",
     lastTicket: "000",
     lastTable: "00",
+    ticketInQueue: Array(100).fill(0),
+    ticketPreferential: Array(100).fill(0),
+    ticketName: Array(100).fill(""),
 };
 
 // Conecte-se ao cliente
@@ -54,23 +57,47 @@ app.get("/", (req, res) => {
 
 app.get("/api", (req, res) => {
     // Obtenha os valores das variáveis do servidor
+    let {
+        currentTicket,
+        currentTable,
+        lastTicket,
+        lastTable,
+        ticketInQueue,
+        ticketPreferential,
+        ticketName,
+    } = data;
 
-    let currentTicket = data.currentTicket;
-    let currentTable = data.currentTable;
-    let lastTicket = data.lastTicket;
-    let lastTable = data.lastTable;
     // Envie os valores das variáveis como resposta
-    res.json({ currentTicket, currentTable, lastTicket, lastTable });
+    res.json({
+        currentTicket,
+        currentTable,
+        lastTicket,
+        lastTable,
+        ticketInQueue,
+        ticketPreferential,
+        ticketName,
+    });
 });
 
-app.put("/api/updateVariables", (req, res) => {
+app.put("/api/updateVariablesInAPI", (req, res) => {
     // Obtenha os valores atualizados das variáveis do corpo da solicitação
-    let { currentTicket, currentTable, lastTicket, lastTable } = req.body;
+    let {
+        currentTicket,
+        currentTable,
+        lastTicket,
+        lastTable,
+        ticketInQueue,
+        ticketPreferential,
+        ticketName,
+    } = req.body;
 
     data.currentTicket = currentTicket;
     data.currentTable = currentTable;
     data.lastTicket = lastTicket;
     data.lastTable = lastTable;
+    data.ticketInQueue = ticketInQueue;
+    data.ticketPreferential = ticketPreferential;
+    data.ticketName = ticketName;
 
     // Envie uma resposta de sucesso
     res.status(200).send("Variáveis atualizadas no servidor");

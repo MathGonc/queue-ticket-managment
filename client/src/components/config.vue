@@ -46,7 +46,7 @@ export default {
             };
             console.log(data);
             this.$store.dispatch("updatedGlobalCurrentTicket", data);
-            this.$store.dispatch("updateVariables");
+            this.$store.dispatch("updateVariablesInAPI");
 
             this.socket.emit("clientMonitorUpdate", this.currentTicket);
         },

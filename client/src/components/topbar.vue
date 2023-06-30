@@ -1,7 +1,7 @@
 <template>
     <div class="top-bar">
         <!-- Conteúdo da barra superior -->
-        <h1>Minha Barra Superior</h1>
+        <img src="../assets/logo.png" alt="Logo" class="logo" />
         <!-- Outros elementos da barra superior -->
     </div>
 </template>
