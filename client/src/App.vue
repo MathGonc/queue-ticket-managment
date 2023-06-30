@@ -1,8 +1,21 @@
 <template>
     <div id="app">
+        <topbar></topbar>
         <router-view></router-view>
     </div>
 </template>
+
+<script>
+import topbar from "@/components/topbar.vue";
+
+export default {
+    name: "IndexPage",
+    components: {
+        topbar,
+    },
+    // Outras configurações e métodos da página
+};
+</script>
 
 <style>
 #app {
