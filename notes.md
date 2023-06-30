@@ -8,7 +8,7 @@
 -   [x] **Admin:** Botão para chamar nova senha (bloquear botao por 10 segundos apos clicar)
 -   [x] **Config:** Criar pagina
 -   [x] **Config:** Botão para trocar a senha atual
--   [ ] **Admin:** Botao para chamar senha atual novamente (com possibilidade de alternar o guiche mas mantendo a senha atual)
+-   [ ] **Admin:** Botao para chamar senha atual novamente (com possibilidade de alternar o guichê mas mantendo a senha atual)
 -   [ ] **Monitor:** Piscar numero ao trocar a senha (em vermelho e preto ou sumindo e voltando)
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
 -   [ ] **Monitor:** Leitura de senha em voz alta
