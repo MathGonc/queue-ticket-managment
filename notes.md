@@ -8,14 +8,15 @@
 -   [x] **Admin:** Botão para chamar nova senha (bloquear botao por 10 segundos apos clicar)
 -   [x] **Config:** Criar pagina
 -   [x] **Config:** Botão para trocar a senha atual
--   [ ] **Admin:** Botao para chamar senha atual novamente
--   [ ] **Monitor:** Piscar numero ao trocar a senha
+-   [ ] **Admin:** Botao para chamar senha atual novamente (com possibilidade de alternar o guiche mas mantendo a senha atual)
+-   [ ] **Monitor:** Piscar numero ao trocar a senha (em vermelho e preto)
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
 -   [ ] **Monitor:** Leitura de senha em voz alta
--   [ ] Inserir **Topbar** (logo)
--   [ ] Inserir **Bottombar** (desenvolvimento)
--   [ ] Inserir **CSS** (fundo cinza claro, bordas cinza medio)
--   [ ] **Monitor:** Relogio no canto superior da janela
+-   [ ] **Config:** Checkbox para ativar/desativar _som de notificação_ e _leitura da senha por voz_
+-   [ ] Inserir **Topbar** (logo centralizada)
+-   [ ] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
+-   [ ] Inserir **CSS** (fundo cinza claro, bordas cinza escuro)
+-   [ ] **Topbar:** Relogio no canto superior direito da janela
 -   [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 -   [ ] **MongoDB**
 -   [ ] Armazenamento de usuarios para restrição de acesso ao **Admin** e **Config**
