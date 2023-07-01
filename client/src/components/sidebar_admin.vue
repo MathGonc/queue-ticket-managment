@@ -2,10 +2,12 @@
     <div>
         <div class="sidebar_admin">
             <h2>Próximos atendimentos:</h2>
-            <ul>
+            <ul style="white-space: nowrap">
                 <li v-for="(ticket, index) in filteredTickets" :key="index">
                     {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
-                    <span v-if="ticket.ticketPreferential"> (P)</span>
+                    <span v-if="ticket.ticketPreferential" style="color: red"
+                        >(Preferencial)</span
+                    >
                 </li>
             </ul>
         </div>
