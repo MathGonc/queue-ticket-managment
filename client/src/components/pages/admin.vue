@@ -7,5 +7,6 @@
 <script>
 export default {
     name: "page_admin",
+    mounted() {},
 };
 </script>

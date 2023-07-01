@@ -12,6 +12,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { useToast } from "vue-toastification";
 import io from "socket.io-client";
 import config from "../../../config.js";
 
@@ -26,6 +27,7 @@ export default {
             this.$store.dispatch("getVariablesAPI");
         });
         this.socket.on("receiveUpdateMonitor", (newTicket) => {
+            useToast().info("Nova senha!", { position: "bottom-center" });
             if (this.soundNotification == true) {
                 const audio = new Audio(require("@/assets/sound.wav"));
                 audio.play();

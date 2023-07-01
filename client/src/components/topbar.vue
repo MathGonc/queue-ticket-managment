@@ -13,10 +13,4 @@ export default {
 };
 </script>
 
-<style>
-.top-bar {
-    background-color: #f2f2f2;
-    padding: 10px;
-    /* Estilos adicionais da barra superior */
-}
-</style>
+<style></style>

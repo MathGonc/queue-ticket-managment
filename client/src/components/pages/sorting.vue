@@ -26,6 +26,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { useToast } from "vue-toastification";
 import io from "socket.io-client";
 import config from "../../../config.js";
 
@@ -45,12 +46,13 @@ export default {
     },
     methods: {
         cadastrarSenha() {
-            if (this.nameInput.length < 1) return;
+            if (this.nameInput.length < 1) {
+                return useToast().error("Digite um nome para cadastrar");
+            }
             // Procurar a primeira posição vaga na array ticketInQueue
             const index = this.ticketInQueue.findIndex(
                 (ticket) => ticket === 0
             );
-            console.log(index);
 
             if (index !== -1) {
                 // Atualizar os valores da senha na posição encontrada
@@ -70,7 +72,12 @@ export default {
 
                 this.nameInput = "";
                 this.preferential = false;
-            }
+
+                useToast().success("Usuario cadastrado com sucesso");
+            } else
+                return useToast().error(
+                    "Sem espaço disponivel para novas senhas"
+                );
         },
     },
 };

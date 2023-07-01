@@ -5,7 +5,7 @@
             <button
                 type="button"
                 class="btn btn-outline-danger"
-                @click="changeActualTicket(newTicketNumber)"
+                @click="resetAllTickets"
                 :disabled="buttonDisabled"
             >
                 Resetar senhas
@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { useToast } from "vue-toastification";
+
 export default {
     name: "page_config",
     data() {
@@ -63,7 +65,11 @@ export default {
             console.log(voices);
         };
     },
-    methods: {},
+    methods: {
+        resetAllTickets() {
+            useToast().success("Senhas resetadas");
+        },
+    },
     computed: {},
 };
 </script>

@@ -13,14 +13,33 @@ export default {
     components: {
         topbar,
     },
+    data() {
+        return {
+            showAlert: false,
+            stringAlert: "-",
+        };
+    },
     mounted() {
         this.$store.dispatch("getVariablesAPI");
     },
-    // Outras configurações e métodos da página
+    methods: {},
 };
 </script>
 
 <style>
+html,
+body {
+    height: 100%;
+    width: 100%;
+    background-color: #ffffff;
+    opacity: 1;
+    background-image: repeating-radial-gradient(
+            circle at 0 0,
+            transparent 0,
+            #ffffff 10px
+        ),
+        repeating-linear-gradient(#eaeaea55, #eaeaea);
+}
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -41,5 +60,8 @@ nav a {
 
 nav a.router-link-exact-active {
     color: #42b983;
+}
+.container > *:not(:last-child) {
+    padding-right: 10px; /* Espaço horizontal desejado */
 }
 </style>

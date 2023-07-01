@@ -34,7 +34,7 @@
             <span v-if="myCalledTicket != 0"
                 ><button
                     type="button"
-                    @click="callNextTicket"
+                    @click="callSameTicket"
                     :disabled="true"
                     class="btn btn-outline-primary"
                 >
@@ -47,6 +47,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { useToast } from "vue-toastification";
 import io from "socket.io-client";
 import config from "../../../config.js";
 
@@ -64,14 +65,6 @@ export default {
         this.socket.on("receiveUpdateGlobal", () => {
             this.$store.dispatch("getVariablesAPI");
         });
-
-        this.$store.watch(
-            (state) => state.currentTicket,
-            (newTicket) => {
-                // Faça algo com a nova variável
-                console.log("Nova atualização do ticket:", newTicket);
-            }
-        );
     },
     computed: {
         ...mapState([
@@ -88,6 +81,8 @@ export default {
     },
     methods: {
         callNextTicket() {
+            if (this.myTable == 0)
+                return useToast().error("Selecione seu guichê");
             let ticketIndex = -1;
             for (let i = 0; i < this.ticketInQueue.length; i++) {
                 if (
@@ -115,7 +110,6 @@ export default {
                     newTable: parseInt(this.myTable),
                     newUser: this.ticketName[ticketIndex],
                 };
-                console.log(data);
                 this.$store.dispatch("updatedGlobalCurrentTicket", data);
 
                 this.currentTicket = ticketIndex.toString().padStart(3, "0");
@@ -135,8 +129,14 @@ export default {
                     this.buttonDisabled = false;
                 }, 10000);
             } else {
-                console.log("Nenhuma senha cadastrada");
+                useToast().error("Nenhuma senha cadastrada");
             }
+        },
+        callSameTicket() {
+            if (this.myCalledTicket == 0)
+                return useToast().error(
+                    "Você não chamou nenhum ticket recentemente"
+                );
         },
     },
 };

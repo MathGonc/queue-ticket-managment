@@ -1,5 +1,5 @@
 <template>
-    <div id="sidebar_admin">
+    <div>
         <div class="sidebar_admin">
             <h2>Próximos atendimentos:</h2>
             <ul>
@@ -24,13 +24,6 @@ export default {
         this.socket.on("receiveUpdateGlobal", () => {
             this.$store.dispatch("getVariablesAPI");
         });
-        this.$store.watch(
-            (state) => state.currentTicket,
-            (newTicket) => {
-                // Faça algo com a nova variável
-                console.log("Nova atualização do ticket:", newTicket);
-            }
-        );
     },
     computed: {
         ...mapState(["ticketInQueue", "ticketPreferential", "ticketName"]),
@@ -59,6 +52,5 @@ export default {
     width: 200px;
     height: 100%;
     background-color: #f2f2f2;
-    padding: 10px;
 }
 </style>
