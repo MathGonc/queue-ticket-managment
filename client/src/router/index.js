@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import index from "../components/index.vue";
-import monitor from "../components/monitor.vue";
-import sorting from "../components/sorting.vue";
-import admin from "../components/admin.vue";
-import config from "../components/config.vue";
+import index from "../components/pages/index.vue";
+import monitor from "../components/pages/monitor.vue";
+import sorting from "../components/pages/sorting.vue";
+import service from "../components/pages/service.vue";
+import config from "../components/pages/config.vue";
+
+import sidebar_admin from "../components/sidebar_admin.vue";
 
 const routes = [
     {
@@ -17,19 +19,26 @@ const routes = [
         component: monitor,
     },
     {
-        path: "/sorting",
-        name: "sorting",
-        component: sorting,
-    },
-    {
         path: "/admin",
         name: "admin",
-        component: admin,
-    },
-    {
-        path: "/config",
-        name: "config",
-        component: config,
+        component: sidebar_admin,
+        children: [
+            {
+                path: "sorting",
+                name: "sorting",
+                component: sorting,
+            },
+            {
+                path: "service",
+                name: "service",
+                component: service,
+            },
+            {
+                path: "config",
+                name: "config",
+                component: config,
+            },
+        ],
     },
 ];
 

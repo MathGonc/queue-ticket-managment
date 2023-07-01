@@ -10,15 +10,19 @@
 -   [x] **Config:** Botão para trocar a senha atual
 -   [x] **Triagem:** Criar pagina
 -   [x] Recebimento de atualizações global independente da pagina
--   [ ] Função de chamar senha agora procurando nas arrays
--   [ ] **Admin:** Botao para chamar senha atual novamente (com possibilidade de alternar o guichê mas mantendo a senha atual)
+-   [x] Função de chamar senha agora procurando nas arrays
+-   [x] Inserir **Topbar** (logo centralizada)
+-   [x] Inserir **CSS**
+-   [ ] **Config:** toggle para ativar/desativar _som de notificação_ e _leitura da senha por voz_
+-   [ ] **Config:** Botão de resetar senhas
+-   [ ] **Monitor:** Leitura de senha em voz alta
 -   [ ] **Monitor:** Piscar numero ao trocar a senha (em vermelho e preto ou sumindo e voltando)
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
--   [ ] **Monitor:** Leitura de senha em voz alta
--   [ ] **Config:** toggle para ativar/desativar _som de notificação_ e _leitura da senha por voz_
--   [ ] Inserir **Topbar** (logo centralizada)
+-   [ ] **Admin:** Botao para chamar senha atual novamente (com possibilidade de alternar o guichê mas mantendo a senha atual)
+-   [ ] **Triagem:** Selecionar o tipo de atendimento
+-   [ ] Inserir fundo cinza claro, mas não tão claro quanto a bottombar e topbar
 -   [ ] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
--   [ ] Inserir **CSS** (fundo cinza claro, bordas cinza escuro)
+-   [ ] Inserir nova sidebar
 -   [ ] **Topbar:** Relogio no canto superior direito da janela
 -   [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 -   [ ] **MongoDB**

@@ -4,6 +4,9 @@ import config from "./config.js";
 
 export default createStore({
     state: {
+        soundNotification: true,
+        soundCallTicket: true,
+        soundCallTicketVoice: 0,
         currentTicket: "999",
         currentTable: "99",
         currentUser: "-",
@@ -22,12 +25,19 @@ export default createStore({
         setCurrentTable(state, table) {
             state.currentTable = table;
         },
+        setCurrentUser(state, table) {
+            state.currentUser = table;
+        },
         setLastTicket(state, ticket) {
             state.lastTicket = ticket;
         },
         setLastTable(state, table) {
             state.lastTable = table;
         },
+        setLastUser(state, table) {
+            state.lastUser = table;
+        },
+
         changeCurrentTicket(state, data) {
             console.log(data);
             if (state.lastTicket !== state.currentTicket) {
@@ -69,14 +79,6 @@ export default createStore({
             console.log(data);
             commit("changeCurrentTicket", data);
         },
-        updatedNextTicket({ commit, state }) {
-            const index = state.ticketInQueue.findIndex(
-                (inQueue) => inQueue === 0
-            );
-            if (index !== -1) {
-                commit("markTicketAsQueue", { index });
-            }
-        },
         getVariablesAPI({ commit }) {
             return axios
                 .get(`${config.url_server_api}`) // Ajuste a URL se necessário
@@ -84,8 +86,10 @@ export default createStore({
                     const {
                         currentTicket,
                         currentTable,
+                        currentUser,
                         lastTicket,
                         lastTable,
+                        lastUser,
                         ticketInQueue,
                         ticketPreferential,
                         ticketName,
@@ -94,8 +98,10 @@ export default createStore({
                     // Chamar as mutações para atualizar as variáveis globais
                     commit("setCurrentTicket", currentTicket);
                     commit("setCurrentTable", currentTable);
+                    commit("setCurrentUser", currentUser);
                     commit("setLastTicket", lastTicket);
                     commit("setLastTable", lastTable);
+                    commit("setLastUser", lastUser);
 
                     // Atualizar as arrays com os dados recebidos
                     commit("setTicketInQueue", { array: ticketInQueue });
@@ -113,8 +119,10 @@ export default createStore({
             const {
                 currentTicket,
                 currentTable,
+                currentUser,
                 lastTicket,
                 lastTable,
+                lastUser,
                 ticketInQueue,
                 ticketPreferential,
                 ticketName,
@@ -122,8 +130,10 @@ export default createStore({
             const updatedData = {
                 currentTicket,
                 currentTable,
+                currentUser,
                 lastTicket,
                 lastTable,
+                lastUser,
                 ticketInQueue,
                 ticketPreferential,
                 ticketName,

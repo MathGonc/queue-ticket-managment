@@ -1,31 +1,54 @@
 <template>
     <div class="admin">
-        <h2>Painel de Administração - Guichê: {{ myTable }}</h2>
-        <h4>
-            Senha atual: {{ currentTicket }} ({{ currentUser }}) (Guichê:
-            {{ currentTable }})
-        </h4>
-        <label for="counter"
-            >Digite o número do guichê:
-            <input
-                type="number"
-                id="counter"
-                min="00"
-                max="99"
-                maxlength="2"
-                v-model="myTable"
-        /></label>
+        <div class="container">
+            <h2>Painel de atendimento</h2>
+            <h5>
+                Senha atual: {{ currentTicket }} ({{ currentUser }}) (Guichê:
+                {{ currentTable }})
+            </h5>
+            <br />
+            <div class="input-group mb-3 justify-content-center">
+                <span class="input-group-text" id="basic-addon1"
+                    >Digite o número do seu guichê:</span
+                ><input
+                    type="number"
+                    id="counter"
+                    min="00"
+                    max="99"
+                    maxlength="2"
+                    v-model="myTable"
+                />
+            </div>
+            <br />
+            <span
+                ><button
+                    type="button"
+                    @click="callNextTicket"
+                    :disabled="buttonDisabled"
+                    class="btn btn-outline-primary"
+                >
+                    Chamar Próxima Senha
+                </button></span
+            >
 
-        <button @click="callNextTicket" :disabled="buttonDisabled" class="btn">
-            Chamar Próxima Senha
-        </button>
+            <span v-if="myCalledTicket != 0"
+                ><button
+                    type="button"
+                    @click="callNextTicket"
+                    :disabled="true"
+                    class="btn btn-outline-primary"
+                >
+                    Chamar senha {{ myCalledTicket }} novamente
+                </button></span
+            >
+        </div>
     </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
 import io from "socket.io-client";
-import config from "../../config.js";
+import config from "../../../config.js";
 
 export default {
     name: "page_admin",
@@ -38,7 +61,7 @@ export default {
     },
     mounted() {
         this.socket = io(config.url_server);
-        this.socket.on("updatedGlobalCurrentTicket", () => {
+        this.socket.on("receiveUpdateGlobal", () => {
             this.$store.dispatch("getVariablesAPI");
         });
 
@@ -87,26 +110,27 @@ export default {
             }
 
             if (ticketIndex !== -1) {
-                // Ticket encontrado
+                let data = {
+                    newTicket: parseInt(ticketIndex),
+                    newTable: parseInt(this.myTable),
+                    newUser: this.ticketName[ticketIndex],
+                };
+                console.log(data);
+                this.$store.dispatch("updatedGlobalCurrentTicket", data);
+
                 this.currentTicket = ticketIndex.toString().padStart(3, "0");
                 this.ticketInQueue[ticketIndex] = 2;
                 this.ticketPreferential[ticketIndex] = 0;
                 this.ticketName[ticketIndex] = "-";
 
-                let data = {
-                    newTicket: parseInt(ticketIndex),
-                    newTable: parseInt(this.myTable),
-                    newUser: "",
-                };
-                console.log(data);
-                this.$store.dispatch("updatedGlobalCurrentTicket", data);
                 this.$store.dispatch("updateVariablesInAPI");
 
-                this.socket.emit("clientMonitorUpdate", parseInt(ticketIndex));
+                this.socket.emit("signalUpdateValues");
+                this.socket.emit("signalUpdateMonitor", ticketIndex);
 
                 this.myCalledTicket = parseInt(ticketIndex);
 
-                //this.buttonDisabled = true;
+                this.buttonDisabled = true;
                 setTimeout(() => {
                     this.buttonDisabled = false;
                 }, 10000);
@@ -118,17 +142,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.admin {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.btn {
-    display: block;
-    width: 200px;
-    height: 50px;
-    margin-top: 20px;
-}
-</style>
+<style scoped></style>

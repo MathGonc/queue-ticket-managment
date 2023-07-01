@@ -1,6 +1,6 @@
 const config = {
     port_server: "3030",
-    port_client: "8081",
+    port_client: "8080",
     url: `http://localhost`,
     url_server: ``,
     url_server_api: ``,

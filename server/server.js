@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:8081", // Especifique a origem permitida para o CORS
+        origin: "http://localhost:8080", // Especifique a origem permitida para o CORS
         methods: ["GET", "POST"], // Especifique os métodos permitidos
         allowedHeaders: ["my-custom-header"], // Especifique os cabeçalhos personalizados permitidos
         credentials: true, // Habilitar o envio de cookies de autenticação (se aplicável)
@@ -19,8 +19,10 @@ app.use(express.json());
 let data = {
     currentTicket: "000",
     currentTable: "00",
+    currentUser: "00",
     lastTicket: "000",
     lastTable: "00",
+    lastUser: "00",
     ticketInQueue: Array(100).fill(0),
     ticketPreferential: Array(100).fill(0),
     ticketName: Array(100).fill(""),
@@ -34,12 +36,14 @@ io.on("connection", (socket) => {
     socket.emit("updatedGlobalCurrentTicket", data.currentTicket);
 
     // Receba uma nova atualização do cliente
-    socket.on("clientMonitorUpdate", (newTicket) => {
-        // Atualize a variável currentTicket com a nova atualização
-        data.currentTicket = newTicket;
+    socket.on("signalUpdateValues", () => {
+        io.emit("receiveUpdateGlobal"); // Envie a nova atualização para todos os clientes conectados, incluindo o cliente que enviou a atualização
+    });
 
-        // Envie a nova atualização para todos os clientes conectados, incluindo o cliente que enviou a atualização
-        io.emit("updatedGlobalCurrentTicket", data.currentTicket);
+    socket.on("signalUpdateMonitor", (newTicket) => {
+        io.emit("receiveUpdateMonitor", newTicket);
+
+        console.log(newTicket);
     });
 
     // Quando o cliente se desconectar
@@ -60,8 +64,10 @@ app.get("/api", (req, res) => {
     let {
         currentTicket,
         currentTable,
+        currentUser,
         lastTicket,
         lastTable,
+        lastUser,
         ticketInQueue,
         ticketPreferential,
         ticketName,
@@ -71,8 +77,10 @@ app.get("/api", (req, res) => {
     res.json({
         currentTicket,
         currentTable,
+        currentUser,
         lastTicket,
         lastTable,
+        lastUser,
         ticketInQueue,
         ticketPreferential,
         ticketName,
@@ -84,8 +92,10 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
     let {
         currentTicket,
         currentTable,
+        currentUser,
         lastTicket,
         lastTable,
+        lastUser,
         ticketInQueue,
         ticketPreferential,
         ticketName,
@@ -93,8 +103,10 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 
     data.currentTicket = currentTicket;
     data.currentTable = currentTable;
+    data.currentUser = currentUser;
     data.lastTicket = lastTicket;
     data.lastTable = lastTable;
+    data.lastUser = lastUser;
     data.ticketInQueue = ticketInQueue;
     data.ticketPreferential = ticketPreferential;
     data.ticketName = ticketName;

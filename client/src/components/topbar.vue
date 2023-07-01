@@ -1,8 +1,8 @@
 <template>
     <div class="top-bar">
-        <!-- Conteúdo da barra superior -->
-        <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <!-- Outros elementos da barra superior -->
+        <nav>
+            <img src="../assets/logo.png" alt="Logo" class="logo" />
+        </nav>
     </div>
 </template>
 

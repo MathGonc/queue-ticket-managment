@@ -1,22 +1,21 @@
 <template>
     <div id="app">
         <topbar></topbar>
-        <overlay_admin></overlay_admin>
         <router-view></router-view>
     </div>
 </template>
 
 <script>
-import overlay_admin from "@/components/overlay_admin.vue";
 import topbar from "@/components/topbar.vue";
 
 export default {
     name: "IndexPage",
     components: {
-        overlay_admin,
         topbar,
     },
-    mounted() {},
+    mounted() {
+        this.$store.dispatch("getVariablesAPI");
+    },
     // Outras configurações e métodos da página
 };
 </script>

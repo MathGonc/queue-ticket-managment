@@ -16,6 +16,7 @@
 
 ```
 Javascript
+Bootstrap
 Vue
 Vue-Router
 Vuex
