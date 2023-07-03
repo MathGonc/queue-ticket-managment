@@ -40,7 +40,11 @@ body {
     width: 100%;
     background-color: #ffffff;
     opacity: 1;
-    background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+    background-image: repeating-radial-gradient(
+            circle at 0 0,
+            transparent 0,
+            #ffffff 10px
+        ),
         repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -67,7 +71,7 @@ nav a.router-link-exact-active {
 
 .container {
     text-align: center;
-    background: #bdbdbdb2;
+    background: #e0e0e0b2;
     border-radius: 10px;
     padding: 20px; /* Adicione um valor de espaçamento desejado */
 }
@@ -80,6 +84,7 @@ nav a.router-link-exact-active {
 .title_page {
     text-align: center;
     font-size: 32px;
+    font-weight: bold;
 }
 
 /* fade effect! */

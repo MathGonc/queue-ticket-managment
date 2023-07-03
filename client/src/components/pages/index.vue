@@ -1,20 +1,40 @@
 <template>
     <div class="index">
         <span class="title_page">Sistema de atendimento</span>
-        <div class="buttons">
-            <button type="button" class="btn btn btn-outline-primary" @click="goToService">
-                Atendimento
-            </button>
-            <button type="button" class="btn btn btn-outline-primary" @click="goToSorting">
-                Triagem
-            </button>
-            <button type="button" class="btn btn btn-outline-primary" @click="goToMonitor">
-                Monitor
-            </button>
-            <button type="button" class="btn btn btn-outline-primary" @click="goToConfig">
-                Configurações
-            </button>
-        </div>
+        <transition-group>
+            <div v-if="transitionFade">
+                <div class="buttons">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="goToService"
+                    >
+                        <b>Atendimento</b>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="goToSorting"
+                    >
+                        <b>Triagem</b>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="goToMonitor"
+                    >
+                        <b>Monitor</b>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        @click="goToConfig"
+                    >
+                        <b>Configurações</b>
+                    </button>
+                </div>
+            </div>
+        </transition-group>
     </div>
 </template>
 
@@ -22,6 +42,14 @@
 export default {
     name: "page_index",
     props: {},
+    data() {
+        return {
+            transitionFade: false,
+        };
+    },
+    mounted() {
+        this.transitionFade = true;
+    },
     methods: {
         goToMonitor() {
             this.$router.push({ name: "monitor" });

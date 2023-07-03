@@ -6,19 +6,26 @@
                 <div class="container w-25 p-3">
                     <div class="row">
                         <div class="col">
-                            <div class="input-group input-group-sm mb-3 justify-content-center">
-                                <span class="input-group-text" id="basic-addon1">Idioma:</span>
+                            <div
+                                class="input-group input-group-sm mb-3 justify-content-center"
+                            >
+                                <span class="input-group-text" id="basic-addon1"
+                                    >Idioma:</span
+                                >
                                 <select
                                     class="form-select"
                                     aria-label="Default select example"
                                     v-model="displayLanguage"
-                                    disabled>
+                                    disabled
+                                >
                                     <option value="0">Português</option>
                                     <option value="1">English</option>
                                 </select>
                             </div>
 
-                            <div class="input-group input-group-sm mb-3 justify-content-center">
+                            <div
+                                class="input-group input-group-sm mb-3 justify-content-center"
+                            >
                                 <span class="input-group-text" id="basic-addon1"
                                     >Modo do monitor:</span
                                 >
@@ -26,45 +33,60 @@
                                     class="form-select"
                                     aria-label="Default select example"
                                     v-model="SetMonitorMode"
-                                    disabled>
+                                    disabled
+                                >
                                     <option value="0">Horizontal</option>
                                     <option value="1">Vertical</option>
                                 </select>
                             </div>
 
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="flexSwitchCheckDefault"
+                                <label
+                                    class="form-check-label"
+                                    for="flexSwitchCheckDefault"
                                     ><input
                                         class="form-check-input"
                                         type="checkbox"
                                         id="flexSwitchCheckDefault"
                                         v-model="SetSoundNotification"
-                                        :disabled="buttonDisabled" />
+                                        :disabled="buttonDisabled"
+                                    />
                                     Notificação ao chamar senha</label
                                 >
                             </div>
 
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="flexSwitchCheckDefault"
+                                <label
+                                    class="form-check-label"
+                                    for="flexSwitchCheckDefault"
                                     ><input
                                         class="form-check-input"
                                         type="checkbox"
                                         id="flexSwitchCheckDefault"
                                         v-model="SetSoundCallTicket"
-                                        :disabled="buttonDisabled" />
+                                        :disabled="buttonDisabled"
+                                    />
                                     Voz ao chamar senha</label
                                 >
                             </div>
 
                             <div v-if="SetSoundCallTicket">
-                                <div class="input-group input-group-sm mb-3 justify-content-center">
-                                    <span class="input-group-text" id="basic-addon1"
+                                <div
+                                    class="input-group input-group-sm mb-3 justify-content-center"
+                                >
+                                    <span
+                                        class="input-group-text"
+                                        id="basic-addon1"
                                         >Tipo de voz:</span
                                     ><select
                                         class="selectpicker"
                                         v-model="SetSoundCallTicketVoice"
-                                        :disabled="buttonDisabled">
-                                        <option v-for="value in 21" :key="value - 1">
+                                        :disabled="buttonDisabled"
+                                    >
+                                        <option
+                                            v-for="value in 21"
+                                            :key="value - 1"
+                                        >
                                             {{ value - 1 }}
                                         </option>
                                     </select>
@@ -76,7 +98,8 @@
                                     type="button"
                                     class="btn btn-outline-primary"
                                     @click="saveConfigs"
-                                    :disabled="buttonDisabled">
+                                    :disabled="buttonDisabled"
+                                >
                                     Salvar
                                 </button>
                             </span>
@@ -85,7 +108,8 @@
                                     type="button"
                                     class="btn btn-outline-danger"
                                     @click="resetAllTickets"
-                                    :disabled="buttonDisabled">
+                                    :disabled="buttonDisabled"
+                                >
                                     Resetar senhas
                                 </button></span
                             >

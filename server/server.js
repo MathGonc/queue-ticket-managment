@@ -21,13 +21,14 @@ let globalData = {
     soundNotification: true,
     soundCallTicket: true,
     soundCallTicketVoice: 0,
-    currentTicket: "000",
-    currentTable: "00",
-    currentUser: "00",
-    lastTicket: "000",
-    lastTable: "00",
-    lastUser: "00",
+    currentTicket: 0,
+    currentTable: 0,
+    currentUser: "-",
+    lastTicket: -1,
+    lastTable: -1,
+    lastUser: "-",
     ticketInQueue: Array(100).fill(0),
+    ticketType: Array(100).fill(""),
     ticketPreferential: Array(100).fill(0),
     ticketName: Array(100).fill(""),
 };
@@ -77,6 +78,7 @@ app.get("/api", (req, res) => {
         lastTable,
         lastUser,
         ticketInQueue,
+        ticketType,
         ticketPreferential,
         ticketName,
     } = globalData;
@@ -94,6 +96,7 @@ app.get("/api", (req, res) => {
         lastTable,
         lastUser,
         ticketInQueue,
+        ticketType,
         ticketPreferential,
         ticketName,
     });
@@ -109,6 +112,7 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
         lastTable,
         lastUser,
         ticketInQueue,
+        ticketType,
         ticketPreferential,
         ticketName,
     } = req.body;
@@ -120,6 +124,7 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
     globalData.lastTable = lastTable;
     globalData.lastUser = lastUser;
     globalData.ticketInQueue = ticketInQueue;
+    globalData.ticketType = ticketType;
     globalData.ticketPreferential = ticketPreferential;
     globalData.ticketName = ticketName;
 
@@ -128,7 +133,12 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 });
 
 app.put("/api/updateGlobalConfigs", (req, res) => {
-    let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
+    let {
+        monitorMode,
+        soundNotification,
+        soundCallTicket,
+        soundCallTicketVoice,
+    } = req.body;
 
     globalData.monitorMode = monitorMode;
     globalData.soundNotification = soundNotification;

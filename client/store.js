@@ -15,6 +15,7 @@ export default createStore({
         lastTable: "99",
         lastUser: "-",
         ticketInQueue: Array(100).fill(0), // se o ticket foi chamado: 0 ou 1
+        ticketType: Array(100).fill("-"),
         ticketPreferential: Array(100).fill(0), // se o ticket é preferencial: 0 ou 1
         ticketName: Array(100).fill("-"), // nome do usuário do ticket
     },
@@ -68,6 +69,9 @@ export default createStore({
         setTicketInQueue(state, { array }) {
             state.ticketInQueue = array;
         },
+        setTicketType(state, { array }) {
+            state.ticketType = array;
+        },
         markTicketAsQueue(state, { index }) {
             state.ticketInQueue[index] = 1;
             state.currentTicket = index.toString().padStart(3, "0");
@@ -78,8 +82,12 @@ export default createStore({
         setTicketName(state, { array }) {
             state.ticketName = array;
         },
-        setTicketData(state, { index, ticketInQueue, ticketPreferential, ticketName }) {
+        setTicketData(
+            state,
+            { index, ticketInQueue, ticketType, ticketPreferential, ticketName }
+        ) {
             state.ticketInQueue[index] = ticketInQueue;
+            state.ticketType[index] = ticketType;
             state.ticketPreferential[index] = ticketPreferential;
             state.ticketName[index] = ticketName;
         },
@@ -90,11 +98,17 @@ export default createStore({
             commit("changeCurrentTicket", data);
         },
         resetStoreAllTickets({ commit }) {
-            const ticketInQueue = Array(this.state.ticketInQueue.length).fill(0);
-            const ticketPreferential = Array(this.state.ticketPreferential.length).fill(0);
+            const ticketInQueue = Array(this.state.ticketInQueue.length).fill(
+                0
+            );
+            const ticketType = Array(this.state.ticketType.length).fill(0);
+            const ticketPreferential = Array(
+                this.state.ticketPreferential.length
+            ).fill(0);
             const ticketName = Array(this.state.ticketName.length).fill(0);
 
             commit("setTicketInQueue", { array: ticketInQueue });
+            commit("setticketType", { array: ticketType });
             commit("setTicketPreferential", { array: ticketPreferential });
             commit("setTicketName", { array: ticketName });
         },
@@ -114,6 +128,7 @@ export default createStore({
                         lastTable,
                         lastUser,
                         ticketInQueue,
+                        ticketType,
                         ticketPreferential,
                         ticketName,
                     } = response.data;
@@ -132,6 +147,8 @@ export default createStore({
 
                     // Atualizar as arrays com os dados recebidos
                     commit("setTicketInQueue", { array: ticketInQueue });
+
+                    commit("setTicketType", { array: ticketType });
                     commit("setTicketPreferential", {
                         array: ticketPreferential,
                     });
@@ -151,6 +168,7 @@ export default createStore({
                 lastTable,
                 lastUser,
                 ticketInQueue,
+                ticketType,
                 ticketPreferential,
                 ticketName,
             } = state;
@@ -162,6 +180,7 @@ export default createStore({
                 lastTable,
                 lastUser,
                 ticketInQueue,
+                ticketType,
                 ticketPreferential,
                 ticketName,
             };
@@ -169,12 +188,18 @@ export default createStore({
 
             // Envie uma requisição PUT ou POST para a API com os dados atualizados
             return axios
-                .put(`${config.url_server_api}/updateVariablesInAPI`, updatedData)
+                .put(
+                    `${config.url_server_api}/updateVariablesInAPI`,
+                    updatedData
+                )
                 .then(() => {
                     console.log("Variáveis atualizadas no backend");
                 })
                 .catch((error) => {
-                    console.error("Erro ao atualizar as variáveis no backend:", error);
+                    console.error(
+                        "Erro ao atualizar as variáveis no backend:",
+                        error
+                    );
                     throw error;
                 });
         },
@@ -187,7 +212,10 @@ export default createStore({
                     console.log("Configurações globais atualizadas no backend");
                 })
                 .catch((error) => {
-                    console.error("Erro ao atualizar as configurações globais no backend:", error);
+                    console.error(
+                        "Erro ao atualizar as configurações globais no backend:",
+                        error
+                    );
                     throw error;
                 });
         },

@@ -4,8 +4,12 @@
             <h2>Próximos atendimentos:</h2>
             <ul style="white-space: nowrap">
                 <li v-for="(ticket, index) in filteredTickets" :key="index">
-                    {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
-                    <span v-if="ticket.ticketPreferential" style="color: red">(Preferencial)</span>
+                    {{ ticket.ticketNumber }} ({{ ticket.ticketName }}) [{{
+                        ticket.ticketType
+                    }}]
+                    <span v-if="ticket.ticketPreferential" style="color: red"
+                        >(Preferencial)</span
+                    >
                 </li>
             </ul>
         </div>
@@ -26,13 +30,19 @@ export default {
         });
     },
     computed: {
-        ...mapState(["ticketInQueue", "ticketPreferential", "ticketName"]),
+        ...mapState([
+            "ticketInQueue",
+            "ticketType",
+            "ticketPreferential",
+            "ticketName",
+        ]),
         filteredTickets() {
             return this.ticketInQueue.reduce((filtered, ticket, index) => {
                 if (ticket === 1) {
                     filtered.push({
                         ticketNumber: index,
                         ticketName: this.ticketName[index],
+                        ticketType: this.ticketType[index],
                         ticketPreferential: this.ticketPreferential[index],
                     });
                 }

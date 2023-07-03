@@ -6,16 +6,30 @@
                     <div class="row">
                         <div class="col">
                             <Transition name="bounce">
-                                <p v-if="transitionNewTicket" style="text-align: center">
+                                <p
+                                    v-if="transitionNewTicket"
+                                    style="text-align: center"
+                                >
                                     <b>
-                                        <h1>
-                                            Senha: {{ currentTicket }} (Guichê: {{ currentTable }})
-                                        </h1>
+                                        <span v-if="currentTicket >= 0">
+                                            <h1>
+                                                <b
+                                                    >Senha:
+                                                    {{ currentTicket }} (Guichê:
+                                                    {{ currentTable }})
+                                                </b>
+                                            </h1></span
+                                        >
                                     </b>
                                 </p>
                             </Transition>
                             <br />
-                            <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
+                            <span v-if="currentTicket >= 1">
+                                <h4>
+                                    Última Senha: {{ lastTicket }} (Guichê:
+                                    {{ lastTable }})
+                                </h4>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -69,7 +83,9 @@ export default {
                         message.voice = voices[this.soundCallTicketVoice];
                         speechSynthesis.speak(message);
                     } else {
-                        console.log("o navegador não suporta a API Web Speech.");
+                        console.log(
+                            "o navegador não suporta a API Web Speech."
+                        );
                     }
                 }
             }, 1000);

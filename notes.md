@@ -5,6 +5,7 @@
 ### Fix:
 
 -   [ ] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
+-   [ ] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
 -   [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 -   [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 
@@ -31,8 +32,8 @@
 -   [x] **Config:** Botão de resetar senhas
 -   [x] **Monitor:** Piscar numero ao trocar a senha (sumindo e voltando)
 -   [x] **Admin:** Botao para chamar senha atual novamente
+-   [ ] **Triagem:** Selecionar o tipo de atendimento (INICIAL, AGENDAMENTO, RETORNO, INFORMAÇÕES e JUNTADA DE DOCUMENTOS)
 -   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
--   [ ] **Triagem:** Selecionar o tipo de atendimento
 -   [ ] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
 -   [ ] Inserir nova sidebar
 -   [ ] **Topbar:** Relogio no canto superior direito da janela
