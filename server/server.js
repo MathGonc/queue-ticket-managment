@@ -16,7 +16,11 @@ const io = socketIO(server, {
 app.use(cors());
 app.use(express.json());
 
-let data = {
+let globalData = {
+    monitorMode: 0,
+    soundNotification: true,
+    soundCallTicket: true,
+    soundCallTicketVoice: 0,
     currentTicket: "000",
     currentTable: "00",
     currentUser: "00",
@@ -33,7 +37,7 @@ io.on("connection", (socket) => {
     console.log("Novo cliente conectado");
 
     // Envie a atualização atual para o cliente recém-conectado
-    socket.emit("updatedGlobalCurrentTicket", data.currentTicket);
+    socket.emit("updatedGlobalCurrentTicket", globalData.currentTicket);
 
     // Receba uma nova atualização do cliente
     socket.on("signalUpdateValues", () => {
@@ -62,6 +66,10 @@ app.get("/", (req, res) => {
 app.get("/api", (req, res) => {
     // Obtenha os valores das variáveis do servidor
     let {
+        monitorMode,
+        soundNotification,
+        soundCallTicket,
+        soundCallTicketVoice,
         currentTicket,
         currentTable,
         currentUser,
@@ -71,10 +79,14 @@ app.get("/api", (req, res) => {
         ticketInQueue,
         ticketPreferential,
         ticketName,
-    } = data;
+    } = globalData;
 
     // Envie os valores das variáveis como resposta
     res.json({
+        monitorMode,
+        soundNotification,
+        soundCallTicket,
+        soundCallTicketVoice,
         currentTicket,
         currentTable,
         currentUser,
@@ -101,21 +113,31 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
         ticketName,
     } = req.body;
 
-    data.currentTicket = currentTicket;
-    data.currentTable = currentTable;
-    data.currentUser = currentUser;
-    data.lastTicket = lastTicket;
-    data.lastTable = lastTable;
-    data.lastUser = lastUser;
-    data.ticketInQueue = ticketInQueue;
-    data.ticketPreferential = ticketPreferential;
-    data.ticketName = ticketName;
+    globalData.currentTicket = currentTicket;
+    globalData.currentTable = currentTable;
+    globalData.currentUser = currentUser;
+    globalData.lastTicket = lastTicket;
+    globalData.lastTable = lastTable;
+    globalData.lastUser = lastUser;
+    globalData.ticketInQueue = ticketInQueue;
+    globalData.ticketPreferential = ticketPreferential;
+    globalData.ticketName = ticketName;
 
     // Envie uma resposta de sucesso
     res.status(200).send("Variáveis atualizadas no servidor");
 });
 
-// Inicie o servidor na porta desejada
+app.put("/api/updateGlobalConfigs", (req, res) => {
+    let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
+
+    globalData.monitorMode = monitorMode;
+    globalData.soundNotification = soundNotification;
+    globalData.soundCallTicket = soundCallTicket;
+    globalData.soundCallTicketVoice = soundCallTicketVoice;
+
+    res.status(200).send("Configurações atualizadas no servidor");
+});
+
 const port = 3030;
 server.listen(port, () => {
     console.log(`Servidor Express rodando na porta ${port}`);

@@ -1,12 +1,26 @@
 <template>
     <div class="monitor">
-        <div class="container">
-            <h1>Senha: {{ currentTicket }} (Guichê: {{ currentTable }})</h1>
-        </div>
-        <br />
-        <div class="container">
-            <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
-        </div>
+        <transition-group>
+            <div v-if="transitionFade">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <Transition name="bounce">
+                                <p v-if="transitionNewTicket" style="text-align: center">
+                                    <b>
+                                        <h1>
+                                            Senha: {{ currentTicket }} (Guichê: {{ currentTable }})
+                                        </h1>
+                                    </b>
+                                </p>
+                            </Transition>
+                            <br />
+                            <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition-group>
     </div>
 </template>
 
@@ -19,15 +33,23 @@ import config from "../../../config.js";
 export default {
     name: "page_monitor",
     data() {
-        return {};
+        return {
+            transitionFade: true,
+            transitionNewTicket: false,
+        };
     },
     mounted() {
+        this.transitionFade = true;
+        this.transitionNewTicket = true;
         this.socket = io(config.url_server);
         this.socket.on("receiveUpdateGlobal", () => {
-            this.$store.dispatch("getVariablesAPI");
+            this.$store.dispatch("getGlobalVariablesAPI");
         });
+
         this.socket.on("receiveUpdateMonitor", (newTicket) => {
             useToast().info("Nova senha!", { position: "bottom-center" });
+            this.transitionNewTicket = false;
+            setTimeout(() => (this.transitionNewTicket = true), 1000);
             if (this.soundNotification == true) {
                 const audio = new Audio(require("@/assets/sound.wav"));
                 audio.play();
@@ -47,9 +69,7 @@ export default {
                         message.voice = voices[this.soundCallTicketVoice];
                         speechSynthesis.speak(message);
                     } else {
-                        console.log(
-                            "o navegador não suporta a API Web Speech."
-                        );
+                        console.log("o navegador não suporta a API Web Speech.");
                     }
                 }
             }, 1000);
@@ -73,9 +93,21 @@ export default {
 </script>
 
 <style scoped>
-.monitor {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.bounce-enter-active {
+    animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+    animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.25);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 </style>

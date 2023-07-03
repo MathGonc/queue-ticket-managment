@@ -1,33 +1,17 @@
 <template>
     <div class="index">
-        <h1>{{ msg }}</h1>
+        <span class="title_page">Sistema de atendimento</span>
         <div class="buttons">
-            <button
-                type="button"
-                class="btn btn btn-outline-primary"
-                @click="goToService"
-            >
+            <button type="button" class="btn btn btn-outline-primary" @click="goToService">
                 Atendimento
             </button>
-            <button
-                type="button"
-                class="btn btn btn-outline-primary"
-                @click="goToSorting"
-            >
+            <button type="button" class="btn btn btn-outline-primary" @click="goToSorting">
                 Triagem
             </button>
-            <button
-                type="button"
-                class="btn btn btn-outline-primary"
-                @click="goToMonitor"
-            >
+            <button type="button" class="btn btn btn-outline-primary" @click="goToMonitor">
                 Monitor
             </button>
-            <button
-                type="button"
-                class="btn btn btn-outline-primary"
-                @click="goToConfig"
-            >
+            <button type="button" class="btn btn btn-outline-primary" @click="goToConfig">
                 Configurações
             </button>
         </div>
@@ -37,9 +21,7 @@
 <script>
 export default {
     name: "page_index",
-    props: {
-        msg: String,
-    },
+    props: {},
     methods: {
         goToMonitor() {
             this.$router.push({ name: "monitor" });

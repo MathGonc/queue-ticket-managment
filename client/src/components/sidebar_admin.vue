@@ -1,13 +1,11 @@
 <template>
     <div>
-        <div class="sidebar_admin">
+        <div class="sidebar_admin" v-if="!isMobile()">
             <h2>Próximos atendimentos:</h2>
             <ul style="white-space: nowrap">
                 <li v-for="(ticket, index) in filteredTickets" :key="index">
                     {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
-                    <span v-if="ticket.ticketPreferential" style="color: red"
-                        >(Preferencial)</span
-                    >
+                    <span v-if="ticket.ticketPreferential" style="color: red">(Preferencial)</span>
                 </li>
             </ul>
         </div>
@@ -24,7 +22,7 @@ export default {
     mounted() {
         this.socket = io(config.url_server);
         this.socket.on("receiveUpdateGlobal", () => {
-            this.$store.dispatch("getVariablesAPI");
+            this.$store.dispatch("getGlobalVariablesAPI");
         });
     },
     computed: {
@@ -40,6 +38,19 @@ export default {
                 }
                 return filtered;
             }, []);
+        },
+    },
+    methods: {
+        isMobile() {
+            if (
+                /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                    navigator.userAgent
+                )
+            ) {
+                return true;
+            } else {
+                return false;
+            }
         },
     },
 };

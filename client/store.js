@@ -4,6 +4,7 @@ import config from "./config.js";
 
 export default createStore({
     state: {
+        monitorMode: 0,
         soundNotification: true,
         soundCallTicket: true,
         soundCallTicketVoice: 0,
@@ -19,6 +20,18 @@ export default createStore({
     },
 
     mutations: {
+        setMonitorMode(state, monitorMode) {
+            state.monitorMode = monitorMode;
+        },
+        setSoundNotification(state, soundNotification) {
+            state.soundNotification = soundNotification;
+        },
+        setSoundCallTicket(state, soundCallTicket) {
+            state.soundCallTicket = soundCallTicket;
+        },
+        setSoundCallTicketVoice(state, soundCallTicketVoice) {
+            state.soundCallTicketVoice = soundCallTicketVoice;
+        },
         setCurrentTicket(state, ticket) {
             state.currentTicket = ticket;
         },
@@ -65,10 +78,7 @@ export default createStore({
         setTicketName(state, { array }) {
             state.ticketName = array;
         },
-        setTicketData(
-            state,
-            { index, ticketInQueue, ticketPreferential, ticketName }
-        ) {
+        setTicketData(state, { index, ticketInQueue, ticketPreferential, ticketName }) {
             state.ticketInQueue[index] = ticketInQueue;
             state.ticketPreferential[index] = ticketPreferential;
             state.ticketName[index] = ticketName;
@@ -79,11 +89,24 @@ export default createStore({
             console.log(data);
             commit("changeCurrentTicket", data);
         },
-        getVariablesAPI({ commit }) {
+        resetStoreAllTickets({ commit }) {
+            const ticketInQueue = Array(this.state.ticketInQueue.length).fill(0);
+            const ticketPreferential = Array(this.state.ticketPreferential.length).fill(0);
+            const ticketName = Array(this.state.ticketName.length).fill(0);
+
+            commit("setTicketInQueue", { array: ticketInQueue });
+            commit("setTicketPreferential", { array: ticketPreferential });
+            commit("setTicketName", { array: ticketName });
+        },
+        getGlobalVariablesAPI({ commit }) {
             return axios
                 .get(`${config.url_server_api}`) // Ajuste a URL se necessário
                 .then((response) => {
                     const {
+                        monitorMode,
+                        soundNotification,
+                        soundCallTicket,
+                        soundCallTicketVoice,
                         currentTicket,
                         currentTable,
                         currentUser,
@@ -96,6 +119,10 @@ export default createStore({
                     } = response.data;
 
                     // Chamar as mutações para atualizar as variáveis globais
+                    commit("setMonitorMode", monitorMode);
+                    commit("setSoundNotification", soundNotification);
+                    commit("setSoundCallTicket", soundCallTicket);
+                    commit("setSoundCallTicketVoice", soundCallTicketVoice);
                     commit("setCurrentTicket", currentTicket);
                     commit("setCurrentTable", currentTable);
                     commit("setCurrentUser", currentUser);
@@ -142,18 +169,25 @@ export default createStore({
 
             // Envie uma requisição PUT ou POST para a API com os dados atualizados
             return axios
-                .put(
-                    `${config.url_server_api}/updateVariablesInAPI`,
-                    updatedData
-                )
+                .put(`${config.url_server_api}/updateVariablesInAPI`, updatedData)
                 .then(() => {
                     console.log("Variáveis atualizadas no backend");
                 })
                 .catch((error) => {
-                    console.error(
-                        "Erro ao atualizar as variáveis no backend:",
-                        error
-                    );
+                    console.error("Erro ao atualizar as variáveis no backend:", error);
+                    throw error;
+                });
+        },
+        updateGlobalConfigs({ state }, updatedData) {
+            state = updatedData;
+
+            return axios
+                .put(`${config.url_server_api}/updateGlobalConfigs`, state)
+                .then(() => {
+                    console.log("Configurações globais atualizadas no backend");
+                })
+                .catch((error) => {
+                    console.error("Erro ao atualizar as configurações globais no backend:", error);
                     throw error;
                 });
         },
