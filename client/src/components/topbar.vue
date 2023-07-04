@@ -1,5 +1,5 @@
 <template>
-    <div class="top-bar">
+    <div class="topbar">
         <nav>
             <img src="../assets/logo.png" alt="Logo" class="logo" />
         </nav>
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-    name: "TopBar",
+    name: "component_topbar",
     // Outras configurações e métodos do componente
 };
 </script>

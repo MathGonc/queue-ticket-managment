@@ -1,5 +1,6 @@
 <template>
     <div class="admin">
+        <topbar></topbar>
         <span class="title_page">Painel de atendimento</span>
         <transition-group>
             <div v-if="transitionFade">
@@ -55,9 +56,13 @@ import { mapState } from "vuex";
 import { useToast } from "vue-toastification";
 import io from "socket.io-client";
 import config from "../../../config.js";
+import topbar from "../topbar";
 
 export default {
     name: "page_admin",
+    components: {
+        topbar,
+    },
     data() {
         return {
             transitionFade: false,

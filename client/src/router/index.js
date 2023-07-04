@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
+
 import index from "../components/pages/index.vue";
 import monitor from "../components/pages/monitor.vue";
 import sorting from "../components/pages/sorting.vue";
 import service from "../components/pages/service.vue";
 import config from "../components/pages/config.vue";
 
-import sidebar_admin from "../components/sidebar_admin.vue";
+import sidebar from "@/components/sidebar";
 
 const routes = [
     {
@@ -21,7 +22,7 @@ const routes = [
     {
         path: "/admin",
         name: "admin",
-        component: sidebar_admin,
+        component: sidebar,
         children: [
             {
                 path: "sorting",

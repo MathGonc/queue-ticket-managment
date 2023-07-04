@@ -1,21 +1,18 @@
 <template>
     <div class="monitor">
+        <topbar></topbar>
         <transition-group>
             <div v-if="transitionFade">
                 <div class="container">
                     <div class="row">
                         <div class="col">
                             <Transition name="bounce">
-                                <p
-                                    v-if="transitionNewTicket"
-                                    style="text-align: center"
-                                >
+                                <p v-if="transitionNewTicket" style="text-align: center">
                                     <b>
                                         <span v-if="currentTicket >= 0">
                                             <h1>
                                                 <b
-                                                    >Senha:
-                                                    {{ currentTicket }} (Guichê:
+                                                    >Senha: {{ currentTicket }} (Guichê:
                                                     {{ currentTable }})
                                                 </b>
                                             </h1></span
@@ -25,10 +22,7 @@
                             </Transition>
                             <br />
                             <span v-if="currentTicket >= 1">
-                                <h4>
-                                    Última Senha: {{ lastTicket }} (Guichê:
-                                    {{ lastTable }})
-                                </h4>
+                                <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
                             </span>
                         </div>
                     </div>
@@ -43,9 +37,13 @@ import { mapState } from "vuex";
 import { useToast } from "vue-toastification";
 import io from "socket.io-client";
 import config from "../../../config.js";
+import topbar from "../topbar";
 
 export default {
     name: "page_monitor",
+    components: {
+        topbar,
+    },
     data() {
         return {
             transitionFade: true,
@@ -83,9 +81,7 @@ export default {
                         message.voice = voices[this.soundCallTicketVoice];
                         speechSynthesis.speak(message);
                     } else {
-                        console.log(
-                            "o navegador não suporta a API Web Speech."
-                        );
+                        console.log("o navegador não suporta a API Web Speech.");
                     }
                 }
             }, 1000);

@@ -4,32 +4,16 @@
         <transition-group>
             <div v-if="transitionFade">
                 <div class="buttons">
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        @click="goToService"
-                    >
+                    <button type="button" class="btn btn-outline-primary" @click="goToService">
                         <b>Atendimento</b>
                     </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        @click="goToSorting"
-                    >
+                    <button type="button" class="btn btn-outline-primary" @click="goToSorting">
                         <b>Triagem</b>
                     </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        @click="goToMonitor"
-                    >
+                    <button type="button" class="btn btn-outline-primary" @click="goToMonitor">
                         <b>Monitor</b>
                     </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        @click="goToConfig"
-                    >
+                    <button type="button" class="btn btn-outline-primary" @click="goToConfig">
                         <b>Configurações</b>
                     </button>
                 </div>

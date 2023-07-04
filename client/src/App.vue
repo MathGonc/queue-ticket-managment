@@ -1,20 +1,18 @@
 <template>
     <div id="app">
-        <topbar></topbar>
         <router-view></router-view>
+        <nav class="navbar fixed-bottom navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Fixed bottom</a>
+        </nav>
     </div>
 </template>
 
 <script>
-import topbar from "@/components/topbar.vue";
 import io from "socket.io-client";
 import config from "../config.js";
 
 export default {
-    name: "IndexPage",
-    components: {
-        topbar,
-    },
+    name: "page_index",
     data() {
         return {
             showAlert: false,
@@ -40,11 +38,7 @@ body {
     width: 100%;
     background-color: #ffffff;
     opacity: 1;
-    background-image: repeating-radial-gradient(
-            circle at 0 0,
-            transparent 0,
-            #ffffff 10px
-        ),
+    background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
         repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -57,6 +51,7 @@ body {
 }
 
 nav {
+    /*background-color: #f1f1f1;*/
     padding: 10px;
 }
 
@@ -76,10 +71,10 @@ nav a.router-link-exact-active {
     padding: 20px; /* Adicione um valor de espaçamento desejado */
 }
 
-.col > *:not(:last-child) {
-    padding-right: 10px; /* Espaço horizontal desejado entre elementos dentro de container*/
+/*.col > *:not(:last-child) {
+    padding-right: 10px;
     padding-block: 10px;
-}
+}*/
 
 .title_page {
     text-align: center;

@@ -32,10 +32,10 @@
 -   [x] **Config:** Botão de resetar senhas
 -   [x] **Monitor:** Piscar numero ao trocar a senha (sumindo e voltando)
 -   [x] **Admin:** Botao para chamar senha atual novamente
--   [ ] **Triagem:** Selecionar o tipo de atendimento (INICIAL, AGENDAMENTO, RETORNO, INFORMAÇÕES e JUNTADA DE DOCUMENTOS)
--   [ ] **Monitor:** Informações de contato abaixo da senha e abaixo da Bottombar
+-   [x] **Triagem:** Selecionar o tipo de atendimento (INICIAL, AGENDAMENTO, RETORNO, INFORMAÇÕES e JUNTADA DE DOCUMENTOS)
+-   [x] Sidebar
+-   [ ] **Monitor:** Informações de contato abaixo da senha e acima da Bottombar
 -   [ ] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
--   [ ] Inserir nova sidebar
 -   [ ] **Topbar:** Relogio no canto superior direito da janela
 
 ### Posteriorly:
