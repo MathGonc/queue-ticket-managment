@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-        origin: "http://localhost:8080", // Especifique a origem permitida para o CORS
+        origin: "http://172.28.80.45:8080", // Especifique a origem permitida para o CORS
         methods: ["GET", "POST"], // Especifique os métodos permitidos
         allowedHeaders: ["my-custom-header"], // Especifique os cabeçalhos personalizados permitidos
         credentials: true, // Habilitar o envio de cookies de autenticação (se aplicável)

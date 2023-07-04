@@ -56,3 +56,5 @@
 > Abrir google chrome com console: _"runtimeArgs": ["--auto-open-devtools-for-tabs"]_
 
 > Caso de erro com Nodemon: _npm install -g nodemon_
+
+> &nbsp; "Non-breaking space"
