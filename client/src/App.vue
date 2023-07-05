@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <nav class="navbar fixed-bottom navbar-dark bg-dark">
-      <span class="col text-right">Desenvolvido por Matheus Gonçalves</span>
+    <nav class="navbar fixed-bottom">
+      <span class="col pt-auto px-3">Desenvolvido por Matheus Gonçalves</span>
     </nav>
   </div>
 </template>
@@ -38,11 +38,7 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -56,6 +52,12 @@ body {
 
 .sidebar {
   background: #464646;
+}
+
+.navbar {
+  background: #242424;
+  color: #3d3d3d;
+  text-align: right;
 }
 
 nav {
