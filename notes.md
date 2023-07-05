@@ -4,8 +4,9 @@
 
 ### Fix:
 
-- [ ] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
+- [x] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
 - [x] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
+- [ ] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
 - [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 - [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 

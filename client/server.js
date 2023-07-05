@@ -29,7 +29,6 @@ let globalData = {
   currentUser: "-",
   lastTicket: -1,
   lastTable: -1,
-  lastUser: "-",
   ticketInQueue: Array(100).fill(0),
   ticketType: Array(100).fill(""),
   ticketPreferential: Array(100).fill(0),
@@ -79,7 +78,6 @@ app.get("/api", (req, res) => {
     currentUser,
     lastTicket,
     lastTable,
-    lastUser,
     ticketInQueue,
     ticketType,
     ticketPreferential,
@@ -97,7 +95,6 @@ app.get("/api", (req, res) => {
     currentUser,
     lastTicket,
     lastTable,
-    lastUser,
     ticketInQueue,
     ticketType,
     ticketPreferential,
@@ -113,7 +110,6 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
     currentUser,
     lastTicket,
     lastTable,
-    lastUser,
     ticketInQueue,
     ticketType,
     ticketPreferential,
@@ -125,7 +121,6 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
   globalData.currentUser = currentUser;
   globalData.lastTicket = lastTicket;
   globalData.lastTable = lastTable;
-  globalData.lastUser = lastUser;
   globalData.ticketInQueue = ticketInQueue;
   globalData.ticketType = ticketType;
   globalData.ticketPreferential = ticketPreferential;
@@ -136,7 +131,12 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 });
 
 app.put("/api/updateGlobalConfigs", (req, res) => {
-  let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
+  let {
+    monitorMode,
+    soundNotification,
+    soundCallTicket,
+    soundCallTicketVoice,
+  } = req.body;
 
   globalData.monitorMode = monitorMode;
   globalData.soundNotification = soundNotification;

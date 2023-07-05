@@ -2,14 +2,13 @@
   <div id="app">
     <router-view></router-view>
     <nav class="navbar fixed-bottom">
-      <span class="col pt-auto px-3">Desenvolvido por Matheus Gonçalves</span>
+      <!--  <span class="col pt-auto px-3">Desenvolvido por Matheus Gonçalves</span>-->
     </nav>
   </div>
 </template>
 
 <script>
-import io from "socket.io-client";
-import config from "../config.js";
+import { socket } from "./socket";
 
 export default {
   name: "page_index",
@@ -20,8 +19,8 @@ export default {
     };
   },
   mounted() {
-    this.socket = io(config.url_server);
-    this.socket.on("receiveUpdateGlobal", () => {
+    socket.connect();
+    socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
     this.transitionFade = true;
@@ -38,7 +37,11 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #ffffff 10px
+    ),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {

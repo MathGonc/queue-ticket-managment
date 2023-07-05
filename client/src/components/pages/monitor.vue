@@ -11,7 +11,10 @@
                   <b>
                     <span v-if="currentTicket != -1">
                       <h1>
-                        <b>Senha: {{ currentTicket }} (Guichê: {{ currentTable }}) </b>
+                        <b
+                          >Senha: {{ currentTicket }} (Guichê:
+                          {{ currentTable }})
+                        </b>
                       </h1></span
                     >
                   </b>
@@ -19,7 +22,9 @@
               </Transition>
               <br />
               <span v-if="lastTicket != -1">
-                <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
+                <h4>
+                  Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})
+                </h4>
               </span>
             </div>
           </div>
@@ -32,8 +37,7 @@
 <script>
 import { mapState } from "vuex";
 import { useToast } from "vue-toastification";
-import io from "socket.io-client";
-import config from "../../../config.js";
+import { socket } from "@/socket";
 import topbar from "../topbar";
 
 export default {
@@ -48,41 +52,46 @@ export default {
     };
   },
   mounted() {
+    socket.connect();
     this.transitionFade = true;
     this.transitionNewTicket = true;
-    this.socket = io(config.url_server);
-    this.socket.on("receiveUpdateGlobal", () => {
+
+    socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
 
-    this.socket.on("receiveUpdateMonitor", (newTicket) => {
+    socket.on("receiveUpdateMonitor", (newTicket) => {
       useToast().info("Nova senha!", { position: "bottom-center" });
       this.transitionNewTicket = false;
+
       setTimeout(() => (this.transitionNewTicket = true), 1000);
       if (this.soundNotification == true) {
         const audio = new Audio(require("@/assets/sound.wav"));
         audio.play();
       }
+
       setTimeout(() => {
         if (this.soundCallTicket == true) {
-          if ("speechSynthesis" in window) {
-            speechSynthesis.cancel(); // Encerra todas as falas em andamento
-            var message = new SpeechSynthesisUtterance();
-            message.text =
-              "Senha numero " + this.currentTicket + ", dirija-se ao guichê " + this.currentTable;
-            console.log(newTicket);
-            var voices = speechSynthesis.getVoices();
-            message.voice = voices[this.soundCallTicketVoice];
-            speechSynthesis.speak(message);
-          } else {
-            console.log("o navegador não suporta a API Web Speech.");
-          }
+          if (!("speechSynthesis" in window))
+            return console.log("o navegador não suporta a API Web Speech.");
+          speechSynthesis.cancel(); // Encerra todas as falas em andamento
+          var message = new SpeechSynthesisUtterance();
+          message.text =
+            "Senha numero " +
+            this.currentTicket +
+            ", dirija-se ao guichê " +
+            this.currentTable;
+          console.log(newTicket);
+          console.log(this.currentTicket);
+          message.voice =
+            speechSynthesis.getVoices()[this.soundCallTicketVoice];
+          speechSynthesis.speak(message);
         }
       }, 1000);
     });
   },
   unmounted() {
-    this.socket.disconnect();
+    socket.disconnect();
   },
   methods: {},
   computed: {
@@ -95,7 +104,6 @@ export default {
       "currentUser",
       "lastTicket",
       "lastTable",
-      "lastUser",
     ]),
   },
 };
