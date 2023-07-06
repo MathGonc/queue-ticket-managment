@@ -136,9 +136,7 @@ export default {
   },
   async mounted() {
     this.transitionFade = true;
-    socket.connect();
 
-    await this.$store.dispatch("getGlobalVariablesAPI");
     this.SetMonitorMode = this.monitorMode;
     this.SetSoundNotification = this.soundNotification;
     this.SetSoundCallTicket = this.soundCallTicket;

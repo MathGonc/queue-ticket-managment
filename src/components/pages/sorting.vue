@@ -8,13 +8,16 @@
           <div class="row">
             <div class="col">
               <div class="input-group input-group-sm mb-3">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
+                <span class="input-group-text" id="inputGroup-sizing-sm"
+                  >Nome:</span
+                >
                 <input
                   type="text"
                   class="form-control"
                   aria-label="Small"
                   aria-describedby="inputGroup-sizing-sm"
-                  v-model="inputName" />
+                  v-model="inputName"
+                />
               </div>
 
               <div class="input-group input-group-sm mb-3">
@@ -22,21 +25,26 @@
                   class="btn btn-secondary dropdown-toggle"
                   type="button"
                   data-bs-toggle="dropdown"
-                  aria-expanded="false">
+                  aria-expanded="false"
+                >
                   Tipo:
                 </button>
                 <ul class="dropdown-menu">
                   <li v-for="item in dropdownTicketTypes" :key="item.name">
-                    <a class="dropdown-item" href="#" @click="inputTypeTicket = item.name">{{
-                      item.name
-                    }}</a>
+                    <a
+                      class="dropdown-item"
+                      href="#"
+                      @click="inputTypeTicket = item.name"
+                      >{{ item.name }}</a
+                    >
                   </li>
                 </ul>
                 <input
                   type="text"
                   class="form-control"
                   aria-label="Text input with dropdown button"
-                  v-model="inputTypeTicket" />
+                  v-model="inputTypeTicket"
+                />
               </div>
 
               <div class="form-check form-switch">
@@ -45,7 +53,8 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="preferential" />
+                    v-model="preferential"
+                  />
                   Preferencial</label
                 >
               </div>
@@ -53,7 +62,8 @@
                 type="button"
                 @click="cadastrarSenha()"
                 class="btn btn-outline-primary"
-                :disabled="buttonDisabled">
+                :disabled="buttonDisabled"
+              >
                 Cadastrar Senha {{ nextNumberTicket }}
               </button>
             </div>
@@ -93,17 +103,18 @@ export default {
     };
   },
   async mounted() {
-    socket.connect();
     this.transitionFade = true;
-    this.nextNumberTicket = this.ticketInQueue.findIndex((ticket) => ticket === 0);
-
-    await socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI");
-      this.nextNumberTicket = this.ticketInQueue.findIndex((ticket) => ticket === 0);
-    });
+    this.nextNumberTicket = this.ticketInQueue.findIndex(
+      (ticket) => ticket === 0
+    );
   },
   computed: {
-    ...mapState(["ticketInQueue", "ticketType", "ticketPreferential", "ticketName"]),
+    ...mapState([
+      "ticketInQueue",
+      "ticketType",
+      "ticketPreferential",
+      "ticketName",
+    ]),
   },
   methods: {
     setButtonDisabled() {
@@ -123,7 +134,8 @@ export default {
       // Procurar a primeira posição vaga na array ticketInQueue
       const index = this.ticketInQueue.findIndex((ticket) => ticket === 0);
 
-      if (index == -1) return useToast().error("Sem espaço disponivel para novas senhas");
+      if (index == -1)
+        return useToast().error("Sem espaço disponivel para novas senhas");
       this.ticketInQueue[index] = 1;
       this.ticketType[index] = this.inputTypeTicket;
       this.ticketPreferential[index] = this.preferential ? 1 : 0;

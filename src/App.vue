@@ -18,13 +18,13 @@ export default {
       stringAlert: "-",
     };
   },
-  mounted() {
-    socket.connect();
-    socket.on("receiveUpdateGlobal", () => {
+  async mounted() {
+    await socket.connect();
+    await socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
     this.transitionFade = true;
-    this.$store.dispatch("getGlobalVariablesAPI");
+    await this.$store.dispatch("getGlobalVariablesAPI");
   },
   methods: {},
 };
@@ -37,7 +37,11 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #ffffff 10px
+    ),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {

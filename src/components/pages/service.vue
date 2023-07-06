@@ -8,7 +8,8 @@
           <div class="row">
             <div class="col">
               <h5 v-if="currentTicket != -1">
-                Senha atual: {{ currentTicket }} ({{ currentUser }}) (Guichê: {{ currentTable }})
+                Senha atual: {{ currentTicket }} ({{ currentUser }}) (Guichê:
+                {{ currentTable }})
               </h5>
               <br />
               <div class="input-group mb-3 justify-content-center">
@@ -20,7 +21,8 @@
                   min="00"
                   max="99"
                   maxlength="2"
-                  v-model="myTable" />
+                  v-model="myTable"
+                />
               </div>
               <br />
               <span
@@ -28,7 +30,8 @@
                   type="button"
                   @click="callNextTicket"
                   :disabled="buttonDisabled"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar Próxima Senha
                 </button></span
               >
@@ -38,7 +41,8 @@
                   type="button"
                   @click="callSameTicket"
                   :disabled="myCalledTicket == -1"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar senha {{ myCalledTicket }} novamente
                 </button></span
               >
@@ -70,11 +74,6 @@ export default {
     };
   },
   mounted() {
-    socket.connect();
-    socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI");
-    });
-
     this.transitionFade = true;
   },
   watch: {
@@ -115,7 +114,8 @@ export default {
         }
       }
 
-      if (ticketIndex == -1) return useToast().error("Nenhuma senha cadastrada");
+      if (ticketIndex == -1)
+        return useToast().error("Nenhuma senha cadastrada");
       let data = {
         newTicket: parseInt(ticketIndex),
         newTable: parseInt(this.myTable),

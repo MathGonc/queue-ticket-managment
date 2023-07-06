@@ -2,7 +2,9 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
+        <div
+          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
+        >
           <div class="px-3 pt-2">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
@@ -18,20 +20,29 @@
 
           <div class="sidebar-list d-0 px-3 pt-1 text-white">
             <ul class="nav flex-column mb-0">
-              <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+              <li
+                class="nav-item"
+                v-for="(ticket, index) in filteredTickets"
+                :key="index"
+              >
                 <div class="row">
                   <div class="col-auto px-0">
                     <button
                       @click="removeTicket(ticket.ticketNumber)"
                       type="button"
-                      class="btn btn-danger btn-sm">
+                      class="btn btn-danger btn-sm"
+                    >
                       X
                     </button>
                   </div>
                   <div class="col-auto align-middle px-2">
                     <span>
                       {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                      }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                      }}<span
+                        v-if="ticket.ticketPreferential"
+                        style="color: red"
+                        >&nbsp;(P)</span
+                      >
                     </span>
                     <br />
                     ({{ ticket.ticketType }})
@@ -56,14 +67,14 @@ import { useToast } from "vue-toastification";
 
 export default {
   name: "page_sidebar",
-  async mounted() {
-    await socket.connect();
-    await socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI");
-    });
-  },
+  async mounted() {},
   computed: {
-    ...mapState(["ticketInQueue", "ticketType", "ticketPreferential", "ticketName"]),
+    ...mapState([
+      "ticketInQueue",
+      "ticketType",
+      "ticketPreferential",
+      "ticketName",
+    ]),
     filteredTickets() {
       return this.ticketInQueue
         .reduce((filtered, ticket, index) => {

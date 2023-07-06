@@ -10,7 +10,10 @@
                 <p v-if="transitionNewTicket" style="text-align: center">
                   <span v-if="currentTicket != -1">
                     <h1 style="font-size: 72px">
-                      <b>Senha: {{ currentTicket }} (Guichê {{ currentTable }})</b>
+                      <b
+                        >Senha: {{ currentTicket }} (Guichê
+                        {{ currentTable }})</b
+                      >
                     </h1></span
                   >
                 </p>
@@ -45,13 +48,8 @@ export default {
     };
   },
   async mounted() {
-    socket.connect();
     this.transitionFade = true;
     this.transitionNewTicket = true;
-
-    await socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI");
-    });
 
     await socket.on("receiveUpdateMonitor", (newTicket) => {
       useToast().info("Nova senha!", { position: "bottom-center" });
@@ -70,10 +68,14 @@ export default {
           speechSynthesis.cancel(); // Encerra todas as falas em andamento
           var message = new SpeechSynthesisUtterance();
           message.text =
-            "Senha numero " + this.currentTicket + ", dirija-se ao guichê " + this.currentTable;
+            "Senha numero " +
+            this.currentTicket +
+            ", dirija-se ao guichê " +
+            this.currentTable;
           console.log(newTicket);
           console.log(this.currentTicket);
-          message.voice = speechSynthesis.getVoices()[this.soundCallTicketVoice];
+          message.voice =
+            speechSynthesis.getVoices()[this.soundCallTicketVoice];
           speechSynthesis.speak(message);
         }
       }, 1000);
