@@ -11,10 +11,7 @@
                   <b>
                     <span v-if="currentTicket != -1">
                       <h1>
-                        <b
-                          >Senha: {{ currentTicket }} (Guichê:
-                          {{ currentTable }})
-                        </b>
+                        <b>Senha: {{ currentTicket }} (Guichê: {{ currentTable }}) </b>
                       </h1></span
                     >
                   </b>
@@ -22,9 +19,7 @@
               </Transition>
               <br />
               <span v-if="lastTicket != -1">
-                <h4>
-                  Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})
-                </h4>
+                <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
               </span>
             </div>
           </div>
@@ -51,16 +46,16 @@ export default {
       transitionNewTicket: false,
     };
   },
-  mounted() {
+  async mounted() {
     socket.connect();
     this.transitionFade = true;
     this.transitionNewTicket = true;
 
-    socket.on("receiveUpdateGlobal", () => {
+    await socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
 
-    socket.on("receiveUpdateMonitor", (newTicket) => {
+    await socket.on("receiveUpdateMonitor", (newTicket) => {
       useToast().info("Nova senha!", { position: "bottom-center" });
       this.transitionNewTicket = false;
 
@@ -77,14 +72,10 @@ export default {
           speechSynthesis.cancel(); // Encerra todas as falas em andamento
           var message = new SpeechSynthesisUtterance();
           message.text =
-            "Senha numero " +
-            this.currentTicket +
-            ", dirija-se ao guichê " +
-            this.currentTable;
+            "Senha numero " + this.currentTicket + ", dirija-se ao guichê " + this.currentTable;
           console.log(newTicket);
           console.log(this.currentTicket);
-          message.voice =
-            speechSynthesis.getVoices()[this.soundCallTicketVoice];
+          message.voice = speechSynthesis.getVoices()[this.soundCallTicketVoice];
           speechSynthesis.speak(message);
         }
       }, 1000);

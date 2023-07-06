@@ -37,11 +37,7 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -54,7 +50,11 @@ body {
 }
 
 .sidebar {
+  text-align: center;
   background: #464646;
+}
+.sidebar .sidebar-list {
+  text-align: left;
 }
 
 .navbar {
