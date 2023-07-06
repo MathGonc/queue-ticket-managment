@@ -8,18 +8,16 @@
             <div class="col">
               <Transition name="bounce">
                 <p v-if="transitionNewTicket" style="text-align: center">
-                  <b>
-                    <span v-if="currentTicket != -1">
-                      <h1>
-                        <b>Senha: {{ currentTicket }} (Guichê: {{ currentTable }}) </b>
-                      </h1></span
-                    >
-                  </b>
+                  <span v-if="currentTicket != -1">
+                    <h1 style="font-size: 72px">
+                      <b>Senha: {{ currentTicket }} (Guichê {{ currentTable }})</b>
+                    </h1></span
+                  >
                 </p>
               </Transition>
               <br />
               <span v-if="lastTicket != -1">
-                <h4>Última Senha: {{ lastTicket }} (Guichê: {{ lastTable }})</h4>
+                <h3>Última Senha: {{ lastTicket }} (Guichê {{ lastTable }})</h3>
               </span>
             </div>
           </div>
