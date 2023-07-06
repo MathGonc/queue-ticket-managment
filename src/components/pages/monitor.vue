@@ -79,8 +79,8 @@ export default {
       }, 1000);
     });
   },
-  unmounted() {
-    socket.disconnect();
+  async beforeUnmount() {
+    socket.off("receiveUpdateMonitor", this.handleReceiveUpdateMonitor);
   },
   methods: {},
   computed: {
