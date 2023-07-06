@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       transitionFade: false,
-      myTable: null,
+      myTable: localStorage.getItem("myTable") || null,
       myCalledTicket: -1,
       buttonDisabled: false,
     };
@@ -74,7 +74,13 @@ export default {
     socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
+
     this.transitionFade = true;
+  },
+  watch: {
+    myTable(newValue) {
+      localStorage.setItem("myTable", newValue);
+    },
   },
   computed: {
     ...mapState([
