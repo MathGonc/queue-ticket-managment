@@ -15,32 +15,31 @@
 ## **Tecnologias utilizadas:**
 
 ```
-Javascript
+Axios
+Cors
 Bootstrap
+Javascript
+ExpressJS
+Nodemon
+Socket.IO
 Vue 3
 Vue-Router
 Vuex
-Axios
-ExpressJS
-Socket.IO
-Cors
-Nodemon
+Vue-toastification
 ```
 
 ## **Project setup:**
 
 ```
-cd client > npm install
-
-cd server > npm install
+npm install
 ```
 
 ### Compiles and hot-reloads for development
 
 ```
-cd client > npm run serve
+npm run serve
 
-cd server > nodemon server.js
+node server.js
 ```
 
 ### Compiles and minifies for production
