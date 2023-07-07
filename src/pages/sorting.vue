@@ -96,7 +96,7 @@ export default {
     this.transitionFade = true;
     await this.$store.dispatch("getGlobalVariablesAPI");
     this.getNextTicketFree();
-    await socket.on("receiveUpdateGlobal", () => {
+    socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI").then(() => {
         this.getNextTicketFree();
       });

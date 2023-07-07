@@ -156,11 +156,12 @@ export default {
   async mounted() {
     this.transitionFade = true;
 
-    await this.$store.dispatch("getGlobalVariablesAPI");
-    this.SetMonitorMode = this.monitorMode;
-    this.SetSoundNotification = this.soundNotification;
-    this.SetSoundCallTicket = this.soundCallTicket;
-    this.SetSoundCallTicketVoice = this.soundCallTicketVoice;
+    await this.$store.dispatch("getGlobalVariablesAPI").then(() => {
+      this.SetMonitorMode = this.monitorMode;
+      this.SetSoundNotification = this.soundNotification;
+      this.SetSoundCallTicket = this.soundCallTicket;
+      this.SetSoundCallTicketVoice = this.soundCallTicketVoice;
+    });
   },
   computed: {
     ...mapState(["monitorMode", "soundNotification", "soundCallTicket", "soundCallTicketVoice"]),
