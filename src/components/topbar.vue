@@ -7,8 +7,15 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "component_topbar",
+  computed: {
+    ...mapState({
+      loggedIn: (state) => state.auth.loggedIn,
+      // outras propriedades do estado de autenticação que você precisa
+    }),
+  },
 };
 </script>
 

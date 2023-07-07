@@ -11,26 +11,32 @@ const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: process.env.VUE_APP_URL + ":" + process.env.VUE_APP_PORT_CLIENT, // Especifique a origem permitida para o CORS
-    methods: ["GET", "POST"], // Especifique os métodos permitidos
-    allowedHeaders: ["my-custom-header"], // Especifique os cabeçalhos personalizados permitidos
-    credentials: true, // Habilitar o envio de cookies de autenticação (se aplicável)
+    origin: process.env.VUE_APP_URL + ":" + process.env.VUE_APP_PORT_CLIENT,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header", "Content-Type", "Authorization"],
+    credentials: true,
   },
 });
 
-app.use(cors());
+app.use(cors);
 app.use(express.json());
 app.use(bodyParser.json());
 
 const routes = require("./routes");
 app.use("/", routes);
 
-mongoose.connect(`mongodb://${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  `mongodb://${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 const db = mongoose.connection;
-db.on("error", console.error.bind(console, "Erro na conexão com o banco de dados:"));
+db.on(
+  "error",
+  console.error.bind(console, "Erro na conexão com o banco de dados:")
+);
 db.once("open", () => {
   console.log("Conexão bem-sucedida com o banco de dados");
 });
@@ -147,7 +153,12 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 });
 
 app.put("/api/updateGlobalConfigs", (req, res) => {
-  let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
+  let {
+    monitorMode,
+    soundNotification,
+    soundCallTicket,
+    soundCallTicketVoice,
+  } = req.body;
 
   globalData.monitorMode = monitorMode;
   globalData.soundNotification = soundNotification;

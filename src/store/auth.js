@@ -1,27 +1,34 @@
-const authModule = {
-  state: {
-    loggedIn: false,
-    // outras propriedades relacionadas à autenticação
-  },
-  mutations: {
-    setLoggedIn(state, value) {
-      state.loggedIn = value;
-    },
-    // outras mutações relacionadas à autenticação
-  },
-  actions: {
-    login({ commit }, credentials) {
-      // Realize a lógica de autenticação aqui, como enviar uma requisição ao servidor para verificar as credenciais
+//import axios from "axios";
 
-      // Se a autenticação for bem-sucedida, atualize o estado loggedIn para true
-      commit("setLoggedIn", true);
-    },
-    logout({ commit }) {
-      // Realize a lógica de logout aqui, como limpar os dados de autenticação e encerrar a sessão do usuário
+const state = {
+  user: null,
+  posts: null,
+};
 
-      // Após o logout, atualize o estado loggedIn para false
-      commit("setLoggedIn", false);
-    },
-    // outras ações relacionadas à autenticação
+const getters = {
+  isAuthenticated: (state) => !!state.user,
+  StatePosts: (state) => state.posts,
+  StateUser: (state) => state.user,
+};
+
+const actions = {};
+
+const mutations = {
+  setUser(state, username) {
+    state.user = username;
   },
+  setPosts(state, posts) {
+    state.posts = posts;
+  },
+  LogOut(state) {
+    state.user = null;
+    state.posts = null;
+  },
+};
+
+export default {
+  state,
+  getters,
+  actions,
+  mutations,
 };

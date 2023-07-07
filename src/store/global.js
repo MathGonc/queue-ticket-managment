@@ -1,8 +1,7 @@
-import { createStore } from "vuex";
 import axios from "axios";
-import config from "./config.js";
+import config from "../../config.js";
 
-export default createStore({
+export const globalModule = {
   state: {
     monitorMode: 0,
     soundNotification: true,
@@ -75,7 +74,10 @@ export default createStore({
     setTicketName(state, { array }) {
       state.ticketName = array;
     },
-    setTicketData(state, { index, ticketInQueue, ticketType, ticketPreferential, ticketName }) {
+    setTicketData(
+      state,
+      { index, ticketInQueue, ticketType, ticketPreferential, ticketName }
+    ) {
       state.ticketInQueue[index] = ticketInQueue;
       state.ticketType[index] = ticketType;
       state.ticketPreferential[index] = ticketPreferential;
@@ -90,7 +92,9 @@ export default createStore({
     resetStoreAllTickets({ commit }) {
       const ticketInQueue = Array(this.state.ticketInQueue.length).fill(0);
       const ticketType = Array(this.state.ticketType.length).fill(0);
-      const ticketPreferential = Array(this.state.ticketPreferential.length).fill(0);
+      const ticketPreferential = Array(
+        this.state.ticketPreferential.length
+      ).fill(0);
       const ticketName = Array(this.state.ticketName.length).fill(0);
 
       commit("setTicketInQueue", { array: ticketInQueue });
@@ -188,9 +192,14 @@ export default createStore({
           console.log("Configurações globais atualizadas no backend");
         })
         .catch((error) => {
-          console.error("Erro ao atualizar as configurações globais no backend:", error);
+          console.error(
+            "Erro ao atualizar as configurações globais no backend:",
+            error
+          );
           throw error;
         });
     },
   },
-});
+};
+
+export default globalModule;
