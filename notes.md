@@ -10,7 +10,29 @@
 - [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 - [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 
-### Additions:
+### Posteriorly:
+
+- [x] **MongoDB**
+- [ ] MongoDB: Sistema de registro(via config)
+- [ ] MongoDB: Sistema de login e autenticação
+- [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
+- [ ] Restrições para diferentes roles realizarem diferentes tarefas
+- [ ] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
+- [ ] MongoDB: Tabela de tickets
+- [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
+- [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
+- [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
+- [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
+
+### Maybe:
+
+- [ ] Adaptação do HTML para o celular
+- [ ] Monitor: modo Vertical e Horizontal
+- [ ] **Monitor:** Informações de contato abaixo da senha e acima da Bottombar
+- [ ] **Topbar:** Relogio no canto superior direito da janela
+- [ ] Seleção de idioma: _Português_ e _Inglês_
+
+### Essential:
 
 - [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
 - [x] **Monitor:** Som ao atualizar a pagina
@@ -36,19 +58,6 @@
 - [x] **Triagem:** Selecionar o tipo de atendimento (INICIAL, AGENDAMENTO, RETORNO, INFORMAÇÕES e JUNTADA DE DOCUMENTOS)
 - [x] Sidebar
 - [x] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
-
-### Posteriorly:
-
-- [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
-- [ ] **MongoDB**
-- [ ] MongoDB: Usuarios para restrição de acesso ao **Admin** e **Config**
-- [ ] MongoDB: criar tabelas de _senhas cadastradas_ e _senhas já chamadas_ e filtrar por horario de criação
-- [ ] Monitor: modo Vertical e Horizontal
-- [ ] MongoDB: Armazenamento de senhas e configurações
-- [ ] Seleção de idioma: _Português_ e _Inglês_
-- [ ] Adaptação do HTML para o celular
-- [ ] **Monitor:** Informações de contato abaixo da senha e acima da Bottombar
-- [ ] **Topbar:** Relogio no canto superior direito da janela
 
 ## **Tricks:**
 
