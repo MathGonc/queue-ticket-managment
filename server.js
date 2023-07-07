@@ -1,11 +1,13 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const socketIO = require("socket.io");
+
 const app = express();
 const server = http.createServer(app);
-
-require("dotenv").config();
 
 const io = socketIO(server, {
   cors: {
@@ -18,6 +20,20 @@ const io = socketIO(server, {
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+
+const routes = require("./routes");
+app.use("/", routes);
+
+mongoose.connect(`mongodb://${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "Erro na conexão com o banco de dados:"));
+db.once("open", () => {
+  console.log("Conexão bem-sucedida com o banco de dados");
+});
 
 let globalData = {
   monitorMode: 0,
@@ -131,12 +147,7 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 });
 
 app.put("/api/updateGlobalConfigs", (req, res) => {
-  let {
-    monitorMode,
-    soundNotification,
-    soundCallTicket,
-    soundCallTicketVoice,
-  } = req.body;
+  let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
 
   globalData.monitorMode = monitorMode;
   globalData.soundNotification = soundNotification;

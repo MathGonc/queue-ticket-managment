@@ -13,18 +13,15 @@ import { socket } from "./socket";
 export default {
   name: "page_index",
   data() {
-    return {
-      showAlert: false,
-      stringAlert: "-",
-    };
+    return {};
   },
   async mounted() {
+    this.transitionFade = true;
     await socket.connect();
+    await this.$store.dispatch("getGlobalVariablesAPI");
     await socket.on("receiveUpdateGlobal", () => {
       this.$store.dispatch("getGlobalVariablesAPI");
     });
-    this.transitionFade = true;
-    await this.$store.dispatch("getGlobalVariablesAPI");
   },
   methods: {},
 };
@@ -37,11 +34,7 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {

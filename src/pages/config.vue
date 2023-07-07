@@ -7,33 +7,25 @@
         <div class="container w-25 p-3">
           <div class="row">
             <div class="col">
-              <div
-                class="input-group input-group-sm mb-3 justify-content-center"
-              >
+              <div class="input-group input-group-sm mb-3 justify-content-center">
                 <span class="input-group-text" id="basic-addon1">Idioma:</span>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="displayLanguage"
-                  disabled
-                >
+                  disabled>
                   <option value="0">Português</option>
                   <option value="1">English</option>
                 </select>
               </div>
 
-              <div
-                class="input-group input-group-sm mb-3 justify-content-center"
-              >
-                <span class="input-group-text" id="basic-addon1"
-                  >Modo do monitor:</span
-                >
+              <div class="input-group input-group-sm mb-3 justify-content-center">
+                <span class="input-group-text" id="basic-addon1">Modo do monitor:</span>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="SetMonitorMode"
-                  disabled
-                >
+                  disabled>
                   <option value="0">Horizontal</option>
                   <option value="1">Vertical</option>
                 </select>
@@ -46,8 +38,7 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="SetSoundNotification"
-                    :disabled="buttonDisabled"
-                  />
+                    :disabled="buttonDisabled" />
                   Notificação ao chamar senha</label
                 >
               </div>
@@ -59,23 +50,18 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="SetSoundCallTicket"
-                    :disabled="buttonDisabled"
-                  />
+                    :disabled="buttonDisabled" />
                   Voz ao chamar senha</label
                 >
               </div>
 
               <div v-if="SetSoundCallTicket">
-                <div
-                  class="input-group input-group-sm mb-3 justify-content-center"
-                >
-                  <span class="input-group-text" id="basic-addon1"
-                    >Tipo de voz:</span
+                <div class="input-group input-group-sm mb-3 justify-content-center">
+                  <span class="input-group-text" id="basic-addon1">Tipo de voz:</span
                   ><select
                     class="selectpicker"
                     v-model="SetSoundCallTicketVoice"
-                    :disabled="buttonDisabled"
-                  >
+                    :disabled="buttonDisabled">
                     <option v-for="value in 21" :key="value - 1">
                       {{ value - 1 }}
                     </option>
@@ -88,8 +74,7 @@
                   type="button"
                   class="btn btn-outline-primary"
                   @click="saveConfigs"
-                  :disabled="buttonDisabled"
-                >
+                  :disabled="buttonDisabled">
                   Salvar
                 </button>
               </span>
@@ -98,11 +83,40 @@
                   type="button"
                   class="btn btn-outline-danger"
                   @click="resetAllTickets"
-                  :disabled="buttonDisabled"
-                >
+                  :disabled="buttonDisabled">
                   Resetar senhas
                 </button></span
               >
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="container w-50 p-3">
+          <div class="row">
+            <div class="col">
+              <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Small"
+                  aria-describedby="inputGroup-sizing-sm"
+                  v-model="registerUsername" />
+                <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
+                <input
+                  type="password"
+                  class="form-control"
+                  aria-label="Small"
+                  aria-describedby="inputGroup-sizing-sm"
+                  v-model="registerPass" />
+                <button
+                  type="button"
+                  @click="register()"
+                  class="btn btn-outline-primary"
+                  :disabled="buttonDisabled">
+                  Cadastrar usuario
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -112,10 +126,12 @@
 </template>
 
 <script>
-import topbar from "../topbar";
+import topbar from "../components/topbar";
 import { mapState } from "vuex";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
+import axios from "axios";
+import config from "../../config.js";
 
 export default {
   name: "page_config",
@@ -132,26 +148,38 @@ export default {
       SetSoundNotification: null,
       SetSoundCallTicket: null,
       SetSoundCallTicketVoice: null,
+
+      registerUsername: null,
+      registerPass: null,
     };
   },
   async mounted() {
     this.transitionFade = true;
 
+    await this.$store.dispatch("getGlobalVariablesAPI");
     this.SetMonitorMode = this.monitorMode;
     this.SetSoundNotification = this.soundNotification;
     this.SetSoundCallTicket = this.soundCallTicket;
     this.SetSoundCallTicketVoice = this.soundCallTicketVoice;
-    console.log(this.soundCallTicketVoice);
   },
   computed: {
-    ...mapState([
-      "monitorMode",
-      "soundNotification",
-      "soundCallTicket",
-      "soundCallTicketVoice",
-    ]),
+    ...mapState(["monitorMode", "soundNotification", "soundCallTicket", "soundCallTicketVoice"]),
   },
   methods: {
+    register() {
+      axios
+        .post(`${config.url_server}/register`, {
+          login: this.registerUsername,
+          password: this.registerPass,
+        })
+        .then((response) => {
+          console.log(response.data.message);
+        })
+        .catch((error) => {
+          console.error(error.response.data.error);
+        });
+    },
+
     toggleSoundNotification() {
       this.soundNotification = 1;
     },
