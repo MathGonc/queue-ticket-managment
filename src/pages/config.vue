@@ -24,7 +24,7 @@
                 <select
                   class="form-select"
                   aria-label="Default select example"
-                  v-model="SetMonitorMode"
+                  v-model="globalStore.monitorMode"
                   disabled>
                   <option value="0">Horizontal</option>
                   <option value="1">Vertical</option>
@@ -37,7 +37,7 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="SetSoundNotification"
+                    v-model="globalStore.soundNotification"
                     :disabled="buttonDisabled" />
                   Notificação ao chamar senha</label
                 >
@@ -49,18 +49,18 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="SetSoundCallTicket"
+                    v-model="globalStore.soundCallTicket"
                     :disabled="buttonDisabled" />
                   Voz ao chamar senha</label
                 >
               </div>
 
-              <div v-if="SetSoundCallTicket">
+              <div v-if="soundCallTicket">
                 <div class="input-group input-group-sm mb-3 justify-content-center">
                   <span class="input-group-text" id="basic-addon1">Tipo de voz:</span
                   ><select
                     class="selectpicker"
-                    v-model="SetSoundCallTicketVoice"
+                    v-model="globalStore.soundCallTicketVoice"
                     :disabled="buttonDisabled">
                     <option v-for="value in 21" :key="value - 1">
                       {{ value - 1 }}
@@ -126,29 +126,39 @@
 </template>
 
 <script>
+import { ref, defineComponent } from "vue";
 import topbar from "../components/topbar";
-import { mapState } from "vuex";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import axios from "axios";
 import config from "../../config.js";
+import { useGlobalStore } from "@/stores/global";
 
-export default {
+export default defineComponent({
   name: "page_config",
   components: {
     topbar,
+  },
+  setup() {
+    const globalStore = useGlobalStore();
+    const monitorMode = ref(() => globalStore.monitorMode);
+    const soundNotification = ref(() => globalStore.soundNotification);
+    const soundCallTicket = ref(() => globalStore.soundCallTicket);
+    const soundCallTicketVoice = ref(() => globalStore.soundCallTicketVoice);
+
+    return {
+      globalStore,
+      monitorMode,
+      soundNotification,
+      soundCallTicket,
+      soundCallTicketVoice,
+    };
   },
   data() {
     return {
       transitionFade: false,
       buttonDisabled: false,
       displayLanguage: 0,
-
-      SetMonitorMode: null,
-      SetSoundNotification: null,
-      SetSoundCallTicket: null,
-      SetSoundCallTicketVoice: null,
-
       registerUsername: null,
       registerPass: null,
     };
@@ -156,15 +166,7 @@ export default {
   async mounted() {
     this.transitionFade = true;
 
-    await this.$store.dispatch("getGlobalVariablesAPI").then(() => {
-      this.SetMonitorMode = this.monitorMode;
-      this.SetSoundNotification = this.soundNotification;
-      this.SetSoundCallTicket = this.soundCallTicket;
-      this.SetSoundCallTicketVoice = this.soundCallTicketVoice;
-    });
-  },
-  computed: {
-    ...mapState(["monitorMode", "soundNotification", "soundCallTicket", "soundCallTicketVoice"]),
+    await this.globalStore.getGlobalVariablesAPI().then(() => {});
   },
   methods: {
     register() {
@@ -180,10 +182,6 @@ export default {
           console.error(error.response.data.error);
         });
     },
-
-    toggleSoundNotification() {
-      this.soundNotification = 1;
-    },
     setButtonDisabled() {
       this.buttonDisabled = true;
       setTimeout(() => {
@@ -191,28 +189,23 @@ export default {
       }, 10000);
     },
     resetAllTickets() {
-      this.$store
-        .dispatch("resetStoreAllTickets")
-        .then(() => {
-          this.$store.dispatch("updateVariablesInAPI");
-          socket.emit("signalUpdateValues");
-          useToast().success("Senhas resetadas");
-          this.setButtonDisabled();
-        })
-        .catch(() => {
-          useToast().error("Erro ao resetar as senhas");
-        });
+      this.globalStore.resetStoreAllTickets();
+      this.globalStore.updateVariablesInAPI();
+      socket.emit("signalUpdateValues");
+      useToast().success("Senhas resetadas");
+      this.setButtonDisabled();
+      //useToast().error("Erro ao resetar as senhas");
     },
     saveConfigs() {
       const updatedData = {
-        monitorMode: this.SetMonitorMode,
-        soundNotification: this.SetSoundNotification,
-        soundCallTicket: this.SetSoundCallTicket,
-        soundCallTicketVoice: this.SetSoundCallTicketVoice,
+        monitorMode: this.globalStore.monitorMode,
+        soundNotification: this.globalStore.soundNotification,
+        soundCallTicket: this.globalStore.soundCallTicket,
+        soundCallTicketVoice: this.globalStore.soundCallTicketVoice,
       };
 
-      this.$store
-        .dispatch("updateGlobalConfigs", updatedData)
+      this.globalStore
+        .updateGlobalConfigs(updatedData)
         .then(() => {
           useToast().success("Configurações salvas");
           this.setButtonDisabled();
@@ -222,7 +215,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

@@ -54,7 +54,7 @@
                 @click="cadastrarSenha()"
                 class="btn btn-outline-primary"
                 :disabled="buttonDisabled">
-                Cadastrar Senha {{ nextNumberTicket }}
+                Cadastrar Senha {{ globalStore.nextTicketEnterInQueue }}
               </button>
             </div>
           </div>
@@ -65,15 +65,31 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { defineComponent, computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import topbar from "../components/topbar";
+import { useGlobalStore } from "@/stores/global";
 
-export default {
+export default defineComponent({
   name: "page_sorting",
   components: {
     topbar,
+  },
+  setup() {
+    const globalStore = useGlobalStore();
+    const ticketInQueue = computed(() => globalStore.ticketInQueue);
+    const ticketType = computed(() => globalStore.ticketType);
+    const ticketPreferential = computed(() => globalStore.ticketPreferential);
+    const ticketName = computed(() => globalStore.ticketName);
+
+    return {
+      globalStore,
+      ticketInQueue,
+      ticketType,
+      ticketPreferential,
+      ticketName,
+    };
   },
   data() {
     return {
@@ -94,21 +110,14 @@ export default {
   },
   async mounted() {
     this.transitionFade = true;
-    await this.$store.dispatch("getGlobalVariablesAPI");
-    this.getNextTicketFree();
+    await this.globalStore.getGlobalVariablesAPI();
     socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI").then(() => {
-        this.getNextTicketFree();
+      this.globalStore.getGlobalVariablesAPI().then(() => {
+        //this.getNextTicketEnterInQueue();
       });
     });
   },
-  computed: {
-    ...mapState(["ticketInQueue", "ticketType", "ticketPreferential", "ticketName"]),
-  },
   methods: {
-    getNextTicketFree() {
-      this.nextNumberTicket = this.ticketInQueue.findIndex((ticket) => ticket === 0);
-    },
     setButtonDisabled() {
       if (process.env.VUE_APP_DEV == 1) return;
       this.buttonDisabled = true;
@@ -124,14 +133,14 @@ export default {
         return useToast().error("Digite ou selecione um tipo");
       }
       // Procurar a primeira posição vaga na array ticketInQueue
-      const index = this.ticketInQueue.findIndex((ticket) => ticket === 0);
+      const index = this.globalStore.nextTicketEnterInQueue;
 
       if (index == -1) return useToast().error("Sem espaço disponivel para novas senhas");
       this.ticketInQueue[index] = 1;
       this.ticketType[index] = this.inputTypeTicket;
       this.ticketPreferential[index] = this.preferential ? 1 : 0;
       this.ticketName[index] = this.inputName;
-      this.$store.commit("setTicketData", {
+      this.globalStore.setTicketData({
         index,
         ticketInQueue: this.ticketInQueue[index],
         ticketPreferential: this.ticketPreferential[index],
@@ -140,7 +149,7 @@ export default {
         ticketType: this.inputTypeTicket,
       });
 
-      this.$store.dispatch("updateVariablesInAPI");
+      this.globalStore.updateVariablesInAPI();
       socket.emit("signalUpdateValues");
 
       this.inputName = "";
@@ -152,7 +161,7 @@ export default {
       this.setButtonDisabled();
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

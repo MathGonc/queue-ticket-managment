@@ -51,10 +51,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import topbar from "../components/topbar";
 import { socket } from "@/socket";
+import { useGlobalStore } from "@/stores/global";
 
 export default {
   name: "page_admin",
@@ -69,6 +70,28 @@ export default {
       buttonDisabled: false,
     };
   },
+  setup() {
+    const globalStore = useGlobalStore();
+    const currentTicket = computed(() => globalStore.currentTicket);
+    const currentTable = computed(() => globalStore.currentTable);
+    const currentUser = computed(() => globalStore.currentUser);
+    const lastTicket = computed(() => globalStore.lastTicket);
+    const lastTable = computed(() => globalStore.lastTable);
+    const ticketInQueue = computed(() => globalStore.ticketInQueue);
+    const ticketPreferential = computed(() => globalStore.ticketPreferential);
+    const ticketName = computed(() => globalStore.ticketName);
+    return {
+      globalStore,
+      currentTicket,
+      currentTable,
+      currentUser,
+      lastTicket,
+      lastTable,
+      ticketInQueue,
+      ticketPreferential,
+      ticketName,
+    };
+  },
   mounted() {
     this.transitionFade = true;
   },
@@ -76,18 +99,6 @@ export default {
     myTable(newValue) {
       localStorage.setItem("myTable", newValue);
     },
-  },
-  computed: {
-    ...mapState([
-      "currentTicket",
-      "currentTable",
-      "currentUser",
-      "lastTicket",
-      "lastTable",
-      "ticketInQueue",
-      "ticketPreferential",
-      "ticketName",
-    ]),
   },
   methods: {
     callNextTicket() {
@@ -116,13 +127,13 @@ export default {
         newTable: parseInt(this.myTable),
         newUser: this.ticketName[ticketIndex],
       };
-      this.$store.dispatch("updatedGlobalCurrentTicket", data);
+      this.globalStore.updatedGlobalCurrentTicket(data);
 
       this.currentTicket = ticketIndex.toString().padStart(3, "0");
       this.ticketInQueue[ticketIndex] = 2;
       this.ticketPreferential[ticketIndex] = 0;
 
-      this.$store.dispatch("updateVariablesInAPI");
+      this.globalStore.updateVariablesInAPI();
 
       socket.emit("signalUpdateValues");
       socket.emit("signalUpdateMonitor", ticketIndex);
@@ -140,12 +151,12 @@ export default {
         return useToast().error("Você não chamou nenhum ticket recentemente");
 
       if (this.myCalledTicket != this.currentTicket) {
-        await this.$store.dispatch("updatedGlobalCurrentTicket", {
+        await this.globalStore.updatedGlobalCurrentTicket({
           newTicket: parseInt(this.myCalledTicket),
           newTable: parseInt(this.myTable),
           newUser: this.ticketName[this.myCalledTicket],
         });
-        await this.$store.dispatch("updateVariablesInAPI");
+        await this.globalStore.updateVariablesInAPI();
       }
 
       await socket.emit("signalUpdateValues");

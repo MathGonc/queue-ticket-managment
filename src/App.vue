@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { useGlobalStore } from "@/stores/global";
 import { socket } from "./socket";
 
 export default {
@@ -16,26 +16,18 @@ export default {
   data() {
     return {};
   },
-  computed: {
-    ...mapState({
-      loggedIn: (state) => state.auth.loggedIn,
-    }),
-  },
+  computed: {},
   async mounted() {
-    if (this.loggedIn == false) return this.$router.push({ name: "login" });
     this.transitionFade = true;
     await socket.connect();
-    await this.$store.dispatch("getGlobalVariablesAPI");
-    await socket.on("receiveUpdateGlobal", () => {
-      this.$store.dispatch("getGlobalVariablesAPI");
+
+    const globalStore = useGlobalStore();
+    globalStore.getGlobalVariablesAPI();
+    socket.on("receiveUpdateGlobal", () => {
+      globalStore.getGlobalVariablesAPI();
     });
   },
-  methods: {
-    ...mapActions({
-      login: "auth/login",
-      logout: "auth/logout",
-    }),
-  },
+  methods: {},
 };
 </script>
 
@@ -46,11 +38,7 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {

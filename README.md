@@ -22,9 +22,9 @@ Javascript
 ExpressJS
 Nodemon
 Socket.IO
+Pinia
 Vue 3
 Vue-Router
-Vuex
 Vue-toastification
 ```
 

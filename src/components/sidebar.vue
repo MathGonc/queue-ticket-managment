@@ -2,9 +2,7 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div
-          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
-        >
+        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
           <div class="px-3 pt-2">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
@@ -20,29 +18,20 @@
 
           <div class="sidebar-list d-0 px-3 pt-1 text-white">
             <ul class="nav flex-column mb-0">
-              <li
-                class="nav-item"
-                v-for="(ticket, index) in filteredTickets"
-                :key="index"
-              >
+              <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
                 <div class="row">
                   <div class="col-auto px-0">
                     <button
                       @click="removeTicket(ticket.ticketNumber)"
                       type="button"
-                      class="btn btn-danger btn-sm"
-                    >
+                      class="btn btn-danger btn-sm">
                       X
                     </button>
                   </div>
                   <div class="col-auto align-middle px-2">
                     <span>
                       {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                      }}<span
-                        v-if="ticket.ticketPreferential"
-                        style="color: red"
-                        >&nbsp;(P)</span
-                      >
+                      }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
                     </span>
                     <br />
                     ({{ ticket.ticketType }})
@@ -61,20 +50,29 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { socket } from "@/socket";
+import { defineComponent, computed } from "vue";
 import { useToast } from "vue-toastification";
+import { socket } from "@/socket";
+import { useGlobalStore } from "@/stores/global";
 
-export default {
+export default defineComponent({
   name: "page_sidebar",
+  setup() {
+    const globalStore = useGlobalStore();
+    const ticketInQueue = computed(() => globalStore.ticketInQueue);
+    const ticketType = computed(() => globalStore.ticketType);
+    const ticketPreferential = computed(() => globalStore.ticketPreferential);
+    const ticketName = computed(() => globalStore.ticketName);
+    return {
+      globalStore,
+      ticketInQueue,
+      ticketType,
+      ticketPreferential,
+      ticketName,
+    };
+  },
   async mounted() {},
   computed: {
-    ...mapState([
-      "ticketInQueue",
-      "ticketType",
-      "ticketPreferential",
-      "ticketName",
-    ]),
     filteredTickets() {
       return this.ticketInQueue
         .reduce((filtered, ticket, index) => {
@@ -106,7 +104,7 @@ export default {
   methods: {
     removeTicket(index) {
       console.log(index);
-      this.$store.commit("setTicketData", {
+      this.globalStore.setTicketData({
         index,
         ticketInQueue: 0,
         ticketPreferential: 0,
@@ -114,7 +112,7 @@ export default {
         ticketType: 0,
       });
 
-      this.$store.dispatch("updateVariablesInAPI");
+      this.globalStore.updateVariablesInAPI();
       socket.emit("signalUpdateValues");
 
       useToast().success("Senha " + index + " liberada");
@@ -127,7 +125,7 @@ export default {
         : false;
     },
   },
-};
+});
 </script>
 
 <style></style>

@@ -23,7 +23,10 @@ export default {
   methods: {
     login() {
       axios
-        .post("/login", { username: this.username, password: this.password })
+        .post("/login", {
+          username: this.username,
+          password: this.password,
+        })
         .then((response) => {
           console.log(response.data.message);
         })

@@ -28,10 +28,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import topbar from "../components/topbar";
+import { useGlobalStore } from "@/stores/global";
 
 export default {
   name: "page_monitor",
@@ -42,6 +43,28 @@ export default {
     return {
       transitionFade: true,
       transitionNewTicket: false,
+    };
+  },
+  setup() {
+    const globalStore = useGlobalStore();
+    const soundNotification = computed(() => globalStore.soundNotification);
+    const soundCallTicket = computed(() => globalStore.soundCallTicket);
+    const soundCallTicketVoice = computed(() => globalStore.soundCallTicketVoice);
+    const currentTicket = computed(() => globalStore.currentTicket);
+    const currentTable = computed(() => globalStore.currentTable);
+    const currentUser = computed(() => globalStore.currentUser);
+    const lastTicket = computed(() => globalStore.lastTicket);
+    const lastTable = computed(() => globalStore.lastTable);
+    return {
+      globalStore,
+      soundCallTicket,
+      soundNotification,
+      soundCallTicketVoice,
+      currentTicket,
+      currentTable,
+      currentUser,
+      lastTicket,
+      lastTable,
     };
   },
   async mounted() {
@@ -78,18 +101,6 @@ export default {
     socket.off("receiveUpdateMonitor", this.handleReceiveUpdateMonitor);
   },
   methods: {},
-  computed: {
-    ...mapState([
-      "soundNotification",
-      "soundCallTicket",
-      "soundCallTicketVoice",
-      "currentTicket",
-      "currentTable",
-      "currentUser",
-      "lastTicket",
-      "lastTable",
-    ]),
-  },
 };
 </script>
 
