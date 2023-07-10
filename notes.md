@@ -25,14 +25,16 @@
 - [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
 - [x] Restrições para diferentes roles acessarem diferentes paginas
 - [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
-- [ ] MongoDB: Tabela de tickets
+- [x] MongoDB: Tabela de tickets
 - [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
 - [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
 - [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
+- [ ] Opção de resetar as senhas todo dia
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:
 
+- [ ] Logs para verificação de atendimento, do tipo (logs de triagem, logs de atendimento e relatorio de senhas atendidas em um dia especifico)
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical e Horizontal
 - [ ] **Monitor:** Informações de contato abaixo da senha e acima da Bottombar
