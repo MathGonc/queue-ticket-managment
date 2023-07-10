@@ -66,16 +66,16 @@ export const useAuth = defineStore("auth", () => {
 
   async function login(loginData) {
     try {
-      http.post("/login", loginData).then((response) => {
+      await http.post("/login", loginData).then((response) => {
         const data = response.data;
-        console.log(data);
         setToken(data.token);
         isAuth.value = true;
         setUserData(data.user);
         router.push({ name: "index" });
+        return response;
       });
-    } catch (error) {
-      console.log(error.response.data);
+    } catch (response) {
+      return response.status;
     }
   }
 
@@ -85,6 +85,7 @@ export const useAuth = defineStore("auth", () => {
       //router.push("/login");
     } catch (error) {
       console.log(error.response.data);
+      return error.response.status;
     }
   }
 

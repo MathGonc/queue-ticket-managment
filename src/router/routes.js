@@ -4,6 +4,8 @@ import { useToast } from "vue-toastification";
 export default async function routes(to, from, next) {
   const auth = useAuth();
 
+  if (process.env.VUE_APP_SYSTEM_AUTH == 0) return next();
+
   if (to.name === "login") next();
   else if (to.meta?.auth) {
     if (auth.isAuth) {

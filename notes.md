@@ -19,9 +19,9 @@
 - [x] MongoDB: Sistema de login e autenticação
 - [x] MongoDB: Pasta "db" com funções do banco de dados separada
 - [x] Mensagem de "sem permissão" ao tentar acessar uma pagina que não tem permissão
-- [ ] Adicionar submit e required em outros formularios igual no login
-- [ ] Limpar campo e notificações na criação de usuario
-- [ ] Pagina de login
+- [x] Adicionar submit e required em outros formularios igual no login
+- [x] Limpar campo e notificações na criação de usuario
+- [x] Pagina de login
 - [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
 - [x] Restrições para diferentes roles acessarem diferentes paginas
 - [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)

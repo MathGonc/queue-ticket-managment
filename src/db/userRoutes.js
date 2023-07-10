@@ -6,19 +6,21 @@ const User = require("./models/user");
 
 router.post("/register", async (req, res) => {
   try {
-    const { username, login, password } = req.body;
+    const { username, login, password, role } = req.body;
 
-    // Verifica se o login já está em uso
     const existingUser = await User.findOne({ login });
     if (existingUser) {
       return res.status(400).json({ error: "Login already in use" });
     }
 
-    // Criptografa a senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Cria um novo usuário no banco de dados
-    const newUser = new User({ username, login, password: hashedPassword });
+    const newUser = new User({
+      username,
+      login,
+      password: hashedPassword,
+      role,
+    });
     await newUser.save();
 
     res.status(201).json({ message: "User created successfully" });
@@ -31,8 +33,8 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { login, password } = req.body;
-
-    const user = await User.findOne({ login }).exec();
+    console.log(req.body);
+    const user = await User.findOne({ login });
     if (!user) {
       return res.status(401).json({ error: "Invalid login or password" });
     }
@@ -43,10 +45,8 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id, role: user.role }, "secret-key"); //{expiresIn: "1h",}
-
-    res.status(200).json({ token, user });
+    return res.status(200).json({ token, user });
   } catch (error) {
-    console.error(error); // Exibe o erro no console do servidor
     res.status(500).json({ error: "Internal server error" });
   }
 });

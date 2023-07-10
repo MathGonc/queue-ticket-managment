@@ -7,25 +7,33 @@
         <div class="container w-25 p-3">
           <div class="row">
             <div class="col">
-              <div class="input-group input-group-sm mb-3 justify-content-center">
+              <div
+                class="input-group input-group-sm mb-3 justify-content-center"
+              >
                 <span class="input-group-text" id="basic-addon1">Idioma:</span>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="displayLanguage"
-                  disabled>
+                  disabled
+                >
                   <option value="0">Português</option>
                   <option value="1">English</option>
                 </select>
               </div>
 
-              <div class="input-group input-group-sm mb-3 justify-content-center">
-                <span class="input-group-text" id="basic-addon1">Modo do monitor:</span>
+              <div
+                class="input-group input-group-sm mb-3 justify-content-center"
+              >
+                <span class="input-group-text" id="basic-addon1"
+                  >Modo do monitor:</span
+                >
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="globalStore.monitorMode"
-                  disabled>
+                  disabled
+                >
                   <option value="0">Horizontal</option>
                   <option value="1">Vertical</option>
                 </select>
@@ -38,7 +46,8 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="globalStore.soundNotification"
-                    :disabled="buttonDisabled" />
+                    :disabled="buttonDisabled"
+                  />
                   Notificação ao chamar senha</label
                 >
               </div>
@@ -50,18 +59,23 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="globalStore.soundCallTicket"
-                    :disabled="buttonDisabled" />
+                    :disabled="buttonDisabled"
+                  />
                   Voz ao chamar senha</label
                 >
               </div>
 
               <div v-if="soundCallTicket">
-                <div class="input-group input-group-sm mb-3 justify-content-center">
-                  <span class="input-group-text" id="basic-addon1">Tipo de voz:</span
+                <div
+                  class="input-group input-group-sm mb-3 justify-content-center"
+                >
+                  <span class="input-group-text" id="basic-addon1"
+                    >Tipo de voz:</span
                   ><select
                     class="selectpicker"
                     v-model="globalStore.soundCallTicketVoice"
-                    :disabled="buttonDisabled">
+                    :disabled="buttonDisabled"
+                  >
                     <option v-for="value in 21" :key="value - 1">
                       {{ value - 1 }}
                     </option>
@@ -74,7 +88,8 @@
                   type="button"
                   class="btn btn-outline-primary"
                   @click="saveConfigs"
-                  :disabled="buttonDisabled">
+                  :disabled="buttonDisabled"
+                >
                   Salvar
                 </button>
               </span>
@@ -83,7 +98,8 @@
                   type="button"
                   class="btn btn-outline-danger"
                   @click="resetAllTickets"
-                  :disabled="buttonDisabled">
+                  :disabled="buttonDisabled"
+                >
                   Resetar senhas
                 </button></span
               >
@@ -94,48 +110,69 @@
         <div class="container w-25 p-3">
           <div class="row">
             <div class="col">
-              <div class="input-group input-group-sm mb-1">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Small"
-                  aria-describedby="inputGroup-sizing-sm"
-                  v-model="register.username" />
-              </div>
-              <div class="input-group input-group-sm mb-1">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Login:</span>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Small"
-                  aria-describedby="inputGroup-sizing-sm"
-                  v-model="register.login" />
-              </div>
-              <div class="input-group input-group-sm mb-1">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
-                <input
-                  type="password"
-                  class="form-control"
-                  aria-label="Small"
-                  aria-describedby="inputGroup-sizing-sm"
-                  v-model="register.pass" />
-              </div>
-              <div class="input-group input-group-sm mb-2">
-                <span class="input-group-text" for="inputGroupSelect01">Função</span>
-                <select class="custom-select" id="inputGroupSelect01" v-model="register.role">
-                  <option value="1">Monitor</option>
-                  <option value="2">Atendente</option>
-                  <option value="3">Administrador</option>
-                </select>
-              </div>
-              <button
-                type="button"
-                @click="handleRegister()"
-                class="btn btn-outline-primary btn-sm"
-                :disabled="buttonDisabled">
-                Cadastrar usuario
-              </button>
+              <form @submit.prevent="handleRegister()">
+                <div class="input-group input-group-sm mb-1">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >Nome:</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    v-model="register.username"
+                    required
+                  />
+                </div>
+                <div class="input-group input-group-sm mb-1">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >Login:</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    v-model="register.login"
+                    required
+                  />
+                </div>
+                <div class="input-group input-group-sm mb-1">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >Senha:</span
+                  >
+                  <input
+                    type="password"
+                    class="form-control"
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    v-model="register.pass"
+                    required
+                  />
+                </div>
+                <div class="input-group input-group-sm mb-2">
+                  <span class="input-group-text" for="inputGroupSelect01"
+                    >Função</span
+                  >
+                  <select
+                    class="custom-select"
+                    id="inputGroupSelect01"
+                    v-model="register.role"
+                    required
+                  >
+                    <option value="1">Monitor</option>
+                    <option value="2">Atendente</option>
+                    <option value="3">Administrador</option>
+                  </select>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-outline-primary btn-sm"
+                  :disabled="buttonDisabled"
+                >
+                  Cadastrar usuario
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -172,7 +209,17 @@ export default defineComponent({
         password: this.register.pass,
         role: this.register.role,
       };
-      auth.register(userData);
+      auth.register(userData).then((response) => {
+        this.register = 0;
+        switch (response) {
+          case 400:
+            return useToast().error("Este usuario já existe");
+          case 500:
+            return;
+          default:
+            return useToast().success("Usuario criado com sucesso");
+        }
+      });
     }
 
     return {
