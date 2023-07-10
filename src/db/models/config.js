@@ -1,35 +1,14 @@
 const mongoose = require("mongoose");
 
-const configs = mongoose.model(
+const config = mongoose.model(
   "Config",
   {
-    number: {
-      type: Number,
-      required: true,
-    },
-    status: {
-      type: Number,
-      required: true,
-    },
-    serviced: {
-      preferential: {
-        type: Number,
-        required: true,
-      },
-      type: String,
-    },
-    dateQueue: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-    dateServiced: {
-      type: Date,
-    },
+    monitorMode: { type: Number, default: 0 },
+    soundNotification: { type: Number, default: 0 },
+    soundCallTicket: { type: Number, default: 0 },
+    soundCallTicketVoice: { type: Number, default: 0 },
   },
-  {
-    versionKey: false,
-  }
+  { versionKey: false }
 );
 
 module.exports = config;

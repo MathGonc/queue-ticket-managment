@@ -35,9 +35,7 @@ const tickets = mongoose.model(
       type: Date,
     },
   },
-  {
-    versionKey: false,
-  }
+  { versionKey: false }
 );
 
 module.exports = tickets;

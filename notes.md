@@ -8,7 +8,7 @@
 - [x] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
 - [x] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
 - [x] Mensagem de erro ao logar
-- [ ] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
+- [x] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
 - [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 - [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 
@@ -19,6 +19,7 @@
 - [x] MongoDB: Sistema de login e autenticação
 - [x] MongoDB: Pasta "db" com funções do banco de dados separada
 - [x] Mensagem de "sem permissão" ao tentar acessar uma pagina que não tem permissão
+- [ ] Adicionar submit e required em outros formularios igual no login
 - [ ] Limpar campo e notificações na criação de usuario
 - [ ] Pagina de login
 - [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
