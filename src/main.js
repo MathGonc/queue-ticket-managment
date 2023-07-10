@@ -1,10 +1,9 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
-import router from "./router";
 import Toast from "vue-toastification";
-//import axios from "axios";
-//import config from "../config";
+import router from "./router";
+import { useAuth } from "@/stores/auth.js";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
@@ -19,5 +18,17 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 app.use(Toast, options);
+
+if (localStorage.getItem("token")) {
+  (async () => {
+    const auth = useAuth();
+    try {
+      auth.setIsAuth(true);
+      await auth.checkToken();
+    } catch (error) {
+      auth.clearToken();
+    }
+  })();
+}
 
 app.mount("#app");

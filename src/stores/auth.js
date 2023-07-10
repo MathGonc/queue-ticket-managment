@@ -1,0 +1,103 @@
+import { computed, ref } from "vue";
+import { defineStore } from "pinia";
+import http from "@/services/http.js";
+import router from "../router";
+import { useUserStore } from "@/stores/user.js";
+
+export const useAuth = defineStore("auth", () => {
+  const token = ref(localStorage.getItem("token"));
+  const isAuth = ref(false);
+
+  function setToken(tokenValue) {
+    localStorage.setItem("token", tokenValue);
+    token.value = tokenValue;
+  }
+
+  function setIsAuth(auth) {
+    isAuth.value = auth;
+  }
+
+  function setUserData(data) {
+    const userStore = useUserStore();
+    userStore.userData = data;
+  }
+
+  const isAuthenticated = computed(() => {
+    return token.value;
+  });
+
+  async function checkToken() {
+    try {
+      const tokenAuth = "Bearer " + token.value;
+      const { data } = await http.get("/auth/verify", {
+        headers: {
+          Authorization: tokenAuth,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      clearToken();
+      router.push("/login");
+      console.log("error", error.response.data);
+    }
+  }
+
+  async function checkPermission() {
+    try {
+      const tokenAuth = "Bearer " + token.value;
+      const { data } = await http.get("/auth/verifyPermission", {
+        headers: {
+          Authorization: tokenAuth,
+        },
+      });
+      return data;
+    } catch (error) {
+      clearToken();
+      router.push("/login");
+      console.log("error", error.response.data);
+    }
+  }
+
+  function clearToken() {
+    localStorage.removeItem("token");
+    token.value = null;
+  }
+
+  async function login(loginData) {
+    try {
+      http.post("/login", loginData).then((response) => {
+        const data = response.data;
+        console.log(data);
+        setToken(data.token);
+        isAuth.value = true;
+        setUserData(data.user);
+        router.push({ name: "index" });
+      });
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+
+  async function register(data) {
+    try {
+      await http.post("/register", data);
+      //router.push("/login");
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+
+  return {
+    token,
+    isAuth,
+    isAuthenticated,
+    setToken,
+    checkToken,
+    checkPermission,
+    setIsAuth,
+    clearToken,
+    login,
+    register,
+  };
+});

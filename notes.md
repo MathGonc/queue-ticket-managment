@@ -7,17 +7,23 @@
 - [x] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
 - [x] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
 - [x] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
+- [x] Mensagem de erro ao logar
+- [ ] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
 - [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 - [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 
 ### Posteriorly:
 
 - [x] **MongoDB**
-- [ ] MongoDB: Sistema de registro(via config)
-- [ ] MongoDB: Sistema de login e autenticação
+- [x] MongoDB: Sistema de registro(via config)
+- [x] MongoDB: Sistema de login e autenticação
+- [x] MongoDB: Pasta "db" com funções do banco de dados separada
+- [x] Mensagem de "sem permissão" ao tentar acessar uma pagina que não tem permissão
+- [ ] Limpar campo e notificações na criação de usuario
+- [ ] Pagina de login
 - [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
-- [ ] Restrições para diferentes roles realizarem diferentes tarefas
-- [ ] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
+- [x] Restrições para diferentes roles acessarem diferentes paginas
+- [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
 - [ ] MongoDB: Tabela de tickets
 - [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
 - [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)

@@ -1,39 +1,41 @@
 <template>
   <div>
-    <h2>Login</h2>
-    <form @submit.prevent="login">
-      <input type="text" v-model="username" placeholder="Usuário" required />
-      <input type="password" v-model="password" placeholder="Senha" required />
-      <button type="submit">Entrar</button>
+    <h1>Login</h1>
+    <form @submit.prevent="handleLogin">
+      <div>
+        <label>Login:</label>
+        <input v-model="login" type="text" required />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input v-model="password" type="password" required />
+      </div>
+      <button type="submit">Login</button>
     </form>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { useAuth } from "@/stores/auth.js";
+import { ref } from "vue";
 
 export default {
   name: "page_login",
-  data() {
+  setup() {
+    const auth = useAuth();
+    const login = ref("");
+    const password = ref("");
+
+    function handleLogin() {
+      const loginData = { login: login.value, password: password.value };
+      auth.login(loginData);
+    }
+
     return {
-      username: "",
-      password: "",
+      login,
+      password,
+      handleLogin,
     };
-  },
-  methods: {
-    login() {
-      axios
-        .post("/login", {
-          username: this.username,
-          password: this.password,
-        })
-        .then((response) => {
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          console.error(error.response.data.error);
-        });
-    },
   },
 };
 </script>

@@ -1,6 +1,12 @@
 <template>
   <div id="app">
     <router-view></router-view>
+    <nav class="position-absolute top-0 end-0">
+      <template v-if="auth.isAuth"
+        >{{ this.userData.username }} ({{ this.userRole }})
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
+      </template>
+    </nav>
     <nav class="navbar fixed-bottom">
       <!--  <span class="col pt-auto px-3">Desenvolvido por Matheus Gonçalves</span>-->
     </nav>
@@ -10,11 +16,24 @@
 <script>
 import { useGlobalStore } from "@/stores/global";
 import { socket } from "./socket";
+import { useAuth } from "@/stores/auth.js";
+import { useLocalStorage } from "@vueuse/core";
 
 export default {
   name: "page_index",
   data() {
-    return {};
+    return {
+      userRole: 0,
+    };
+  },
+  setup() {
+    const auth = useAuth();
+
+    const userData = useLocalStorage("userData", { username: "" });
+    return {
+      userData,
+      auth,
+    };
   },
   computed: {},
   async mounted() {
@@ -26,8 +45,23 @@ export default {
     socket.on("receiveUpdateGlobal", () => {
       globalStore.getGlobalVariablesAPI();
     });
+
+    if (this.auth.isAuth) {
+      this.userRole = 0;
+      await this.auth.checkPermission().then((data) => {
+        this.userRole = data.role;
+      });
+
+      await console.log(this.userRole);
+    }
   },
-  methods: {},
+  methods: {
+    async logout() {
+      await this.auth.clearToken();
+      await this.auth.setIsAuth(false);
+      await this.$router.push({ name: "login" });
+    },
+  },
 };
 </script>
 
@@ -58,7 +92,7 @@ body {
   text-align: left;
 }
 
-.navbar {
+.navbar.fixed-bottom {
   background: #242424;
   color: #3d3d3d;
   text-align: right;

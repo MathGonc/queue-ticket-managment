@@ -1,8 +1,9 @@
 import { createPinia } from "pinia";
+
+import { useAuth } from "./auth";
 import { useGlobalStore } from "./global";
 
-const pinia = createPinia();
-
-pinia.use(useGlobalStore);
+createPinia().use(useAuth);
+createPinia().use(useGlobalStore);
 
 export default pinia;

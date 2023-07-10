@@ -2,8 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
-const mongoose = require("mongoose");
 const socketIO = require("socket.io");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const {} = require("jsonwebtoken");
 
 const app = express();
 const server = http.createServer(app);
@@ -20,18 +23,12 @@ const io = socketIO(server, {
 app.use(cors());
 app.use(express.json());
 
-const routes = require("./routes");
-app.use("/", routes);
+const userRoutes = require("./src/db/userRoutes.js");
+app.use("/", userRoutes);
 
-mongoose.connect(`mongodb://${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "Erro na conexão com o banco de dados:"));
-db.once("open", () => {
-  console.log("Conexão bem-sucedida com o banco de dados");
-});
+//Database
+const { connect } = require("./src/db/db");
+connect();
 
 let globalData = {
   monitorMode: 0,

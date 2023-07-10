@@ -1,6 +1,6 @@
 <template>
+  <topbar></topbar>
   <div class="config">
-    <topbar></topbar>
     <span class="title_page">Painel de configuração</span>
     <transition-group>
       <div v-if="transitionFade">
@@ -91,32 +91,51 @@
           </div>
         </div>
         <br />
-        <div class="container w-50 p-3">
+        <div class="container w-25 p-3">
           <div class="row">
             <div class="col">
-              <div class="input-group input-group-sm mb-3">
+              <div class="input-group input-group-sm mb-1">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
                 <input
                   type="text"
                   class="form-control"
                   aria-label="Small"
                   aria-describedby="inputGroup-sizing-sm"
-                  v-model="registerUsername" />
+                  v-model="register.username" />
+              </div>
+              <div class="input-group input-group-sm mb-1">
+                <span class="input-group-text" id="inputGroup-sizing-sm">Login:</span>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Small"
+                  aria-describedby="inputGroup-sizing-sm"
+                  v-model="register.login" />
+              </div>
+              <div class="input-group input-group-sm mb-1">
                 <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
                 <input
                   type="password"
                   class="form-control"
                   aria-label="Small"
                   aria-describedby="inputGroup-sizing-sm"
-                  v-model="registerPass" />
-                <button
-                  type="button"
-                  @click="register()"
-                  class="btn btn-outline-primary"
-                  :disabled="buttonDisabled">
-                  Cadastrar usuario
-                </button>
+                  v-model="register.pass" />
               </div>
+              <div class="input-group input-group-sm mb-2">
+                <span class="input-group-text" for="inputGroupSelect01">Função</span>
+                <select class="custom-select" id="inputGroupSelect01" v-model="register.role">
+                  <option value="1">Monitor</option>
+                  <option value="2">Atendente</option>
+                  <option value="3">Administrador</option>
+                </select>
+              </div>
+              <button
+                type="button"
+                @click="handleRegister()"
+                class="btn btn-outline-primary btn-sm"
+                :disabled="buttonDisabled">
+                Cadastrar usuario
+              </button>
             </div>
           </div>
         </div>
@@ -127,12 +146,11 @@
 
 <script>
 import { ref, defineComponent } from "vue";
-import topbar from "../components/topbar";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import axios from "axios";
-import config from "../../config.js";
 import { useGlobalStore } from "@/stores/global";
+import { useAuth } from "@/stores/auth.js";
+import topbar from "../components/topbar";
 
 export default defineComponent({
   name: "page_config",
@@ -146,12 +164,24 @@ export default defineComponent({
     const soundCallTicket = ref(() => globalStore.soundCallTicket);
     const soundCallTicketVoice = ref(() => globalStore.soundCallTicketVoice);
 
+    const auth = useAuth();
+    function handleRegister() {
+      const userData = {
+        username: this.register.username,
+        login: this.register.login,
+        password: this.register.pass,
+        role: this.register.role,
+      };
+      auth.register(userData);
+    }
+
     return {
       globalStore,
       monitorMode,
       soundNotification,
       soundCallTicket,
       soundCallTicketVoice,
+      handleRegister,
     };
   },
   data() {
@@ -159,8 +189,12 @@ export default defineComponent({
       transitionFade: false,
       buttonDisabled: false,
       displayLanguage: 0,
-      registerUsername: null,
-      registerPass: null,
+      register: {
+        username: null,
+        login: null,
+        pass: null,
+        role: null,
+      },
     };
   },
   async mounted() {
@@ -169,19 +203,6 @@ export default defineComponent({
     await this.globalStore.getGlobalVariablesAPI().then(() => {});
   },
   methods: {
-    register() {
-      axios
-        .post(`${config.url_server}/register`, {
-          login: this.registerUsername,
-          password: this.registerPass,
-        })
-        .then((response) => {
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          console.error(error.response.data.error);
-        });
-    },
     setButtonDisabled() {
       this.buttonDisabled = true;
       setTimeout(() => {

@@ -1,8 +1,13 @@
 const mongoose = require("mongoose");
 
-const ticketsSchema = new mongoose.Schema(
+const tickets = mongoose.model(
+  "Ticket",
   {
     number: {
+      type: Number,
+      required: true,
+    },
+    status: {
       type: Number,
       required: true,
     },
@@ -10,13 +15,21 @@ const ticketsSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    serviced: {
+    name: {
       type: String,
-      required: true,
+      require: true,
+    },
+    type: {
+      type: String,
+      require: true,
+    },
+    servicedBy: {
+      type: String,
     },
     dateQueue: {
       type: Date,
       default: Date.now,
+      required: true,
     },
     dateServiced: {
       type: Date,
@@ -27,4 +40,4 @@ const ticketsSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("tickets", ticketsSchema);
+module.exports = tickets;
