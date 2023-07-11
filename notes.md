@@ -22,14 +22,16 @@
 - [x] Adicionar submit e required em outros formularios igual no login
 - [x] Limpar campo e notificações na criação de usuario
 - [x] Pagina de login
-- [ ] MongoDB: Armazenamento de configurações globais (monitor mode e som)
 - [x] Restrições para diferentes roles acessarem diferentes paginas
 - [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
 - [x] MongoDB: Tabela de tickets
+- [x] MongoDB: Armazenamento de configurações globais (monitor mode e som)
+- [ ] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
 - [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
 - [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
 - [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
 - [ ] Opção de resetar as senhas todo dia
+- [ ] Zerar o painel (ultima e penultima senha) ao resetar as senhas do dia
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:

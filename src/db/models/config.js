@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-const config = mongoose.model(
-  "Config",
+const configSchema = new mongoose.Schema(
   {
     monitorMode: { type: Number, default: 0 },
     soundNotification: { type: Number, default: 0 },
@@ -11,4 +10,6 @@ const config = mongoose.model(
   { versionKey: false }
 );
 
-module.exports = config;
+const Config = mongoose.model("Config", configSchema);
+
+module.exports = Config;

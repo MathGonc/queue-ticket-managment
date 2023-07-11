@@ -111,18 +111,13 @@ export const useGlobalStore = defineStore("global", {
           throw error;
         });
     },
-    updateGlobalConfigs(updatedData) {
-      Object.assign(this.$state, updatedData);
-
-      return axios
-        .put(`${config.url_server_api}/updateGlobalConfigs`, this.$state)
-        .then(() => {
-          console.log("Configurações globais atualizadas no backend");
-        })
-        .catch((error) => {
-          console.error("Erro ao atualizar as configurações globais no backend:", error);
-          throw error;
-        });
+    updateGlobalConfigsAPI(updatedData) {
+      return axios.put(`${config.url_server_api}/updateGlobalConfigs`, updatedData);
+    },
+    updateGlobalConfigsDB(updatedData) {
+      console.log(config.url_server);
+      console.log(updatedData);
+      axios.post(`${config.url_server}/saveConfigsDB`, updatedData);
     },
     setMonitorMode(monitorMode) {
       this.monitorMode = monitorMode;

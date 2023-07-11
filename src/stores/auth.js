@@ -89,6 +89,15 @@ export const useAuth = defineStore("auth", () => {
     }
   }
 
+  async function saveConfigs(data) {
+    try {
+      await http.post("/saveConfigs", data);
+    } catch (error) {
+      console.log(error.response.data);
+      return error.response.status;
+    }
+  }
+
   return {
     token,
     isAuth,
@@ -100,5 +109,6 @@ export const useAuth = defineStore("auth", () => {
     clearToken,
     login,
     register,
+    saveConfigs,
   };
 });

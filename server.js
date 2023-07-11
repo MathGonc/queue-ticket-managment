@@ -6,8 +6,6 @@ const socketIO = require("socket.io");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const {} = require("jsonwebtoken");
-
 const app = express();
 const server = http.createServer(app);
 
@@ -25,6 +23,8 @@ app.use(express.json());
 
 const userRoutes = require("./src/db/userRoutes.js");
 app.use("/", userRoutes);
+const globalRoutes = require("./src/db/globalRoutes.js");
+app.use("/", globalRoutes);
 
 //Database
 const { connect } = require("./src/db/db");
