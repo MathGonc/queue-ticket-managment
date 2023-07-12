@@ -25,7 +25,7 @@
                 <select
                   class="form-select"
                   aria-label="Default select example"
-                  v-model="globalStore.monitorMode"
+                  v-model="monitorConfig.monitorMode"
                   disabled>
                   <option value="0">Horizontal</option>
                   <option value="1">Vertical</option>
@@ -38,7 +38,7 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="globalStore.soundNotification"
+                    v-model="monitorConfig.soundNotification"
                     :disabled="buttonDisabled" />
                   Notificação ao chamar senha</label
                 >
@@ -50,18 +50,18 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="globalStore.soundCallTicket"
+                    v-model="monitorConfig.soundCallTicket"
                     :disabled="buttonDisabled" />
                   Voz ao chamar senha</label
                 >
               </div>
 
-              <div v-if="soundCallTicket">
+              <div v-if="monitorConfig.soundCallTicket">
                 <div class="input-group input-group-sm mb-3 justify-content-center">
                   <span class="input-group-text" id="basic-addon1">Tipo de voz:</span
                   ><select
                     class="selectpicker"
-                    v-model="globalStore.soundCallTicketVoice"
+                    v-model="monitorConfig.soundCallTicketVoice"
                     :disabled="buttonDisabled">
                     <option v-for="value in 21" :key="value - 1">
                       {{ value - 1 }}
@@ -156,11 +156,13 @@
 </template>
 
 <script>
-import { ref, defineComponent } from "vue";
+import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useGlobalStore } from "@/stores/global";
 import { useAuth } from "@/stores/auth.js";
+import { loadMonitorConfigs, saveMonitorConfigs } from "../controllers/configController";
+
 import topbar from "../components/topbar";
 
 export default defineComponent({
@@ -170,24 +172,8 @@ export default defineComponent({
   },
   setup() {
     const globalStore = useGlobalStore();
-    const monitorMode = ref(() => globalStore.monitorMode);
-    const soundNotification = ref(() => globalStore.soundNotification);
-    const soundCallTicket = ref(() => globalStore.soundCallTicket);
-    const soundCallTicketVoice = ref(() => globalStore.soundCallTicketVoice);
 
     const auth = useAuth();
-    function handleSaveConfigs(updatedData) {
-      auth.saveConfigs(updatedData).then((response) => {
-        switch (response) {
-          case 400:
-            return useToast().error("Este usuario já existe");
-          case 500:
-            return;
-          default:
-            return useToast().success("Usuario criado com sucesso");
-        }
-      });
-    }
     function handleRegister() {
       const userData = {
         username: this.register.username,
@@ -210,12 +196,7 @@ export default defineComponent({
 
     return {
       globalStore,
-      monitorMode,
-      soundNotification,
-      soundCallTicket,
-      soundCallTicketVoice,
       handleRegister,
-      handleSaveConfigs,
     };
   },
   data() {
@@ -223,6 +204,7 @@ export default defineComponent({
       transitionFade: false,
       buttonDisabled: false,
       displayLanguage: 0,
+      monitorConfig: {},
       register: {
         username: null,
         login: null,
@@ -235,6 +217,9 @@ export default defineComponent({
     this.transitionFade = true;
 
     await this.globalStore.getGlobalVariablesAPI().then(() => {});
+    await loadMonitorConfigs().then((response) => {
+      this.monitorConfig = response;
+    });
   },
   methods: {
     setButtonDisabled() {
@@ -252,20 +237,10 @@ export default defineComponent({
       //useToast().error("Erro ao resetar as senhas");
     },
     saveConfigs() {
-      const updatedData = {
-        monitorMode: this.globalStore.monitorMode,
-        soundNotification: this.globalStore.soundNotification,
-        soundCallTicket: this.globalStore.soundCallTicket,
-        soundCallTicketVoice: this.globalStore.soundCallTicketVoice,
-      };
-
-      this.globalStore
-        .updateGlobalConfigsAPI(updatedData)
-        .then(() => {
-          this.globalStore.updateGlobalConfigsDB(updatedData);
-        })
+      saveMonitorConfigs(this.monitorConfig)
         .then(() => {
           useToast().success("Configurações salvas");
+          socket.emit("signalUpdateMonitorConfigs");
           this.setButtonDisabled();
         })
         .catch(() => {

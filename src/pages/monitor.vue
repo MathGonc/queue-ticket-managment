@@ -31,8 +31,10 @@
 import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import topbar from "../components/topbar";
 import { useGlobalStore } from "@/stores/global";
+import { loadMonitorConfigs } from "../controllers/configController";
+
+import topbar from "../components/topbar";
 
 export default {
   name: "page_monitor",
@@ -43,13 +45,11 @@ export default {
     return {
       transitionFade: true,
       transitionNewTicket: false,
+      monitorConfig: {},
     };
   },
   setup() {
     const globalStore = useGlobalStore();
-    const soundNotification = computed(() => globalStore.soundNotification);
-    const soundCallTicket = computed(() => globalStore.soundCallTicket);
-    const soundCallTicketVoice = computed(() => globalStore.soundCallTicketVoice);
     const currentTicket = computed(() => globalStore.currentTicket);
     const currentTable = computed(() => globalStore.currentTable);
     const currentUser = computed(() => globalStore.currentUser);
@@ -57,9 +57,6 @@ export default {
     const lastTable = computed(() => globalStore.lastTable);
     return {
       globalStore,
-      soundCallTicket,
-      soundNotification,
-      soundCallTicketVoice,
       currentTicket,
       currentTable,
       currentUser,
@@ -71,27 +68,31 @@ export default {
     this.transitionFade = true;
     this.transitionNewTicket = true;
 
-    await socket.on("receiveUpdateMonitor", (newTicket) => {
+    this.fetchMonitorConfigs();
+    await socket.on("receiveUpdateMonitorConfigs", () => {
+      this.fetchMonitorConfigs();
+    });
+
+    await socket.on("receiveUpdateMonitor", () => {
       useToast().info("Nova senha!", { position: "bottom-center" });
       this.transitionNewTicket = false;
 
       setTimeout(() => (this.transitionNewTicket = true), 1000);
-      if (this.soundNotification == true) {
+      if (this.monitorConfig.soundNotification == true) {
         const audio = new Audio(require("@/assets/sound.wav"));
         audio.play();
       }
 
       setTimeout(() => {
-        if (this.soundCallTicket == true) {
+        if (this.monitorConfig.soundCallTicket == true) {
           if (!("speechSynthesis" in window))
             return console.log("o navegador não suporta a API Web Speech.");
           speechSynthesis.cancel(); // Encerra todas as falas em andamento
           var message = new SpeechSynthesisUtterance();
           message.text =
             "Senha numero " + this.currentTicket + ", dirija-se ao guichê " + this.currentTable;
-          console.log(newTicket);
           console.log(this.currentTicket);
-          message.voice = speechSynthesis.getVoices()[this.soundCallTicketVoice];
+          message.voice = speechSynthesis.getVoices()[this.monitorConfig.soundCallTicketVoice];
           speechSynthesis.speak(message);
         }
       }, 1000);
@@ -100,7 +101,13 @@ export default {
   async beforeUnmount() {
     socket.off("receiveUpdateMonitor", this.handleReceiveUpdateMonitor);
   },
-  methods: {},
+  methods: {
+    async fetchMonitorConfigs() {
+      await loadMonitorConfigs().then((response) => {
+        this.monitorConfig = response;
+      });
+    },
+  },
 };
 </script>
 

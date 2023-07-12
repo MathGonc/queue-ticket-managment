@@ -3,8 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const socketIO = require("socket.io");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const app = express();
 const server = http.createServer(app);
@@ -31,10 +29,6 @@ const { connect } = require("./src/db/db");
 connect();
 
 let globalData = {
-  monitorMode: 0,
-  soundNotification: true,
-  soundCallTicket: true,
-  soundCallTicketVoice: 0,
   currentTicket: -1,
   currentTable: -1,
   currentUser: "-",
@@ -46,25 +40,23 @@ let globalData = {
   ticketName: Array(100).fill(""),
 };
 
-// Conecte-se ao cliente
 io.on("connection", (socket) => {
   console.log("Novo cliente conectado");
 
-  // Envie a atualização atual para o cliente recém-conectado
   socket.emit("updatedGlobalCurrentTicket", globalData.currentTicket);
 
-  // Receba uma nova atualização do cliente
   socket.on("signalUpdateValues", () => {
-    io.emit("receiveUpdateGlobal"); // Envie a nova atualização para todos os clientes conectados, incluindo o cliente que enviou a atualização
+    io.emit("receiveUpdateGlobal");
   });
 
-  socket.on("signalUpdateMonitor", (newTicket) => {
-    io.emit("receiveUpdateMonitor", newTicket);
-
-    console.log(newTicket);
+  socket.on("signalUpdateMonitor", () => {
+    io.emit("receiveUpdateMonitor");
   });
 
-  // Quando o cliente se desconectar
+  socket.on("signalUpdateMonitorConfigs", () => {
+    io.emit("receiveUpdateMonitorConfigs");
+  });
+
   socket.on("disconnect", () => {
     console.log("Cliente desconectado");
   });
@@ -80,10 +72,6 @@ app.get("/", (req, res) => {
 app.get("/api", (req, res) => {
   // Obtenha os valores das variáveis do servidor
   let {
-    monitorMode,
-    soundNotification,
-    soundCallTicket,
-    soundCallTicketVoice,
     currentTicket,
     currentTable,
     currentUser,
@@ -97,10 +85,6 @@ app.get("/api", (req, res) => {
 
   // Envie os valores das variáveis como resposta
   res.json({
-    monitorMode,
-    soundNotification,
-    soundCallTicket,
-    soundCallTicketVoice,
     currentTicket,
     currentTable,
     currentUser,
@@ -139,17 +123,6 @@ app.put("/api/updateVariablesInAPI", (req, res) => {
 
   // Envie uma resposta de sucesso
   res.status(200).send("Variáveis atualizadas no servidor");
-});
-
-app.put("/api/updateGlobalConfigs", (req, res) => {
-  let { monitorMode, soundNotification, soundCallTicket, soundCallTicketVoice } = req.body;
-
-  globalData.monitorMode = monitorMode;
-  globalData.soundNotification = soundNotification;
-  globalData.soundCallTicket = soundCallTicket;
-  globalData.soundCallTicketVoice = soundCallTicketVoice;
-
-  res.status(200).send("Configurações atualizadas no servidor");
 });
 
 const port = process.env.VUE_APP_PORT_SERVER || 3000;

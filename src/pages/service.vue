@@ -136,7 +136,7 @@ export default {
       this.globalStore.updateVariablesInAPI();
 
       socket.emit("signalUpdateValues");
-      socket.emit("signalUpdateMonitor", ticketIndex);
+      socket.emit("signalUpdateMonitor");
 
       this.myCalledTicket = parseInt(ticketIndex);
       if (process.env.VUE_APP_DEV == 1) {
@@ -160,7 +160,7 @@ export default {
       }
 
       await socket.emit("signalUpdateValues");
-      await socket.emit("signalUpdateMonitor", this.myCalledTicket);
+      await socket.emit("signalUpdateMonitor");
     },
   },
 };

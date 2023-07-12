@@ -26,7 +26,9 @@
 - [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
 - [x] MongoDB: Tabela de tickets
 - [x] MongoDB: Armazenamento de configurações globais (monitor mode e som)
-- [ ] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
+- [x] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
+- [ ] Organizar solicitações para o servidor nas middlewares e controllers
+- [ ] Carregar mesa do atendente no login
 - [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
 - [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
 - [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario

@@ -26,4 +26,18 @@ router.post("/saveConfigsDB", async (req, res) => {
   }
 });
 
+router.get("/getConfigsDB", async (req, res) => {
+  try {
+    const config = await Config.findOne();
+
+    if (config) {
+      req.config = config;
+      res.status(200).json({ config });
+    }
+  } catch (error) {
+    console.error("Erro ao obter as configurações do banco de dados MongoDB:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

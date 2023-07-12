@@ -5,6 +5,7 @@ const User = mongoose.model("User", {
   login: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: Number, default: 0 },
+  table: { type: Number, default: 0 },
   language: { type: Number, default: 0 },
 });
 

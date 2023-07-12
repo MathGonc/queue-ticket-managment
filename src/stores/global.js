@@ -4,10 +4,6 @@ import config from "../../config.js";
 
 export const useGlobalStore = defineStore("global", {
   state: () => ({
-    monitorMode: 0,
-    soundNotification: false,
-    soundCallTicket: false,
-    soundCallTicketVoice: 0,
     currentTicket: "999",
     currentTable: "99",
     currentUser: "-",
@@ -40,10 +36,6 @@ export const useGlobalStore = defineStore("global", {
         .get(`${config.url_server_api}`)
         .then((response) => {
           const {
-            monitorMode,
-            soundNotification,
-            soundCallTicket,
-            soundCallTicketVoice,
             currentTicket,
             currentTable,
             currentUser,
@@ -55,10 +47,6 @@ export const useGlobalStore = defineStore("global", {
             ticketName,
           } = response.data;
 
-          this.monitorMode = monitorMode;
-          this.soundNotification = soundNotification;
-          this.soundCallTicket = soundCallTicket;
-          this.soundCallTicketVoice = soundCallTicketVoice;
           this.currentTicket = currentTicket;
           this.currentTable = currentTable;
           this.currentUser = currentUser;
@@ -110,26 +98,6 @@ export const useGlobalStore = defineStore("global", {
           console.error("Erro ao atualizar as variáveis no backend:", error);
           throw error;
         });
-    },
-    updateGlobalConfigsAPI(updatedData) {
-      return axios.put(`${config.url_server_api}/updateGlobalConfigs`, updatedData);
-    },
-    updateGlobalConfigsDB(updatedData) {
-      console.log(config.url_server);
-      console.log(updatedData);
-      axios.post(`${config.url_server}/saveConfigsDB`, updatedData);
-    },
-    setMonitorMode(monitorMode) {
-      this.monitorMode = monitorMode;
-    },
-    setSoundNotification(soundNotification) {
-      this.soundNotification = soundNotification;
-    },
-    setSoundCallTicket(soundCallTicket) {
-      this.soundCallTicket = soundCallTicket;
-    },
-    setSoundCallTicketVoice(soundCallTicketVoice) {
-      this.soundCallTicketVoice = soundCallTicketVoice;
     },
     setCurrentTicket(ticket) {
       this.currentTicket = ticket;
