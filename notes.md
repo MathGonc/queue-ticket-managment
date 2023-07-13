@@ -27,9 +27,11 @@
 - [x] MongoDB: Tabela de tickets
 - [x] MongoDB: Armazenamento de configurações globais (monitor mode e som)
 - [x] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
-- [ ] Organizar solicitações para o servidor nas middlewares e controllers
+- [x] Organizar solicitações para o servidor nas middlewares e controllers
 - [ ] Carregar mesa do atendente no login
-- [ ] MongoDB: Sidebar mostrar os tickets registrados na fila porem não chamados (ticketInQueue == 1) filtrando por horario
+- [ ] dbInsertTicket(verificar se é possivel puxar o ID ao criar)
+- [ ] dbLoadTicketsInQueue
+- [ ] dbUpdateTicket(status) & dbDeleteTicket(ticketid)
 - [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
 - [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
 - [ ] Opção de resetar as senhas todo dia
