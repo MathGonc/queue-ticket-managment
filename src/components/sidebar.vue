@@ -50,73 +50,82 @@
 </template>
 
 <script>
-import { defineComponent, computed } from "vue";
-import { useToast } from "vue-toastification";
-import { socket } from "@/socket";
-import { useGlobalStore } from "@/stores/global";
+import { defineComponent } from "vue";
+// import { useToast } from "vue-toastification";
+// import { socket } from "@/socket";
+import { loadTicketsInQueue } from "../controllers/ticketController";
 
 export default defineComponent({
   name: "page_sidebar",
-  setup() {
-    const globalStore = useGlobalStore();
-    const ticketInQueue = computed(() => globalStore.ticketInQueue);
-    const ticketType = computed(() => globalStore.ticketType);
-    const ticketPreferential = computed(() => globalStore.ticketPreferential);
-    const ticketName = computed(() => globalStore.ticketName);
+  data() {
     return {
-      globalStore,
-      ticketInQueue,
-      ticketType,
-      ticketPreferential,
-      ticketName,
+      ticketData: [
+        {
+          ticketData: {
+            number: [],
+            status: [],
+            preferential: [],
+            name: [],
+          },
+        },
+      ],
     };
   },
-  async mounted() {},
+  async mounted() {
+    await loadTicketsInQueue().then((response) => {
+      const queueData = response.data.tickets;
+
+      for (let i = 0; i < queueData.length; i++) {
+        this.ticketData.push(queueData[i]);
+      }
+      console.log(this.ticketData);
+    });
+  },
   computed: {
-    filteredTickets() {
-      return this.ticketInQueue
-        .reduce((filtered, ticket, index) => {
-          if (ticket === 1 && this.ticketPreferential[index] === 1) {
-            filtered.push({
-              ticketNumber: index,
-              ticketName: this.ticketName[index],
-              ticketType: this.ticketType[index],
-              ticketPreferential: this.ticketPreferential[index],
-            });
-          }
-          return filtered;
-        }, [])
-        .concat(
-          this.ticketInQueue.reduce((filtered, ticket, index) => {
-            if (ticket === 1 && this.ticketPreferential[index] !== 1) {
-              filtered.push({
-                ticketNumber: index,
-                ticketName: this.ticketName[index],
-                ticketType: this.ticketType[index],
-                ticketPreferential: this.ticketPreferential[index],
-              });
-            }
-            return filtered;
-          }, [])
-        );
-    },
+    // filteredTickets() {
+    //   return this.ticketInQueue
+    //     .reduce((filtered, ticket, index) => {
+    //       if (ticket === 1 && this.ticketPreferential[index] === 1) {
+    //         filtered.push({
+    //           ticketNumber: index,
+    //           ticketName: this.ticketName[index],
+    //           ticketType: this.ticketType[index],
+    //           ticketPreferential: this.ticketPreferential[index],
+    //         });
+    //       }
+    //       return filtered;
+    //     }, [])
+    //     .concat(
+    //       this.ticketInQueue.reduce((filtered, ticket, index) => {
+    //         if (ticket === 1 && this.ticketPreferential[index] !== 1) {
+    //           filtered.push({
+    //             ticketNumber: index,
+    //             ticketName: this.ticketName[index],
+    //             ticketType: this.ticketType[index],
+    //             ticketPreferential: this.ticketPreferential[index],
+    //           });
+    //         }
+    //         return filtered;
+    //       }, [])
+    //     );
+    // },
   },
   methods: {
-    removeTicket(index) {
-      console.log(index);
-      this.globalStore.setTicketData({
-        index,
-        ticketInQueue: 0,
-        ticketPreferential: 0,
-        ticketName: 0,
-        ticketType: 0,
-      });
+    // removeTicket(index) {
+    //   console.log(index);
+    //   this.globalStore.setTicketData({
+    //     index,
+    //     ticketInQueue: 0,
+    //     ticketPreferential: 0,
+    //     ticketName: 0,
+    //     ticketType: 0,
+    //   });
 
-      this.globalStore.updateVariablesInAPI();
-      socket.emit("signalUpdateValues");
+    //   this.globalStore.updateVariablesInAPI();
+    //   socket.emit("signalUpdateValues");
 
-      useToast().success("Senha " + index + " liberada");
-    },
+    //   useToast().success("Senha " + index + " liberada");
+    // },
     isMobile() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent

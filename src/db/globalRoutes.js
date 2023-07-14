@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Config = require("./models/config");
+const Config = require("./models/global");
 
 router.post("/saveConfigsDB", async (req, res) => {
   try {
@@ -9,14 +9,10 @@ router.post("/saveConfigsDB", async (req, res) => {
     const config = await Config.findOne();
 
     if (config) {
-      // Atualiza as configurações existentes no MongoDB
       config.set(updatedData);
       await config.save();
-      console.log("Configurações globais atualizadas no banco de dados MongoDB");
     } else {
-      // Cria um novo documento de configuração no MongoDB
       await Config.create(updatedData);
-      console.log("Novo documento de configuração criado no banco de dados MongoDB");
     }
 
     res.sendStatus(200);
@@ -37,6 +33,33 @@ router.get("/getConfigsDB", async (req, res) => {
   } catch (error) {
     console.error("Erro ao obter as configurações do banco de dados MongoDB:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/getCurrentTicketRegistred", async (req, res) => {
+  try {
+    const config = await Config.findOne().select("currentTicketRegistred");
+    res.status(200).json({ config });
+  } catch (error) {
+    console.error("Erro ao obter as configurações do banco de dados MongoDB:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/updateCurrentTicketRegistred", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const config = await Config.findOne();
+
+    if (config) {
+      config.set(data);
+      await config.save();
+      console.log(data);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({});
   }
 });
 

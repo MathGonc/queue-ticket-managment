@@ -2,38 +2,12 @@
 
 ## **To do:**
 
-### Fix:
+### To do:
 
-- [x] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
-- [x] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
-- [x] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
-- [x] Mensagem de erro ao logar
-- [x] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
-- [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
-- [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
-
-### Posteriorly:
-
-- [x] **MongoDB**
-- [x] MongoDB: Sistema de registro(via config)
-- [x] MongoDB: Sistema de login e autenticação
-- [x] MongoDB: Pasta "db" com funções do banco de dados separada
-- [x] Mensagem de "sem permissão" ao tentar acessar uma pagina que não tem permissão
-- [x] Adicionar submit e required em outros formularios igual no login
-- [x] Limpar campo e notificações na criação de usuario
-- [x] Pagina de login
-- [x] Restrições para diferentes roles acessarem diferentes paginas
-- [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
-- [x] MongoDB: Tabela de tickets
-- [x] MongoDB: Armazenamento de configurações globais (monitor mode e som)
-- [x] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
-- [x] Organizar solicitações para o servidor nas middlewares e controllers
+- [ ] Listar as senhas carregadas
+- [ ] dbUpdateTicket(status)
+- [ ] dbDeleteTicket(ticketid)
 - [ ] Carregar mesa do atendente no login
-- [ ] dbInsertTicket(verificar se é possivel puxar o ID ao criar)
-- [ ] dbLoadTicketsInQueue
-- [ ] dbUpdateTicket(status) & dbDeleteTicket(ticketid)
-- [ ] Variavel "nextTicketToQueue" ser filtrada pelo ultimo ticket registrado porem não chamado (ticketInQueue == 1)
-- [ ] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
 - [ ] Opção de resetar as senhas todo dia
 - [ ] Zerar o painel (ultima e penultima senha) ao resetar as senhas do dia
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
@@ -47,7 +21,7 @@
 - [ ] **Topbar:** Relogio no canto superior direito da janela
 - [ ] Seleção de idioma: _Português_ e _Inglês_
 
-### Essential:
+### Done:
 
 - [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
 - [x] **Monitor:** Som ao atualizar a pagina
@@ -73,6 +47,34 @@
 - [x] **Triagem:** Selecionar o tipo de atendimento (INICIAL, AGENDAMENTO, RETORNO, INFORMAÇÕES e JUNTADA DE DOCUMENTOS)
 - [x] Sidebar
 - [x] Inserir **Bottombar** (desenvolvimento no canto inferior direito)
+- [x] **MongoDB**
+- [x] MongoDB: Sistema de registro(via config)
+- [x] MongoDB: Sistema de login e autenticação
+- [x] MongoDB: Pasta "db" com funções do banco de dados separada
+- [x] Mensagem de "sem permissão" ao tentar acessar uma pagina que não tem permissão
+- [x] Adicionar submit e required em outros formularios igual no login
+- [x] Limpar campo e notificações na criação de usuario
+- [x] Pagina de login
+- [x] Restrições para diferentes roles acessarem diferentes paginas
+- [x] Nome do usuario logado no canto superior direito (deixar no mesmo arquivo da sidebar)
+- [x] MongoDB: Tabela de tickets
+- [x] MongoDB: Armazenamento de configurações globais (monitor mode e som)
+- [x] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
+- [x] Organizar solicitações para o servidor nas middlewares e controllers
+- [x] dbInsertTicket
+- [x] currentTicketRegistred, currentTicketCalled & lastTicketCalled
+- [x] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
+- [x] dbLoadTicketsInQueue
+
+### Fix:
+
+- [x] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
+- [x] Se a senha 0 for a proxima, ela sempre fica sozinha no monitor
+- [x] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
+- [x] Mensagem de erro ao logar
+- [x] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
+- [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
+- [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 
 ## **Tricks:**
 

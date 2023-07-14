@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-const tickets = mongoose.model(
-  "Ticket",
+const TicketSchema = new mongoose.Schema(
   {
     number: {
       type: Number,
@@ -12,7 +11,7 @@ const tickets = mongoose.model(
       required: true,
     },
     preferential: {
-      type: Number,
+      type: Boolean,
       required: true,
     },
     name: {
@@ -38,4 +37,10 @@ const tickets = mongoose.model(
   { versionKey: false }
 );
 
-module.exports = tickets;
+TicketSchema.index({ status: 1, dateQueue: -1 });
+
+TicketSchema.index({ status: 2, dateServiced: -1 });
+
+const TicketModel = mongoose.model("Ticket", TicketSchema);
+
+module.exports = TicketModel;

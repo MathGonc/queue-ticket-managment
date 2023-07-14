@@ -20,9 +20,9 @@ app.use(cors());
 app.use(express.json());
 
 const userRoutes = require("./src/db/userRoutes.js");
-app.use("/", userRoutes);
 const globalRoutes = require("./src/db/globalRoutes.js");
-app.use("/", globalRoutes);
+const ticketRoutes = require("./src/db/ticketRoutes.js");
+app.use("/", userRoutes, globalRoutes, ticketRoutes);
 
 //Database
 const { connect } = require("./src/db/db");

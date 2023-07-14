@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const Config = require("./models/ticket");
+const TicketModel = require("./models/ticket");
 
-router.get("/dbLoadTicketsInQueue", async (req, res) => {
+router.get("/loadTicketsInQueue", async (req, res) => {
   try {
-    const tickets = await Ticket.find()
-      .sort({ dateQueue: -1 })
-      .sort({
-        preferential: -1,
-        status: -1,
-      })
+    const tickets = await TicketModel.find({
+      $or: [
+        { preferential: true, status: 1 },
+        { preferential: false, status: 1 },
+      ],
+    })
+      .sort({ preferential: -1, dateQueue: 1 })
       .limit(50);
 
-    return tickets;
+    return res.status(200).json({ tickets });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -20,16 +21,18 @@ router.get("/dbLoadTicketsInQueue", async (req, res) => {
   }
 });
 
-router.post("/dbInsertTicket", async (req, res) => {
+router.post("/insertTicket", async (req, res) => {
   try {
-    res.sendStatus(200);
+    const updatedData = req.body;
+    TicketModel.create(updatedData);
+    return res.status(200).json({});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.put("/dbUpdateTicket", async (req, res) => {
+router.put("/updateTicket", async (req, res) => {
   try {
     res.sendStatus(200);
   } catch (error) {

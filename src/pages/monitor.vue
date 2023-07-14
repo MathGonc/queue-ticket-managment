@@ -32,7 +32,7 @@ import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useGlobalStore } from "@/stores/global";
-import { loadMonitorConfigs } from "../controllers/configController";
+import { loadMonitorConfigs } from "../controllers/globalController";
 
 import topbar from "../components/topbar";
 

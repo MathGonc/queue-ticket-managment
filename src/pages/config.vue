@@ -161,7 +161,7 @@ import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useGlobalStore } from "@/stores/global";
 import { useAuth } from "@/stores/auth.js";
-import { loadMonitorConfigs, saveMonitorConfigs } from "../controllers/configController";
+import { loadMonitorConfigs, saveMonitorConfigs } from "../controllers/globalController";
 
 import topbar from "../components/topbar";
 
