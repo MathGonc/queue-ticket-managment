@@ -41,4 +41,16 @@ router.put("/updateTicket", async (req, res) => {
   }
 });
 
+router.delete("/deleteTicket/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    await TicketModel.findByIdAndDelete(_id);
+
+    return res.status(200).json({});
+  } catch (error) {
+    console.error(error);
+    res.status(500);
+  }
+});
+
 module.exports = router;

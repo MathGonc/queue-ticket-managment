@@ -2,7 +2,9 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
+        <div
+          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
+        >
           <div class="px-3 pt-2">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
@@ -18,20 +20,29 @@
 
           <div class="sidebar-list d-0 px-3 pt-1 text-white">
             <ul class="nav flex-column mb-0">
-              <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+              <li
+                class="nav-item"
+                v-for="(ticket, index) in filteredTickets"
+                :key="index"
+              >
                 <div class="row">
                   <div class="col-auto px-0">
                     <button
-                      @click="removeTicket(ticket.ticketNumber)"
+                      @click="handleDeleteTicket(ticket.ticketID)"
                       type="button"
-                      class="btn btn-danger btn-sm">
+                      class="btn btn-danger btn-sm"
+                    >
                       X
                     </button>
                   </div>
                   <div class="col-auto align-middle px-2">
                     <span>
                       {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                      }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                      }}<span
+                        v-if="ticket.ticketPreferential"
+                        style="color: red"
+                        >&nbsp;(P)</span
+                      >
                     </span>
                     <br />
                     ({{ ticket.ticketType }})
@@ -51,81 +62,75 @@
 
 <script>
 import { defineComponent } from "vue";
-// import { useToast } from "vue-toastification";
-// import { socket } from "@/socket";
-import { loadTicketsInQueue } from "../controllers/ticketController";
+import { useToast } from "vue-toastification";
+import { socket } from "@/socket";
+import {
+  loadTicketsInQueue,
+  deleteTicket,
+} from "../controllers/ticketController";
 
 export default defineComponent({
   name: "page_sidebar",
   data() {
     return {
-      ticketData: [
-        {
-          ticketData: {
-            number: [],
-            status: [],
-            preferential: [],
-            name: [],
-          },
-        },
-      ],
+      ticketID: [],
+      ticketNumber: [],
+      ticketStatus: [],
+      ticketType: [],
+      ticketPreferential: [],
+      ticketName: [],
     };
   },
   async mounted() {
-    await loadTicketsInQueue().then((response) => {
-      const queueData = response.data.tickets;
-
-      for (let i = 0; i < queueData.length; i++) {
-        this.ticketData.push(queueData[i]);
-      }
-      console.log(this.ticketData);
+    this.handleLoadTicketsInQueue();
+    socket.on("receiveUpdateGlobal", () => {
+      this.handleLoadTicketsInQueue();
     });
   },
   computed: {
-    // filteredTickets() {
-    //   return this.ticketInQueue
-    //     .reduce((filtered, ticket, index) => {
-    //       if (ticket === 1 && this.ticketPreferential[index] === 1) {
-    //         filtered.push({
-    //           ticketNumber: index,
-    //           ticketName: this.ticketName[index],
-    //           ticketType: this.ticketType[index],
-    //           ticketPreferential: this.ticketPreferential[index],
-    //         });
-    //       }
-    //       return filtered;
-    //     }, [])
-    //     .concat(
-    //       this.ticketInQueue.reduce((filtered, ticket, index) => {
-    //         if (ticket === 1 && this.ticketPreferential[index] !== 1) {
-    //           filtered.push({
-    //             ticketNumber: index,
-    //             ticketName: this.ticketName[index],
-    //             ticketType: this.ticketType[index],
-    //             ticketPreferential: this.ticketPreferential[index],
-    //           });
-    //         }
-    //         return filtered;
-    //       }, [])
-    //     );
-    // },
+    filteredTickets() {
+      return this.ticketNumber.map((ticketNumber, index) => ({
+        ticketID: this.ticketID[index],
+        ticketNumber: this.ticketNumber[index],
+        ticketStatus: this.ticketStatus[index],
+        ticketType: this.ticketType[index],
+        ticketPreferential: this.ticketPreferential[index],
+        ticketName: this.ticketName[index],
+      }));
+    },
   },
   methods: {
-    // removeTicket(index) {
-    //   console.log(index);
-    //   this.globalStore.setTicketData({
-    //     index,
-    //     ticketInQueue: 0,
-    //     ticketPreferential: 0,
-    //     ticketName: 0,
-    //     ticketType: 0,
-    //   });
+    async handleLoadTicketsInQueue() {
+      await loadTicketsInQueue().then((response) => {
+        const queueData = response.data.tickets;
 
-    //   this.globalStore.updateVariablesInAPI();
-    //   socket.emit("signalUpdateValues");
+        this.ticketID = [];
+        this.ticketNumber = [];
+        this.ticketStatus = [];
+        this.ticketType = [];
+        this.ticketPreferential = [];
+        this.ticketName = [];
 
-    //   useToast().success("Senha " + index + " liberada");
-    // },
+        for (let i = 0; i < queueData.length; i++) {
+          this.ticketID.push(queueData[i]._id);
+          this.ticketNumber.push(queueData[i].number);
+          this.ticketStatus.push(queueData[i].status);
+          this.ticketType.push(queueData[i].type);
+          this.ticketPreferential.push(queueData[i].preferential);
+          this.ticketName.push(queueData[i].name);
+        }
+      });
+    },
+    async handleDeleteTicket(ticketID) {
+      await deleteTicket(ticketID).then((response) => {
+        response.status == 200
+          ? useToast().success("Ticket excluido")
+          : useToast().error("Ocorreu um erro");
+
+        //this.handleLoadTicketsInQueue();
+        socket.emit("signalUpdateValues");
+      });
+    },
     isMobile() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent

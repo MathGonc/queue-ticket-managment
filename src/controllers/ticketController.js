@@ -25,7 +25,10 @@ export async function loadAllTickets() {
 
 export async function insertTicket(updatedData) {
   try {
-    const response = await axios.post(`${config.url_server}/insertTicket`, updatedData);
+    const response = await axios.post(
+      `${config.url_server}/insertTicket`,
+      updatedData
+    );
     console.log(response);
     return response;
   } catch (error) {
@@ -34,12 +37,22 @@ export async function insertTicket(updatedData) {
   }
 }
 
-export async function updateTicket(updatedData) {
-  console.log(updatedData);
-  axios.put(`${config.url_server}/updateTicket`, updatedData);
+export async function updateTicketCalled(updatedData) {
+  try {
+    axios.put(`${config.url_server}/updateTicket`, updatedData);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-export async function deleteTicket(updatedData) {
-  console.log(updatedData);
-  axios.delete(`${config.url_server}/deleteTicket`, updatedData);
+export async function deleteTicket(ticketID) {
+  try {
+    const response = axios.delete(
+      `${config.url_server}/deleteTicket/${ticketID}`
+    );
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

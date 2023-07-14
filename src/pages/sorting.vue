@@ -8,13 +8,16 @@
           <div class="row">
             <div class="col">
               <div class="input-group input-group-sm mb-3">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
+                <span class="input-group-text" id="inputGroup-sizing-sm"
+                  >Nome:</span
+                >
                 <input
                   type="text"
                   class="form-control"
                   aria-label="Small"
                   aria-describedby="inputGroup-sizing-sm"
-                  v-model="inputTicket.name" />
+                  v-model="inputTicket.name"
+                />
               </div>
 
               <div class="input-group input-group-sm mb-3">
@@ -22,21 +25,26 @@
                   class="btn btn-secondary dropdown-toggle"
                   type="button"
                   data-bs-toggle="dropdown"
-                  aria-expanded="false">
+                  aria-expanded="false"
+                >
                   Tipo:
                 </button>
                 <ul class="dropdown-menu">
                   <li v-for="item in dropdownTicketTypes" :key="item.name">
-                    <a class="dropdown-item" href="#" @click="inputTypeTicket = item.name">{{
-                      item.name
-                    }}</a>
+                    <a
+                      class="dropdown-item"
+                      href="#"
+                      @click="inputTicket.type = item.name"
+                      >{{ item.name }}</a
+                    >
                   </li>
                 </ul>
                 <input
                   type="text"
                   class="form-control"
                   aria-label="Text input with dropdown button"
-                  v-model="inputTicket.type" />
+                  v-model="inputTicket.type"
+                />
               </div>
 
               <div class="form-check form-switch">
@@ -45,7 +53,8 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="inputTicket.preferential" />
+                    v-model="inputTicket.preferential"
+                  />
                   Preferencial</label
                 >
               </div>
@@ -53,8 +62,9 @@
                 type="button"
                 @click="handleRegisterTicket()"
                 class="btn btn-outline-primary"
-                :disabled="buttonDisabled">
-                Cadastrar Senha {{ globalStore.nextTicketEnterInQueue }}
+                :disabled="buttonDisabled"
+              >
+                Cadastrar Senha {{ nextTicketToRegister }}
               </button>
             </div>
           </div>
@@ -71,8 +81,8 @@ import { socket } from "@/socket";
 import { useGlobalStore } from "@/stores/global";
 import { insertTicket } from "../controllers/ticketController";
 import {
-  getCurrentTicketRegistred,
-  updateCurrentTicketRegistred,
+  getGlobalTicketData,
+  updateGlobalTicketData,
 } from "../controllers/globalController";
 
 import topbar from "../components/topbar";
@@ -101,7 +111,7 @@ export default defineComponent({
     return {
       transitionFade: false,
       buttonDisabled: false,
-      currentTicketRegistred: -1,
+      nextTicketToRegister: -1,
       inputTicket: {
         name: "",
         type: "",
@@ -121,9 +131,10 @@ export default defineComponent({
     await this.handleGetNextNumRegister();
     await this.globalStore.getGlobalVariablesAPI();
     socket.on("receiveUpdateGlobal", () => {
-      this.globalStore.getGlobalVariablesAPI().then(() => {
-        //this.getNextTicketEnterInQueue();
-      });
+      this.handleGetNextNumRegister();
+      // this.globalStore.getGlobalVariablesAPI().then(() => {
+      //   this.getNextTicketEnterInQueue();
+      // });
     });
   },
   methods: {
@@ -135,19 +146,21 @@ export default defineComponent({
       }, 5000);
     },
     async handleGetNextNumRegister() {
-      await getCurrentTicketRegistred().then((response) => {
-        this.currentTicketRegistred = response.currentTicketRegistred;
+      await getGlobalTicketData().then((response) => {
+        this.nextTicketToRegister = response.data.currentTicketRegistred + 1;
       });
     },
     async handleRegisterTicket() {
-      if (this.inputTicket.name.length < 1) return useToast().error("Digite um nome");
-      if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
+      if (this.inputTicket.name.length < 1)
+        return useToast().error("Digite um nome");
+      if (this.inputTicket.type.length < 1)
+        return useToast().error("Digite ou selecione um tipo");
 
       this.setButtonDisabled();
 
       await this.handleGetNextNumRegister();
       const inputTicketData = {
-        number: this.currentTicketRegistred,
+        number: this.nextTicketToRegister,
         status: 1,
         type: this.inputTicket.type,
         preferential: this.inputTicket.preferential,
@@ -159,12 +172,16 @@ export default defineComponent({
           useToast().success("Usuario cadastrado com sucesso");
           this.globalStore.updateVariablesInAPI();
           socket.emit("signalUpdateValues");
-          this.currentTicketRegistred += 1;
+          //this.nextTicketToRegister += 1;
+
+          this.inputTicket.name = "";
+          this.inputTicket.type = "";
+          this.inputTicket.preferential = false;
 
           const updatedData = {
-            currentTicketRegistred: this.currentTicketRegistred,
+            currentTicketRegistred: this.nextTicketToRegister,
           };
-          updateCurrentTicketRegistred(updatedData);
+          updateGlobalTicketData(updatedData);
         }
       });
     },

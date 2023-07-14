@@ -21,20 +21,25 @@ export async function saveMonitorConfigs(updatedData) {
   }
 }
 
-export async function getCurrentTicketRegistred() {
+export async function getGlobalTicketData() {
   try {
-    const response = await axios.get(`${config.url_server}/getCurrentTicketRegistred`);
-    console.log(response.data.config);
-    return response.data.config;
+    const response = await axios.get(
+      `${config.url_server}/getGlobalTicketData`
+    );
+    console.log(response);
+    return response;
   } catch (error) {
     console.error("Erro ao carregar as configurações do monitor:", error);
     throw error;
   }
 }
 
-export async function updateCurrentTicketRegistred(data) {
+export async function updateGlobalTicketData(data) {
   try {
-    const response = await axios.put(`${config.url_server}/updateCurrentTicketRegistred`, data);
+    const response = await axios.put(
+      `${config.url_server}/updateGlobalTicketData`,
+      data
+    );
     return response;
   } catch (error) {
     console.error(error);

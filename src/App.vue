@@ -4,11 +4,16 @@
     <nav class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth"
         >{{ this.userData.username }} ({{ this.userRole }})
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">
+          Sair
+        </button>
       </template>
     </nav>
     <nav class="navbar fixed-bottom">
-      <!--  <span class="col pt-auto px-3">Desenvolvido por Matheus Gonçalves</span>-->
+      <span class="col pt-auto px-3"
+        >© 2023 - Desenvolvido por Matheus Gonçalves - Todos os direitos
+        reservados.</span
+      >
     </nav>
   </div>
 </template>
@@ -72,7 +77,11 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #ffffff 10px
+    ),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -94,7 +103,7 @@ body {
 
 .navbar.fixed-bottom {
   background: #242424;
-  color: #3d3d3d;
+  color: #5c5c5c;
   text-align: right;
 }
 
