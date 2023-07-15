@@ -56,7 +56,7 @@
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
-import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+import { loadTicketsInQueue, updateTicketCalled } from "../controllers/ticketController";
 
 import topbar from "../components/topbar";
 
@@ -119,18 +119,20 @@ export default {
     },
     async callNextTicket() {
       try {
+        this.setButtonDisabled();
         if (this.myTable < 1) return useToast().error("Selecione seu guichê");
 
         const loadResponse = await loadTicketsInQueue();
         if (loadResponse.data.ticket.length < 1)
           return useToast().error("Nenhuma senha cadastrada");
-        this.setButtonDisabled();
+        if (loadResponse.data.ticket[0].status == 2)
+          return useToast().error("Todas as senhas já foram atendidas");
         this.nextTicketData = loadResponse.data.ticket[0];
 
         const loadGlobalResponse = await this.handleGetGlobalTicketData();
         console.log(loadGlobalResponse);
 
-        const updateResponse = await updateGlobalTicketData({
+        const updateGlobalResponse = await updateGlobalTicketData({
           ticket: {
             nextToQueue: this.ticketData.nextToQueue,
             lastNumber: this.ticketData.currentNumber,
@@ -141,10 +143,10 @@ export default {
             currentUser: this.nextTicketData.name,
           },
         });
-        if (updateResponse.status != 200) return useToast().error("Ocorreu um erro");
+        if (updateGlobalResponse.status != 200) return useToast().error("Ocorreu um erro");
 
-        const deleteResponse = await deleteTicket(this.nextTicketData._id);
-        if (deleteResponse.status != 200) return useToast().error("Ocorreu um erro");
+        const updateTicketResponse = await updateTicketCalled(this.nextTicketData._id);
+        if (updateTicketResponse.status != 200) return useToast().error("Ocorreu um erro");
 
         await socket.emit("signalUpdateValues");
         await socket.emit("signalUpdateMonitor");

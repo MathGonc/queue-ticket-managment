@@ -12,23 +12,9 @@ export async function loadTicketsInQueue() {
   }
 }
 
-export async function loadAllTickets() {
-  try {
-    const response = await axios.get(`${config.url_server}/loadAllTickets`);
-    console.log(response.data.config);
-    return response.data.config;
-  } catch (error) {
-    console.error("Erro ao carregar as configurações do monitor:", error);
-    throw error;
-  }
-}
-
 export async function insertTicket(updatedData) {
   try {
-    const response = await axios.post(
-      `${config.url_server}/insertTicket`,
-      updatedData
-    );
+    const response = await axios.post(`${config.url_server}/insertTicket`, updatedData);
     console.log(response);
     return response;
   } catch (error) {
@@ -37,19 +23,20 @@ export async function insertTicket(updatedData) {
   }
 }
 
-export async function updateTicketCalled(updatedData) {
+export async function updateTicketCalled(ticketID) {
   try {
-    axios.put(`${config.url_server}/updateTicket`, updatedData);
+    const response = axios.put(`${config.url_server}/updateTicketCalled/${ticketID}`);
+    console.log("🚀 ~ file: ticketController.js:41 ~ updateTicketCalled ~ response:", response);
+    return response;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
 export async function deleteTicket(ticketID) {
   try {
-    const response = axios.delete(
-      `${config.url_server}/deleteTicket/${ticketID}`
-    );
+    const response = axios.delete(`${config.url_server}/deleteTicket/${ticketID}`);
     return response;
   } catch (error) {
     console.error(error);

@@ -10,12 +10,15 @@
 - [x] modo scroll quando a sidebar ultrapassar o limite da pagina
 - [x] Ao ler que está na pagina /monitor, ocultar nome de usuario
 - [ ] Remover algumas solicitações para o banco de dados, pois já existe detecção de eventos para caso algo seja modificado
-- [ ] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
-- [ ] Lista de tickets já atendidos
+- [ ] Campo "atendido por" e "triagem por" nos tickets
+- [ ] Atributo "submit" na triagem para adicionar com a tecla enter
+- [ ] Função de repetir a chamada do ultimo ticket, salvar em localstorage
 - [ ] Carregar mesa do atendente no login e colocar no localstorage
+- [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
+- [x] Lista de tickets já atendidos
 - [ ] callTicketByName in options
-- [ ] Opção de resetar as senhas todo dia
-- [ ] Zerar o painel (ultima e penultima senha) ao resetar as senhas do dia
+- [ ] Botão de zerar as senhas exibidas no painel
+- [ ] Criar a conta dos usuarios para utilizar na segunda-feira
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:

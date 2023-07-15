@@ -13,15 +13,6 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
-      path: "/",
-      name: "index",
-      component: index,
-      meta: {
-        auth: true,
-        role: 1,
-      },
-    },
-    {
       path: "/login",
       name: "login",
       component: login,
@@ -30,42 +21,39 @@ const router = createRouter({
       path: "/monitor",
       name: "monitor",
       component: monitor,
-      meta: {
-        auth: true,
-        role: 1,
-      },
+      meta: { auth: true, role: 1 },
     },
+
     {
-      path: "/admin",
-      name: "admin",
+      path: "/",
+      name: "",
       component: sidebar,
-      meta: {
-        auth: true,
-      },
+      preserveState: true,
+      meta: { auth: true },
       children: [
+        {
+          path: "",
+          name: "index",
+          component: index,
+          meta: { role: 1 },
+        },
         {
           path: "sorting",
           name: "sorting",
           component: sorting,
-          meta: {
-            role: 2,
-          },
+          meta: { role: 2 },
         },
         {
           path: "service",
           name: "service",
           component: service,
-          meta: {
-            role: 2,
-          },
+          meta: { role: 2 },
         },
         {
           path: "config",
           name: "config",
           component: config,
-          meta: {
-            role: 3,
-          },
+          meta: { role: 3 },
         },
       ],
     },

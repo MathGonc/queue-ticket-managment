@@ -5,12 +5,9 @@ const TicketModel = require("./models/ticket");
 router.get("/loadTicketsInQueue", async (req, res) => {
   try {
     const ticket = await TicketModel.find({
-      $or: [
-        { preferential: true, status: 1 },
-        { preferential: false, status: 1 },
-      ],
+      $or: [{ preferential: true }, { preferential: false }],
     })
-      .sort({ preferential: -1, dateQueue: 1 })
+      .sort({ status: 1, preferential: -1, dateServiced: 1, dateQueue: 1 })
       .limit(50);
 
     return res.status(200).json({ ticket });
@@ -32,12 +29,17 @@ router.post("/insertTicket", async (req, res) => {
   }
 });
 
-router.put("/updateTicket", async (req, res) => {
+router.put("/updateTicketCalled/:id", async (req, res) => {
   try {
-    res.sendStatus(200);
+    const _id = req.params.id;
+    console.log("🚀 ~ file: ticketRoutes.js:54 ~ router.put ~ _id:", _id);
+    response = await TicketModel.findByIdAndUpdate(_id, { status: 2, dateServiced: Date() });
+    console.log("🚀 ~ file: ticketRoutes.js:56 ~ router.put ~ response:", response);
+
+    return res.status(200).json({});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500);
   }
 });
 

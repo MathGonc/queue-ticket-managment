@@ -3,43 +3,66 @@
     <div class="container-fluid">
       <div class="row flex-nowrap">
         <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
-          <div class="px-3 pt-2">
+          <div class="px-3 pt-2" v-if="this.$route.name != 'index'">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
                 <img src="../assets/arrow-left.svg" /> Voltar
               </button>
             </router-link>
+            <hr class="separator" />
           </div>
-
-          <span class="fs-5 d-none d-sm-inline text-white">
-            <hr />
-            <h5>Próximos atendimentos:</h5>
-          </span>
 
           <div class="sidebar-list d-0 px-3 pt-1 text-white">
             <ul class="nav flex-column mb-0">
-              <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-                <div class="row">
-                  <div class="col-auto px-0">
-                    <button
-                      @click="handleDeleteTicket(ticket.ticketID)"
-                      type="button"
-                      class="btn btn-danger btn-sm">
-                      X
-                    </button>
+              <div v-if="ticketStatus.filter((status) => status === 1).length">
+                <span class="fs-5 d-none d-sm-inline text-white">
+                  <h5 style="text-align: center">Próximos atendimentos:</h5>
+                </span>
+                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                  <div class="row" v-if="ticket.ticketStatus == 1">
+                    <div class="col-auto px-0 py-1">
+                      <button
+                        @click="handleDeleteTicket(ticket.ticketID)"
+                        type="button"
+                        class="btn btn-danger btn-sm">
+                        <img src="../assets/trash.svg" />
+                      </button>
+                    </div>
+                    <div class="col-auto align-middle px-2">
+                      <span>
+                        {{ ticket.ticketNumber }} - {{ ticket.ticketName
+                        }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                      </span>
+                      <br />
+                      ({{ ticket.ticketType }})
+                      <br />
+                      {{ convertDate(new Date(ticket.ticketDateQueue)) }}
+                    </div>
+                    <hr class="separator" />
                   </div>
-                  <div class="col-auto align-middle px-2">
-                    <span>
-                      {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                      }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
-                    </span>
-                    <br />
-                    ({{ ticket.ticketType }})
+                </li>
+              </div>
+              <br />
+              <div v-if="ticketStatus.filter((status) => status === 2).length">
+                <span class="fs-5 d-none d-sm-inline text-white">
+                  <h5 style="text-align: center">Atendidos:</h5>
+                </span>
+                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                  <div class="row" v-if="ticket.ticketStatus == 2">
+                    <div class="col-auto align-middle px-2">
+                      <span>
+                        {{ ticket.ticketNumber }} - {{ ticket.ticketName
+                        }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                      </span>
+                      <br />
+                      ({{ ticket.ticketType }})
+                      <br />
+                      {{ convertDate(new Date(ticket.ticketDateServiced)) }}
+                    </div>
+                    <hr class="separator" />
                   </div>
-                </div>
-
-                <hr />
-              </li>
+                </li>
+              </div>
             </ul>
           </div>
         </div>
@@ -65,6 +88,8 @@ export default defineComponent({
       ticketType: [],
       ticketPreferential: [],
       ticketName: [],
+      ticketDateQueue: [],
+      ticketDateServiced: [],
     };
   },
   async mounted() {
@@ -82,13 +107,25 @@ export default defineComponent({
         ticketType: this.ticketType[index],
         ticketPreferential: this.ticketPreferential[index],
         ticketName: this.ticketName[index],
+        ticketDateQueue: this.ticketDateQueue[index],
+        ticketDateServiced: this.ticketDateServiced[index],
       }));
     },
   },
   methods: {
+    convertDate(date) {
+      const formatedDate = `${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString(
+        "pt-BR",
+        {
+          hour12: false,
+        }
+      )}`.slice(0, 19);
+      return formatedDate;
+    },
     async handleLoadTicketsInQueue() {
       await loadTicketsInQueue().then((response) => {
         const queueData = response.data.ticket;
+        console.log(queueData);
 
         this.ticketID = [];
         this.ticketNumber = [];
@@ -96,6 +133,8 @@ export default defineComponent({
         this.ticketType = [];
         this.ticketPreferential = [];
         this.ticketName = [];
+        this.ticketDateQueue = [];
+        this.ticketDateServiced = [];
 
         for (let i = 0; i < queueData.length; i++) {
           this.ticketID.push(queueData[i]._id);
@@ -104,6 +143,8 @@ export default defineComponent({
           this.ticketType.push(queueData[i].type);
           this.ticketPreferential.push(queueData[i].preferential);
           this.ticketName.push(queueData[i].name);
+          this.ticketDateQueue.push(queueData[i].dateQueue);
+          this.ticketDateServiced.push(queueData[i].dateServiced);
         }
       });
     },
@@ -128,4 +169,11 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style>
+hr.separator {
+  border-top: 1px solid rgb(226, 226, 226);
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 0px;
+}
+</style>
