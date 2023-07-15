@@ -4,7 +4,7 @@ const TicketModel = require("./models/ticket");
 
 router.get("/loadTicketsInQueue", async (req, res) => {
   try {
-    const tickets = await TicketModel.find({
+    const ticket = await TicketModel.find({
       $or: [
         { preferential: true, status: 1 },
         { preferential: false, status: 1 },
@@ -13,7 +13,7 @@ router.get("/loadTicketsInQueue", async (req, res) => {
       .sort({ preferential: -1, dateQueue: 1 })
       .limit(50);
 
-    return res.status(200).json({ tickets });
+    return res.status(200).json({ ticket });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

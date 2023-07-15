@@ -4,10 +4,16 @@
 
 ### To do:
 
-- [ ] Listar as senhas carregadas
-- [ ] dbUpdateTicket(status)
-- [ ] dbDeleteTicket(ticketid)
-- [ ] Carregar mesa do atendente no login
+- [x] Listar as senhas carregadas
+- [x] dbUpdateTicket(status)
+- [x] dbDeleteTicket(ticketid)
+- [x] modo scroll quando a sidebar ultrapassar o limite da pagina
+- [x] Ao ler que está na pagina /monitor, ocultar nome de usuario
+- [ ] Remover algumas solicitações para o banco de dados, pois já existe detecção de eventos para caso algo seja modificado
+- [ ] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
+- [ ] Lista de tickets já atendidos
+- [ ] Carregar mesa do atendente no login e colocar no localstorage
+- [ ] callTicketByName in options
 - [ ] Opção de resetar as senhas todo dia
 - [ ] Zerar o painel (ultima e penultima senha) ao resetar as senhas do dia
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
@@ -62,7 +68,7 @@
 - [x] MongoDB: Obter configurações de monitor ao entrar em monitor.vue
 - [x] Organizar solicitações para o servidor nas middlewares e controllers
 - [x] dbInsertTicket
-- [x] currentTicketRegistred, currentTicketCalled & lastTicketCalled
+- [x] nextToQueue, currentTicketCalled & lastTicketCalled
 - [x] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
 - [x] dbLoadTicketsInQueue
 

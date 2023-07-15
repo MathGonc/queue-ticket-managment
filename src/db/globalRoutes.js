@@ -8,16 +8,11 @@ router.post("/saveConfigsDB", async (req, res) => {
 
     const config = await GlobalModel.findOne();
 
-    config
-      ? (config.set(updatedData), await config.save())
-      : await GlobalModel.create(updatedData);
+    config ? (config.set(updatedData), await config.save()) : await GlobalModel.create(updatedData);
 
     res.sendStatus(200);
   } catch (error) {
-    console.error(
-      "Erro ao salvar as configurações no banco de dados MongoDB:",
-      error
-    );
+    console.error("Erro ao salvar as configurações no banco de dados MongoDB:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -31,31 +26,23 @@ router.get("/getConfigsDB", async (req, res) => {
       res.status(200).json({ config });
     }
   } catch (error) {
-    console.error(
-      "Erro ao obter as configurações do banco de dados MongoDB:",
-      error
-    );
+    console.error("Erro ao obter as configurações do banco de dados MongoDB:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 router.get("/getGlobalTicketData", async (req, res) => {
   try {
-    const response = await GlobalModel.findOne().select(
-      "currentTicketRegistred currentTicketCalled lastTicketCalled"
-    );
+    const response = await GlobalModel.findOne().select("ticket");
+    console.log("🚀 ~ file: globalRoutes.js:37 ~ router.get ~ req.params:", req.params);
+    console.log("🚀 ~ file: globalRoutes.js:37 ~ router.get ~ response:", response);
     if (response) {
       res.status(200).json({
-        currentTicketRegistred: response.currentTicketRegistred,
-        currentTicketCalled: response.currentTicketCalled,
-        lastTicketCalled: response.lastTicketCalled,
+        ticket: response.ticket,
       });
     }
   } catch (error) {
-    console.error(
-      "Erro ao obter as configurações do banco de dados MongoDB:",
-      error
-    );
+    console.error("Erro ao obter as configurações do banco de dados MongoDB:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -63,14 +50,10 @@ router.get("/getGlobalTicketData", async (req, res) => {
 router.put("/updateGlobalTicketData", async (req, res) => {
   try {
     const data = req.body;
+    console.log("🚀 ~ file: globalRoutes.js:52 ~ router.put ~ req.body:", req.body);
+    const config = await GlobalModel.findOneAndUpdate({}, { $set: data }, { new: true });
 
-    const config = await GlobalModel.findOne();
-
-    if (config) {
-      config.set(data);
-      await config.save();
-      console.log(data);
-    }
+    config ? res.status(200).json({}) : res.status(500).json({});
   } catch (error) {
     console.error(error);
     res.status(500).json({});

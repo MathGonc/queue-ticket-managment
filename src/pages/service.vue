@@ -7,8 +7,9 @@
         <div class="container w-50 p-3">
           <div class="row">
             <div class="col">
-              <h5 v-if="currentTicket != -1">
-                Senha atual: {{ currentTicket }} ({{ currentUser }}) (Guichê: {{ currentTable }})
+              <h5 v-if="ticketData.currentNumber != -1">
+                Senha atual: {{ ticketData.currentNumber }} ({{ ticketData.currentUser }}) (Guichê:
+                {{ ticketData.currentTable }})
               </h5>
               <br />
               <div class="input-group mb-3 justify-content-center">
@@ -51,11 +52,13 @@
 </template>
 
 <script>
-import { computed } from "vue";
+//import { computed } from "vue";
 import { useToast } from "vue-toastification";
-import topbar from "../components/topbar";
 import { socket } from "@/socket";
-import { useGlobalStore } from "@/stores/global";
+import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
+import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+
+import topbar from "../components/topbar";
 
 export default {
   name: "page_admin",
@@ -68,32 +71,26 @@ export default {
       myTable: localStorage.getItem("myTable") || null,
       myCalledTicket: -1,
       buttonDisabled: false,
-    };
-  },
-  setup() {
-    const globalStore = useGlobalStore();
-    const currentTicket = computed(() => globalStore.currentTicket);
-    const currentTable = computed(() => globalStore.currentTable);
-    const currentUser = computed(() => globalStore.currentUser);
-    const lastTicket = computed(() => globalStore.lastTicket);
-    const lastTable = computed(() => globalStore.lastTable);
-    const ticketInQueue = computed(() => globalStore.ticketInQueue);
-    const ticketPreferential = computed(() => globalStore.ticketPreferential);
-    const ticketName = computed(() => globalStore.ticketName);
-    return {
-      globalStore,
-      currentTicket,
-      currentTable,
-      currentUser,
-      lastTicket,
-      lastTable,
-      ticketInQueue,
-      ticketPreferential,
-      ticketName,
+
+      ticketData: {
+        currentNumber: -1,
+        currentTable: -1,
+        currentUser: "",
+        lastNumber: -1,
+        lastTable: -1,
+        lastUser: "",
+      },
+      nextTicketData: {},
     };
   },
   mounted() {
+    this.handleGetGlobalTicketData();
+    this.getNextTicketToCall();
     this.transitionFade = true;
+
+    socket.on("receiveUpdateGlobal", () => {
+      this.handleGetGlobalTicketData();
+    });
   },
   watch: {
     myTable(newValue) {
@@ -101,63 +98,73 @@ export default {
     },
   },
   methods: {
-    callNextTicket() {
-      if (this.myTable < 1) return useToast().error("Selecione seu guichê");
-      let ticketIndex = -1;
-      for (let i = 0; i < this.ticketInQueue.length; i++) {
-        if (this.ticketInQueue[i] === 1 && this.ticketPreferential[i] === 1) {
-          ticketIndex = i;
-          break;
-        }
-      }
+    setButtonDisabled() {
+      if (process.env.VUE_APP_DEV == 1) return;
+      this.buttonDisabled = true;
+      setTimeout(() => {
+        this.buttonDisabled = false;
+      }, 5000);
+    },
+    async handleGetGlobalTicketData() {
+      await getGlobalTicketData().then((response) => {
+        this.ticketData = response.data.ticket;
+      });
+    },
+    async getNextTicketToCall() {
+      await loadTicketsInQueue().then((response) => {
+        response.data.ticket.length > 0
+          ? (this.nextTicketToCall = response.data.ticket[0].number)
+          : (this.nextTicketToCall = -1);
+      });
+    },
+    async callNextTicket() {
+      try {
+        if (this.myTable < 1) return useToast().error("Selecione seu guichê");
 
-      // Se não houver ticket preferencial, procurar por tickets não preferenciais (ticketInQueue == 1)
-      if (ticketIndex === -1) {
-        for (let i = 0; i < this.ticketInQueue.length; i++) {
-          if (this.ticketInQueue[i] === 1) {
-            ticketIndex = i;
-            break;
-          }
-        }
-      }
+        const loadResponse = await loadTicketsInQueue();
+        if (loadResponse.data.ticket.length < 1)
+          return useToast().error("Nenhuma senha cadastrada");
+        this.setButtonDisabled();
+        this.nextTicketData = loadResponse.data.ticket[0];
 
-      if (ticketIndex == -1) return useToast().error("Nenhuma senha cadastrada");
-      let data = {
-        newTicket: parseInt(ticketIndex),
-        newTable: parseInt(this.myTable),
-        newUser: this.ticketName[ticketIndex],
-      };
-      this.globalStore.updatedGlobalCurrentTicket(data);
+        const loadGlobalResponse = await this.handleGetGlobalTicketData();
+        console.log(loadGlobalResponse);
 
-      this.currentTicket = ticketIndex.toString().padStart(3, "0");
-      this.ticketInQueue[ticketIndex] = 2;
-      this.ticketPreferential[ticketIndex] = 0;
+        const updateResponse = await updateGlobalTicketData({
+          ticket: {
+            nextToQueue: this.ticketData.nextToQueue,
+            lastNumber: this.ticketData.currentNumber,
+            lastTable: this.ticketData.currentTable,
+            lastUser: this.ticketData.currentUser,
+            currentNumber: this.nextTicketData.number,
+            currentTable: this.myTable,
+            currentUser: this.nextTicketData.name,
+          },
+        });
+        if (updateResponse.status != 200) return useToast().error("Ocorreu um erro");
 
-      this.globalStore.updateVariablesInAPI();
+        const deleteResponse = await deleteTicket(this.nextTicketData._id);
+        if (deleteResponse.status != 200) return useToast().error("Ocorreu um erro");
 
-      socket.emit("signalUpdateValues");
-      socket.emit("signalUpdateMonitor");
-
-      this.myCalledTicket = parseInt(ticketIndex);
-      if (process.env.VUE_APP_DEV == 1) {
-        this.buttonDisabled = true;
-        setTimeout(() => {
-          this.buttonDisabled = false;
-        }, 10000);
+        await socket.emit("signalUpdateValues");
+        await socket.emit("signalUpdateMonitor");
+        this.myCalledTicket = parseInt(this.nextTicketToCall);
+      } catch (error) {
+        console.error(error);
       }
     },
     async callSameTicket() {
       if (this.myCalledTicket == -1)
         return useToast().error("Você não chamou nenhum ticket recentemente");
 
-      if (this.myCalledTicket != this.currentTicket) {
-        await this.globalStore.updatedGlobalCurrentTicket({
-          newTicket: parseInt(this.myCalledTicket),
-          newTable: parseInt(this.myTable),
-          newUser: this.ticketName[this.myCalledTicket],
-        });
-        await this.globalStore.updateVariablesInAPI();
-      }
+      // if (this.myCalledTicket != this.currentTicket) {
+      //   await this.globalStore.updatedGlobalCurrentTicket({
+      //     newTicket: parseInt(this.myCalledTicket),
+      //     newTable: parseInt(this.myTable),
+      //     newUser: this.ticketName[this.myCalledTicket],
+      //   });
+      //   await this.globalStore.updateVariablesAPI();
+      // }
 
       await socket.emit("signalUpdateValues");
       await socket.emit("signalUpdateMonitor");

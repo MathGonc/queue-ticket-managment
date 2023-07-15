@@ -8,16 +8,22 @@
             <div class="col">
               <Transition name="bounce">
                 <p v-if="transitionNewTicket" style="text-align: center">
-                  <span v-if="currentTicket != -1">
+                  <span v-if="ticketGlobalData.currentNumber != -1">
                     <h1 style="font-size: 72px">
-                      <b>Senha: {{ currentTicket }} (Guichê {{ currentTable }})</b>
+                      <b
+                        >Senha: {{ ticketGlobalData.currentNumber }} (Guichê
+                        {{ ticketGlobalData.currentTable }})</b
+                      >
                     </h1></span
                   >
                 </p>
               </Transition>
               <br />
-              <span v-if="lastTicket != -1">
-                <h3>Última Senha: {{ lastTicket }} (Guichê {{ lastTable }})</h3>
+              <span v-if="ticketGlobalData.lastNumber != -1">
+                <h3>
+                  Última Senha: {{ ticketGlobalData.lastNumber }} (Guichê
+                  {{ ticketGlobalData.lastTable }})
+                </h3>
               </span>
             </div>
           </div>
@@ -28,11 +34,10 @@
 </template>
 
 <script>
-import { computed } from "vue";
+// import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { useGlobalStore } from "@/stores/global";
-import { loadMonitorConfigs } from "../controllers/globalController";
+import { loadMonitorConfigs, getGlobalTicketData } from "../controllers/globalController";
 
 import topbar from "../components/topbar";
 
@@ -46,56 +51,58 @@ export default {
       transitionFade: true,
       transitionNewTicket: false,
       monitorConfig: {},
-    };
-  },
-  setup() {
-    const globalStore = useGlobalStore();
-    const currentTicket = computed(() => globalStore.currentTicket);
-    const currentTable = computed(() => globalStore.currentTable);
-    const currentUser = computed(() => globalStore.currentUser);
-    const lastTicket = computed(() => globalStore.lastTicket);
-    const lastTable = computed(() => globalStore.lastTable);
-    return {
-      globalStore,
-      currentTicket,
-      currentTable,
-      currentUser,
-      lastTicket,
-      lastTable,
+
+      ticketGlobalData: {
+        nextToQueue: -1,
+        currentNumber: -1,
+        currentTable: -1,
+        currentUser: "",
+        lastNumber: -1,
+        lastTable: -1,
+        lastUser: "",
+      },
     };
   },
   async mounted() {
     this.transitionFade = true;
     this.transitionNewTicket = true;
 
-    this.fetchMonitorConfigs();
+    await this.fetchMonitorConfigs();
+
     await socket.on("receiveUpdateMonitorConfigs", () => {
       this.fetchMonitorConfigs();
     });
 
     await socket.on("receiveUpdateMonitor", () => {
-      useToast().info("Nova senha!", { position: "bottom-center" });
-      this.transitionNewTicket = false;
+      getGlobalTicketData().then((response) => {
+        this.ticketGlobalData = response.data.ticket;
 
-      setTimeout(() => (this.transitionNewTicket = true), 1000);
-      if (this.monitorConfig.soundNotification == true) {
-        const audio = new Audio(require("@/assets/sound.wav"));
-        audio.play();
-      }
+        useToast().info("Nova senha!", { position: "bottom-center" });
+        this.transitionNewTicket = false;
 
-      setTimeout(() => {
-        if (this.monitorConfig.soundCallTicket == true) {
-          if (!("speechSynthesis" in window))
-            return console.log("o navegador não suporta a API Web Speech.");
-          speechSynthesis.cancel(); // Encerra todas as falas em andamento
-          var message = new SpeechSynthesisUtterance();
-          message.text =
-            "Senha numero " + this.currentTicket + ", dirija-se ao guichê " + this.currentTable;
-          console.log(this.currentTicket);
-          message.voice = speechSynthesis.getVoices()[this.monitorConfig.soundCallTicketVoice];
-          speechSynthesis.speak(message);
+        setTimeout(() => (this.transitionNewTicket = true), 1000);
+        if (this.monitorConfig.soundNotification == true) {
+          const audio = new Audio(require("@/assets/sound.wav"));
+          audio.play();
         }
-      }, 1000);
+
+        setTimeout(() => {
+          if (this.monitorConfig.soundCallTicket == true) {
+            if (!("speechSynthesis" in window))
+              return console.log("o navegador não suporta a API Web Speech.");
+            speechSynthesis.cancel(); // Encerra todas as falas em andamento
+            var message = new SpeechSynthesisUtterance();
+            message.text =
+              "Senha numero " +
+              this.ticketGlobalData.currentNumber +
+              ", dirija-se ao guichê " +
+              this.ticketGlobalData.currentTable;
+            console.log(this.ticketGlobalData.currentNumber);
+            message.voice = speechSynthesis.getVoices()[this.monitorConfig.soundCallTicketVoice];
+            speechSynthesis.speak(message);
+          }
+        }, 1000);
+      });
     });
   },
   async beforeUnmount() {

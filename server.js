@@ -97,7 +97,7 @@ app.get("/api", (req, res) => {
   });
 });
 
-app.put("/api/updateVariablesInAPI", (req, res) => {
+app.put("/api/updateVariablesAPI", (req, res) => {
   // Obtenha os valores atualizados das variáveis do corpo da solicitação
   let {
     currentTicket,

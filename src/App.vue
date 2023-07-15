@@ -1,25 +1,21 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <nav class="position-absolute top-0 end-0">
+    <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth"
         >{{ this.userData.username }} ({{ this.userRole }})
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">
-          Sair
-        </button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>
     <nav class="navbar fixed-bottom">
-      <span class="col pt-auto px-3"
-        >© 2023 - Desenvolvido por Matheus Gonçalves - Todos os direitos
-        reservados.</span
+      <span hidden class="col pt-auto px-3"
+        >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
       >
     </nav>
   </div>
 </template>
 
 <script>
-import { useGlobalStore } from "@/stores/global";
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
 import { useLocalStorage } from "@vueuse/core";
@@ -29,11 +25,20 @@ export default {
   data() {
     return {
       userRole: 0,
+      showInterface: true,
     };
+  },
+  watch: {
+    $route() {
+      this.$route.name == "monitor"
+        ? (this.showInterface = false)
+        : this.showInterface == false
+        ? (this.showInterface = true)
+        : false;
+    },
   },
   setup() {
     const auth = useAuth();
-
     const userData = useLocalStorage("userData", { username: "" });
     return {
       userData,
@@ -45,11 +50,11 @@ export default {
     this.transitionFade = true;
     await socket.connect();
 
-    const globalStore = useGlobalStore();
-    globalStore.getGlobalVariablesAPI();
-    socket.on("receiveUpdateGlobal", () => {
-      globalStore.getGlobalVariablesAPI();
-    });
+    // const globalStore = useGlobalStore();
+    // globalStore.getGlobalVariablesAPI();
+    // socket.on("receiveUpdateGlobal", () => {
+    //   globalStore.getGlobalVariablesAPI();
+    // });
 
     if (this.auth.isAuth) {
       this.userRole = 0;
@@ -77,11 +82,7 @@ body {
   width: 100%;
   background-color: #ffffff;
   opacity: 1;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -96,6 +97,8 @@ body {
 .sidebar {
   text-align: center;
   background: #464646;
+  overflow-y: auto;
+  max-height: 500px;
 }
 .sidebar .sidebar-list {
   text-align: left;

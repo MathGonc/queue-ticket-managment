@@ -23,10 +23,7 @@ export async function saveMonitorConfigs(updatedData) {
 
 export async function getGlobalTicketData() {
   try {
-    const response = await axios.get(
-      `${config.url_server}/getGlobalTicketData`
-    );
-    console.log(response);
+    const response = await axios.get(`${config.url_server}/getGlobalTicketData`);
     return response;
   } catch (error) {
     console.error("Erro ao carregar as configurações do monitor:", error);
@@ -36,10 +33,8 @@ export async function getGlobalTicketData() {
 
 export async function updateGlobalTicketData(data) {
   try {
-    const response = await axios.put(
-      `${config.url_server}/updateGlobalTicketData`,
-      data
-    );
+    const response = await axios.put(`${config.url_server}/updateGlobalTicketData`, data);
+    console.log(data);
     return response;
   } catch (error) {
     console.error(error);

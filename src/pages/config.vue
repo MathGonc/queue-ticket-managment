@@ -159,7 +159,6 @@
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { useGlobalStore } from "@/stores/global";
 import { useAuth } from "@/stores/auth.js";
 import { loadMonitorConfigs, saveMonitorConfigs } from "../controllers/globalController";
 
@@ -171,7 +170,7 @@ export default defineComponent({
     topbar,
   },
   setup() {
-    const globalStore = useGlobalStore();
+    // const globalStore = useGlobalStore();
 
     const auth = useAuth();
     function handleRegister() {
@@ -195,7 +194,7 @@ export default defineComponent({
     }
 
     return {
-      globalStore,
+      // globalStore,
       handleRegister,
     };
   },
@@ -216,7 +215,7 @@ export default defineComponent({
   async mounted() {
     this.transitionFade = true;
 
-    await this.globalStore.getGlobalVariablesAPI().then(() => {});
+    // await this.globalStore.getGlobalVariablesAPI().then(() => {});
     await loadMonitorConfigs().then((response) => {
       this.monitorConfig = response;
     });
@@ -229,8 +228,8 @@ export default defineComponent({
       }, 10000);
     },
     resetAllTickets() {
-      this.globalStore.resetStoreAllTickets();
-      this.globalStore.updateVariablesInAPI();
+      // this.globalStore.resetStoreAllTickets();
+      // this.globalStore.updateVariablesAPI();
       socket.emit("signalUpdateValues");
       useToast().success("Senhas resetadas");
       this.setButtonDisabled();
