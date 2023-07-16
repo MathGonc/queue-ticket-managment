@@ -2,37 +2,15 @@ const mongoose = require("mongoose");
 
 const TicketSchema = new mongoose.Schema(
   {
-    number: {
-      type: Number,
-      required: true,
-    },
-    status: {
-      type: Number,
-      required: true,
-    },
-    preferential: {
-      type: Boolean,
-      required: true,
-    },
-    name: {
-      type: String,
-      require: true,
-    },
-    type: {
-      type: String,
-      require: true,
-    },
-    servicedBy: {
-      type: String,
-    },
-    dateQueue: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-    dateServiced: {
-      type: Date,
-    },
+    number: { type: Number, required: true },
+    status: { type: Number, required: true },
+    preferential: { type: Boolean, required: true },
+    name: { type: String, require: true },
+    type: { type: String, require: true },
+    queuedBy: { type: String, require: true },
+    dateQueue: { type: Date, required: true },
+    servicedBy: { type: String },
+    dateServiced: { type: Date },
   },
   { versionKey: false }
 );

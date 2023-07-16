@@ -23,10 +23,11 @@ export async function insertTicket(updatedData) {
   }
 }
 
-export async function updateTicketCalled(ticketID) {
+export async function updateTicketCalled(ticketID, data) {
   try {
-    const response = axios.put(`${config.url_server}/updateTicketCalled/${ticketID}`);
-    console.log("🚀 ~ file: ticketController.js:41 ~ updateTicketCalled ~ response:", response);
+    const response = axios.put(`${config.url_server}/updateTicketCalled/${ticketID}`, data);
+
+    console.log("🚀 ~ file: ticketController.js:30 ~ updateTicketCalled ~ data:", data);
     return response;
   } catch (error) {
     console.error(error);

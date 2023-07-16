@@ -2,8 +2,9 @@
   <div id="app">
     <router-view></router-view>
     <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
-      <template v-if="auth.isAuth"
-        >{{ this.userData.username }} ({{ this.userRole }})
+      <template v-if="auth.isAuth">
+        <img src="./assets/person-fill.svg" />
+        {{ this.userData.username }}
         <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>

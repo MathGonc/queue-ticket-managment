@@ -9,14 +9,12 @@
 - [x] dbDeleteTicket(ticketid)
 - [x] modo scroll quando a sidebar ultrapassar o limite da pagina
 - [x] Ao ler que está na pagina /monitor, ocultar nome de usuario
-- [ ] Remover algumas solicitações para o banco de dados, pois já existe detecção de eventos para caso algo seja modificado
-- [ ] Campo "atendido por" e "triagem por" nos tickets
-- [ ] Atributo "submit" na triagem para adicionar com a tecla enter
-- [ ] Função de repetir a chamada do ultimo ticket, salvar em localstorage
-- [ ] Carregar mesa do atendente no login e colocar no localstorage
+- [x] Campo "atendido por" e "triagem por" nos tickets
+- [x] Atributo "submit" na triagem para adicionar com a tecla enter
+- [x] Função de repetir a chamada do ultimo ticket, salvar em localstorage
 - [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
 - [x] Lista de tickets já atendidos
-- [ ] callTicketByName in options
+- [x] callTicketByName in service page
 - [ ] Botão de zerar as senhas exibidas no painel
 - [ ] Criar a conta dos usuarios para utilizar na segunda-feira
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)

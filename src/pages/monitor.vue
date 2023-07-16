@@ -9,20 +9,22 @@
               <Transition name="bounce">
                 <p v-if="transitionNewTicket" style="text-align: center">
                   <span v-if="ticketGlobalData.currentNumber != -1">
-                    <h1 style="font-size: 72px">
-                      <b
-                        >Senha: {{ ticketGlobalData.currentNumber }} (Guichê
-                        {{ ticketGlobalData.currentTable }})</b
-                      >
+                    <h1 style="font-size: 48px">
+                      <b>
+                        Senha: {{ ticketGlobalData.currentNumber }}
+                        <br />
+                        {{ ticketGlobalData.currentUser }}
+                        <br />
+                        (Guichê {{ ticketGlobalData.currentTable }})
+                      </b>
                     </h1></span
                   >
                 </p>
               </Transition>
-              <br />
               <span v-if="ticketGlobalData.lastNumber != -1">
                 <h3>
-                  Última Senha: {{ ticketGlobalData.lastNumber }} (Guichê
-                  {{ ticketGlobalData.lastTable }})
+                  Última Senha: {{ ticketGlobalData.lastNumber }} -
+                  {{ ticketGlobalData.lastUser }} (Guichê {{ ticketGlobalData.lastTable }})
                 </h3>
               </span>
             </div>
@@ -69,11 +71,15 @@ export default {
 
     await this.fetchMonitorConfigs();
 
+    await getGlobalTicketData().then((responseTicketData) => {
+      this.ticketGlobalData = responseTicketData.data.ticket;
+    });
+
     await socket.on("receiveUpdateMonitorConfigs", () => {
       this.fetchMonitorConfigs();
     });
 
-    await socket.on("receiveUpdateMonitor", () => {
+    await socket.on("receiveUpdateMonitor", (callTicketByName) => {
       getGlobalTicketData().then((response) => {
         this.ticketGlobalData = response.data.ticket;
 
@@ -92,12 +98,17 @@ export default {
               return console.log("o navegador não suporta a API Web Speech.");
             speechSynthesis.cancel(); // Encerra todas as falas em andamento
             var message = new SpeechSynthesisUtterance();
-            message.text =
-              "Senha numero " +
-              this.ticketGlobalData.currentNumber +
-              ", dirija-se ao guichê " +
-              this.ticketGlobalData.currentTable;
-            console.log(this.ticketGlobalData.currentNumber);
+            callTicketByName
+              ? (message.text =
+                  this.ticketGlobalData.currentUser +
+                  ", dirija-se ao guichê " +
+                  this.ticketGlobalData.currentTable)
+              : (message.text =
+                  "Senha numero " +
+                  this.ticketGlobalData.currentNumber +
+                  ", dirija-se ao guichê " +
+                  this.ticketGlobalData.currentTable);
+
             message.voice = speechSynthesis.getVoices()[this.monitorConfig.soundCallTicketVoice];
             speechSynthesis.speak(message);
           }

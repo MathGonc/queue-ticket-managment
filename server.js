@@ -35,8 +35,8 @@ io.on("connection", (socket) => {
     io.emit("receiveUpdateGlobal");
   });
 
-  socket.on("signalUpdateMonitor", () => {
-    io.emit("receiveUpdateMonitor");
+  socket.on("signalUpdateMonitor", (callTicketByName) => {
+    io.emit("receiveUpdateMonitor", callTicketByName);
   });
 
   socket.on("signalUpdateMonitorConfigs", () => {

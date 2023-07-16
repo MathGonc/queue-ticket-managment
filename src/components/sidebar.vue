@@ -16,7 +16,7 @@
             <ul class="nav flex-column mb-0">
               <div v-if="ticketStatus.filter((status) => status === 1).length">
                 <span class="fs-5 d-none d-sm-inline text-white">
-                  <h5 style="text-align: center">Próximos atendimentos:</h5>
+                  <h5 style="text-align: center"><img src="../assets/icon_queued.svg" /> Fila:</h5>
                 </span>
                 <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
                   <div class="row" v-if="ticket.ticketStatus == 1">
@@ -42,22 +42,35 @@
                   </div>
                 </li>
               </div>
+
               <br />
+
               <div v-if="ticketStatus.filter((status) => status === 2).length">
                 <span class="fs-5 d-none d-sm-inline text-white">
-                  <h5 style="text-align: center">Atendidos:</h5>
+                  <h5 style="text-align: center">
+                    <img src="../assets/icon_serviced.svg" /> Atendidos:
+                  </h5>
                 </span>
+
                 <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
                   <div class="row" v-if="ticket.ticketStatus == 2">
+                    <div hidden class="col-auto px-0 py-1">
+                      <button type="button" class="btn btn-info btn-sm">
+                        <img src="../assets/button_recall.svg" />
+                      </button>
+                    </div>
                     <div class="col-auto align-middle px-2">
                       <span>
                         {{ ticket.ticketNumber }} - {{ ticket.ticketName
                         }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
                       </span>
-                      <br />
-                      ({{ ticket.ticketType }})
-                      <br />
-                      {{ convertDate(new Date(ticket.ticketDateServiced)) }}
+                      <div class="col small">
+                        ({{ ticket.ticketType }})
+                        <br />
+                        por {{ ticket.ticketServicedBy }} ({{
+                          convertDate(new Date(ticket.ticketDateServiced))
+                        }})
+                      </div>
                     </div>
                     <hr class="separator" />
                   </div>
@@ -65,6 +78,7 @@
               </div>
             </ul>
           </div>
+          <span class="margin-bottom">&nbsp;</span>
         </div>
         <div class="col py-3"><router-view></router-view></div>
       </div>
@@ -90,6 +104,7 @@ export default defineComponent({
       ticketName: [],
       ticketDateQueue: [],
       ticketDateServiced: [],
+      ticketServicedBy: [],
     };
   },
   async mounted() {
@@ -109,6 +124,7 @@ export default defineComponent({
         ticketName: this.ticketName[index],
         ticketDateQueue: this.ticketDateQueue[index],
         ticketDateServiced: this.ticketDateServiced[index],
+        ticketServicedBy: this.ticketServicedBy[index],
       }));
     },
   },
@@ -135,6 +151,7 @@ export default defineComponent({
         this.ticketName = [];
         this.ticketDateQueue = [];
         this.ticketDateServiced = [];
+        this.ticketServicedBy = [];
 
         for (let i = 0; i < queueData.length; i++) {
           this.ticketID.push(queueData[i]._id);
@@ -145,6 +162,7 @@ export default defineComponent({
           this.ticketName.push(queueData[i].name);
           this.ticketDateQueue.push(queueData[i].dateQueue);
           this.ticketDateServiced.push(queueData[i].dateServiced);
+          this.ticketServicedBy.push(queueData[i].servicedBy);
         }
       });
     },
