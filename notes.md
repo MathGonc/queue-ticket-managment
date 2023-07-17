@@ -4,24 +4,14 @@
 
 ### To do:
 
-- [x] Listar as senhas carregadas
-- [x] dbUpdateTicket(status)
-- [x] dbDeleteTicket(ticketid)
-- [x] modo scroll quando a sidebar ultrapassar o limite da pagina
-- [x] Ao ler que está na pagina /monitor, ocultar nome de usuario
-- [x] Campo "atendido por" e "triagem por" nos tickets
-- [x] Atributo "submit" na triagem para adicionar com a tecla enter
-- [x] Função de repetir a chamada do ultimo ticket, salvar em localstorage
-- [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
-- [x] Lista de tickets já atendidos
-- [x] callTicketByName in service page
-- [x] Botão de zerar as senhas exibidas no painel
-- [x] Criar a conta dos usuarios para utilizar na segunda-feira
+- [ ] Remover localstorage ao fazer "logout"
+- [ ] Mensagem de erro ao errar senha
+- [ ] Criar "indices" das consultas realizadas nas funções para otimizar o processo
+- [ ] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:
 
-- [ ] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [ ] Logs para verificação de atendimento, do tipo (logs de triagem, logs de atendimento e relatorio de senhas atendidas em um dia especifico)
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical e Horizontal
@@ -73,6 +63,19 @@
 - [x] nextToQueue, currentTicketCalled & lastTicketCalled
 - [x] MongoDB: currentTicket mostrar o ultimo ticket registrado e chamado (ticketInQueue == 2) filtrando por horario
 - [x] dbLoadTicketsInQueue
+- [x] Listar as senhas carregadas
+- [x] dbUpdateTicket(status)
+- [x] dbDeleteTicket(ticketid)
+- [x] modo scroll quando a sidebar ultrapassar o limite da pagina
+- [x] Ao ler que está na pagina /monitor, ocultar nome de usuario
+- [x] Campo "atendido por" e "triagem por" nos tickets
+- [x] Atributo "submit" na triagem para adicionar com a tecla enter
+- [x] Função de repetir a chamada do ultimo ticket, salvar em localstorage
+- [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
+- [x] Lista de tickets já atendidos
+- [x] callTicketByName in service page
+- [x] Botão de zerar as senhas exibidas no painel
+- [x] Criar a conta dos usuarios para utilizar na segunda-feira
 
 ### Fix:
 

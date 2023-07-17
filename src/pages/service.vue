@@ -80,7 +80,7 @@ export default {
       callTicketByName: useLocalStorage("callTicketByName", true) || null,
       myTable: localStorage.getItem("myTable") || null,
       myCalledTicketData:
-        useLocalStorage("myCalledTicketData", { _id: "", name: "", number: -1 }) || null,
+        useLocalStorage("myCalledTicketData", { _id: "", name: "", number: 0 }) || null,
       buttonDisabled: false,
 
       globalTicketData: {
