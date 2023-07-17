@@ -9,7 +9,7 @@
       </template>
     </nav>
     <nav class="navbar fixed-bottom">
-      <span class="col pt-auto px-3"
+      <span hidden class="col pt-auto px-3"
         >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
       >
     </nav>
