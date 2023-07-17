@@ -1,8 +1,10 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import http from "@/services/http.js";
+import axios from "axios";
 import router from "../router";
 import { useUserStore } from "@/stores/user.js";
+import config from "../../config";
 
 export const useAuth = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token"));
@@ -60,22 +62,26 @@ export const useAuth = defineStore("auth", () => {
   }
 
   function clearToken() {
-    localStorage.removeItem("token");
+    localStorage.clear();
+    //localStorage.removeItem("token");
     token.value = null;
   }
 
   async function login(loginData) {
     try {
-      await http.post("/login", loginData).then((response) => {
-        const data = response.data;
-        setToken(data.token);
-        isAuth.value = true;
-        setUserData(data.user);
-        router.push({ name: "index" });
-        return response;
-      });
-    } catch (response) {
-      return response.status;
+      const response = await axios.post(
+        `${config.url_server}/login`,
+        loginData
+      );
+      const data = response.data;
+      setToken(data.token);
+      isAuth.value = true;
+      setUserData(data.user);
+      router.push({ name: "index" });
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 

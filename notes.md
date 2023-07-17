@@ -4,14 +4,13 @@
 
 ### To do:
 
-- [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
-- [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
-      0
-- [ ] Sidebar não preenche toda pagina em /config
-- [ ] Remover localstorage ao fazer "logout"
-- [ ] Mensagem de erro ao errar senha
-- [ ] Criar "indices" das consultas realizadas nas funções para otimizar o processo
-- [ ] Restringir nomes de usuarios para ter . no meio e limite de caracteres
+- [x] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
+- [x] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
+- [x] Sidebar não preenche toda pagina em /config
+- [x] Remover localstorage ao fazer "logout"
+- [x] Mensagem de erro ao errar senha
+- [x] Criar "indices" das consultas realizadas nas funções para otimizar o processo
+- [x] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:

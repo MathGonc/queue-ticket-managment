@@ -69,13 +69,13 @@ export default {
     const login = ref("");
     const password = ref("");
 
-    function handleLogin() {
-      const loginData = { login: login.value, password: password.value };
-      auth.login(loginData).then((response) => {
-        if (response == 401) {
-          useToast().error("Usuario ou senha incorreta");
-        }
-      });
+    async function handleLogin() {
+      try {
+        await auth.login({ login: login.value, password: password.value });
+      } catch (error) {
+        if (error.response.status == 401)
+          useToast().error("Conta não encontrada");
+      }
     }
 
     return {

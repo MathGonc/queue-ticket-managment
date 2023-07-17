@@ -15,9 +15,12 @@ const TicketSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-TicketSchema.index({ status: 1, dateQueue: -1 });
-
-TicketSchema.index({ status: 2, dateServiced: -1 });
+TicketSchema.index({
+  status: 1,
+  preferential: -1,
+  dateServiced: -1,
+  dateQueue: 1,
+});
 
 const TicketModel = mongoose.model("Ticket", TicketSchema);
 
