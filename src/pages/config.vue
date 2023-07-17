@@ -145,9 +145,9 @@
           <button
             type="button"
             class="btn btn-outline-danger"
-            @click="resetAllTickets"
+            @click="handleResetGlobalTicketData"
             :disabled="buttonDisabled">
-            Resetar senhas
+            Resetar painel de senhas
           </button>
         </div>
       </div>
@@ -160,7 +160,11 @@ import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useAuth } from "@/stores/auth.js";
-import { loadMonitorConfigs, saveMonitorConfigs } from "../controllers/globalController";
+import {
+  loadMonitorConfigs,
+  saveMonitorConfigs,
+  resetGlobalTicketData,
+} from "../controllers/globalController";
 
 import topbar from "../components/topbar";
 
@@ -181,7 +185,10 @@ export default defineComponent({
         role: this.register.role,
       };
       auth.register(userData).then((response) => {
-        this.register = 0;
+        this.register.username = "";
+        this.register.login = "";
+        this.register.pass = "";
+        this.register.role = 0;
         switch (response) {
           case 400:
             return useToast().error("Este usuario já existe");
@@ -227,13 +234,14 @@ export default defineComponent({
         this.buttonDisabled = false;
       }, 10000);
     },
-    resetAllTickets() {
-      // this.globalStore.resetStoreAllTickets();
-      // this.globalStore.updateVariablesAPI();
-      socket.emit("signalUpdateValues");
-      useToast().success("Senhas resetadas");
+    async handleResetGlobalTicketData() {
+      if (this.buttonDisabled) return;
       this.setButtonDisabled();
-      //useToast().error("Erro ao resetar as senhas");
+      await resetGlobalTicketData().then((response) => {
+        if (response.status != 200) return useToast().error("Erro ao resetar as senhas");
+        socket.emit("signalUpdateValues");
+        useToast().success("Senhas resetadas");
+      });
     },
     saveConfigs() {
       saveMonitorConfigs(this.monitorConfig)

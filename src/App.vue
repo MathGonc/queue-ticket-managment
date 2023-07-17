@@ -49,21 +49,13 @@ export default {
   computed: {},
   async mounted() {
     this.transitionFade = true;
-    await socket.connect();
-
-    // const globalStore = useGlobalStore();
-    // globalStore.getGlobalVariablesAPI();
-    // socket.on("receiveUpdateGlobal", () => {
-    //   globalStore.getGlobalVariablesAPI();
-    // });
+    socket.connect();
 
     if (this.auth.isAuth) {
       this.userRole = 0;
       await this.auth.checkPermission().then((data) => {
         this.userRole = data.role;
       });
-
-      await console.log(this.userRole);
     }
   },
   methods: {

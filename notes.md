@@ -15,12 +15,13 @@
 - [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
 - [x] Lista de tickets já atendidos
 - [x] callTicketByName in service page
-- [ ] Botão de zerar as senhas exibidas no painel
-- [ ] Criar a conta dos usuarios para utilizar na segunda-feira
+- [x] Botão de zerar as senhas exibidas no painel
+- [x] Criar a conta dos usuarios para utilizar na segunda-feira
 - [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ### Maybe:
 
+- [ ] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [ ] Logs para verificação de atendimento, do tipo (logs de triagem, logs de atendimento e relatorio de senhas atendidas em um dia especifico)
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical e Horizontal
@@ -80,6 +81,7 @@
 - [x] Quando chama a ultima senha que o atendente atendeu, acaba chamando a atual mesmo não sendo desse atendente
 - [x] Mensagem de erro ao logar
 - [x] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
+- [x] Quando havia "await" na função "socket.on" o monitor.vue não recebia as atualizações de configuração
 - [ ] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
 - [ ] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
 

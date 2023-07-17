@@ -8,7 +8,7 @@
             <div class="col">
               <Transition name="bounce">
                 <p v-if="transitionNewTicket" style="text-align: center">
-                  <span v-if="ticketGlobalData.currentNumber != -1">
+                  <span v-if="ticketGlobalData.currentNumber">
                     <h1 style="font-size: 48px">
                       <b>
                         Senha: {{ ticketGlobalData.currentNumber }}
@@ -21,7 +21,7 @@
                   >
                 </p>
               </Transition>
-              <span v-if="ticketGlobalData.lastNumber != -1">
+              <span v-if="ticketGlobalData.lastNumber">
                 <h3>
                   Última Senha: {{ ticketGlobalData.lastNumber }} -
                   {{ ticketGlobalData.lastUser }} (Guichê {{ ticketGlobalData.lastTable }})
@@ -75,11 +75,11 @@ export default {
       this.ticketGlobalData = responseTicketData.data.ticket;
     });
 
-    await socket.on("receiveUpdateMonitorConfigs", () => {
+    socket.on("receiveUpdateMonitorConfigs", () => {
       this.fetchMonitorConfigs();
     });
 
-    await socket.on("receiveUpdateMonitor", (callTicketByName) => {
+    socket.on("receiveUpdateMonitor", (callTicketByName) => {
       getGlobalTicketData().then((response) => {
         this.ticketGlobalData = response.data.ticket;
 

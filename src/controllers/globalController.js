@@ -41,3 +41,13 @@ export async function updateGlobalTicketData(data) {
     throw error;
   }
 }
+
+export async function resetGlobalTicketData() {
+  try {
+    const response = await axios.put(`${config.url_server}/resetGlobalTicketData`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

@@ -50,8 +50,33 @@ router.get("/getGlobalTicketData", async (req, res) => {
 router.put("/updateGlobalTicketData", async (req, res) => {
   try {
     const data = req.body;
-    console.log("🚀 ~ file: globalRoutes.js:52 ~ router.put ~ req.body:", req.body);
     const config = await GlobalModel.findOneAndUpdate({}, { $set: data }, { new: true });
+
+    config ? res.status(200).json({}) : res.status(500).json({});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({});
+  }
+});
+
+router.put("/resetGlobalTicketData", async (req, res) => {
+  try {
+    const ticketResetData = {
+      nextToQueue: 1,
+      currentNumber: 0,
+      currentTable: 0,
+      currentUser: "",
+      lastNumber: 0,
+      lastTable: 0,
+      lastUser: "",
+    };
+    console.log("🚀 ~ file: globalRoutes.js:73 ~ router.put ~ ticketResetData:", ticketResetData);
+    const config = await GlobalModel.findOneAndUpdate(
+      {},
+      { ticket: ticketResetData },
+      { new: true }
+    );
+    console.log("🚀 ~ file: globalRoutes.js:74 ~ router.put ~ config:", config);
 
     config ? res.status(200).json({}) : res.status(500).json({});
   } catch (error) {
