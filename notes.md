@@ -2,16 +2,12 @@
 
 ## **To do:**
 
-### To do:
+### To do: (DPU)
 
-- [x] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
-- [x] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
-- [x] Sidebar não preenche toda pagina em /config
-- [x] Remover localstorage ao fazer "logout"
-- [x] Mensagem de erro ao errar senha
-- [x] Criar "indices" das consultas realizadas nas funções para otimizar o processo
-- [x] Restringir nomes de usuarios para ter . no meio e limite de caracteres
-- [ ] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
+### To do: (Portfolio)
+
+- [ ] Logo personalizado
+- [ ] Mudar os tipos de atendimento na triagem para algo mais generico
 
 ### Maybe:
 
@@ -85,6 +81,14 @@
 - [x] Mensagem de erro ao logar
 - [x] Config.vue: runtime-core.esm-bundler.js:41 [Vue warn]: Failed to resolve component: topbar - If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
 - [x] Quando havia "await" na função "socket.on" o monitor.vue não recebia as atualizações de configuração
+- [x] Ao usar a triagem pelo celular, você cadastra uma senha, e ela só vai ao cadastrar a proxima... (cadastro aaaaaa, cadastro bbbbbb, aparece aaaaa)
+- [x] Ao chamar a senha pelo celular, a chamada é a anterior, parecido com o erro de cima...
+- [x] Sidebar não preenche toda pagina em /config
+- [x] Remover localstorage ao fazer "logout"
+- [x] Mensagem de erro ao errar senha
+- [x] Criar "indices" das consultas realizadas nas funções para otimizar o processo
+- [x] Restringir nomes de usuarios para ter . no meio e limite de caracteres
+- [x] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
 
 ## **Tricks:**
 

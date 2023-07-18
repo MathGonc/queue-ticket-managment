@@ -2,7 +2,9 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
+        <div
+          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
+        >
           <div class="px-3 pt-2" v-if="this.$route.name != 'index'">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
@@ -16,35 +18,68 @@
             <ul class="nav flex-column mb-0">
               <div v-if="ticketStatus.filter((status) => status === 1).length">
                 <span class="fs-5 d-none d-sm-inline text-white">
-                  <h5 style="text-align: center"><img src="../assets/icon_queued.svg" /> Fila:</h5>
+                  <h5 style="text-align: left">
+                    <img src="../assets/icon_queued.svg" /> Fila:
+                    <button
+                      @click="toggleCollapseMenuQueued()"
+                      type="button"
+                      class="btn btn-link btn-sm"
+                      style="float: right"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseQueued"
+                      :aria-expanded="this.collapseMenu.queued"
+                      aria-controls="#collapseQueued"
+                    >
+                      <img
+                        v-if="this.collapseMenu.queued"
+                        src="../assets/icon_arrow_left.svg"
+                      />
+                      <img
+                        v-if="!this.collapseMenu.queued"
+                        src="../assets/icon_arrow_down.svg"
+                      />
+                    </button>
+                  </h5>
                 </span>
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-                  <div class="row" v-if="ticket.ticketStatus == 1">
-                    <div class="col-auto px-0 py-1">
-                      <button
-                        @click="handleDeleteTicket(ticket.ticketID)"
-                        type="button"
-                        class="btn btn-danger btn-sm">
-                        <img src="../assets/trash.svg" />
-                      </button>
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
+                  <div class="collapse" id="collapseQueued">
+                    <div class="row" v-if="ticket.ticketStatus == 1">
+                      <div class="col-auto px-0 py-1">
+                        <button
+                          @click="handleDeleteTicket(ticket.ticketID)"
+                          type="button"
+                          class="btn btn-danger btn-sm"
+                        >
+                          <img src="../assets/trash.svg" />
+                        </button>
+                      </div>
+                      <div class="col-auto align-middle px-2">
+                        <span>
+                          {{ ticket.ticketNumber }} - {{ ticket.ticketName
+                          }}<span
+                            v-if="ticket.ticketPreferential"
+                            style="color: red"
+                            >&nbsp;(P)</span
+                          >
+                        </span>
+                        <br />
+                        ({{ ticket.ticketType }})
+                        <br />
+                        {{ convertDate(new Date(ticket.ticketDateQueue)) }}
+                      </div>
+                      <hr class="separator" />
                     </div>
-                    <div class="col-auto align-middle px-2">
-                      <span>
-                        {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                        }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
-                      </span>
-                      <br />
-                      ({{ ticket.ticketType }})
-                      <br />
-                      {{ convertDate(new Date(ticket.ticketDateQueue)) }}
-                    </div>
-                    <hr class="separator" />
                   </div>
                 </li>
               </div>
+            </ul>
+            <br />
 
-              <br />
-
+            <ul class="nav flex-column mb-0">
               <div v-if="ticketStatus.filter((status) => status === 2).length">
                 <span class="fs-5 d-none d-sm-inline text-white">
                   <h5 style="text-align: center">
@@ -52,7 +87,11 @@
                   </h5>
                 </span>
 
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
                   <div class="row" v-if="ticket.ticketStatus == 2">
                     <div hidden class="col-auto px-0 py-1">
                       <button type="button" class="btn btn-info btn-sm">
@@ -62,7 +101,11 @@
                     <div class="col-auto align-middle px-2">
                       <span>
                         {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                        }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                        }}<span
+                          v-if="ticket.ticketPreferential"
+                          style="color: red"
+                          >&nbsp;(P)</span
+                        >
                       </span>
                       <div class="col small">
                         ({{ ticket.ticketType }})
@@ -90,12 +133,20 @@
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+import { useLocalStorage } from "@vueuse/core";
+import {
+  loadTicketsInQueue,
+  deleteTicket,
+} from "../controllers/ticketController";
 
 export default defineComponent({
   name: "page_sidebar",
   data() {
     return {
+      collapseMenu: useLocalStorage("collapseMenu", {
+        queued: true,
+        serviced: true,
+      }),
       ticketID: [],
       ticketNumber: [],
       ticketStatus: [],
@@ -129,13 +180,18 @@ export default defineComponent({
     },
   },
   methods: {
+    toggleCollapseMenuQueued() {
+      console.log("123123213");
+      this.collapseMenu.queued
+        ? (this.collapseMenu.queued = false)
+        : (this.collapseMenu.queued = true);
+    },
     convertDate(date) {
-      const formatedDate = `${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString(
-        "pt-BR",
-        {
-          hour12: false,
-        }
-      )}`.slice(0, 19);
+      const formatedDate = `${date.toLocaleDateString(
+        "pt-BR"
+      )} às ${date.toLocaleTimeString("pt-BR", {
+        hour12: false,
+      })}`.slice(0, 19);
       return formatedDate;
     },
     async handleLoadTicketsInQueue() {
