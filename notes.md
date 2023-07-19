@@ -4,6 +4,12 @@
 
 ### To do: (DPU)
 
+- [ ] Collapse na lista de fila e atendidos
+- [ ] Exibir somente informações principais do atendimento na lista, deixar as adicionais em menu collapse
+- [ ] Organizar rotas e controller no "auth" e "user"
+- [ ] Colocar funções do mongodb dentro do modulo do mongodb
+- [ ] Colocar em modo de produção para ficar mais otimizado
+
 ### To do: (Portfolio)
 
 - [ ] Logo personalizado
