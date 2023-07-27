@@ -21,7 +21,8 @@
                   min="00"
                   max="99"
                   maxlength="2"
-                  v-model="myTable" />
+                  v-model="myTable"
+                />
               </div>
               <div class="form-check form-switch py-2">
                 <label class="form-check-label" for="flexSwitchCheckDefault">
@@ -29,7 +30,8 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="this.callTicketByName" />Chamar pelo nome</label
+                    v-model="this.callTicketByName"
+                  />Chamar pelo nome</label
                 >
               </div>
               <span class="px-1"
@@ -37,7 +39,8 @@
                   type="button"
                   @click="callNextTicket"
                   :disabled="buttonDisabled"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar Próxima Senha
                 </button></span
               >
@@ -47,7 +50,8 @@
                   type="button"
                   @click="callSameTicket"
                   :disabled="buttonDisabled || !myCalledTicketData.number"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar senha {{ myCalledTicketData.number }} novamente
                 </button></span
               >
@@ -64,8 +68,14 @@
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
-import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
-import { loadTicketsInQueue, updateTicketCalled } from "../controllers/ticketController";
+import {
+  getGlobalTicketData,
+  updateGlobalTicketData,
+} from "../controllers/globalController";
+import {
+  loadTicketsInQueue,
+  updateTicketCalled,
+} from "../controllers/ticketController";
 
 import topbar from "../components/topbar";
 
@@ -80,7 +90,11 @@ export default {
       callTicketByName: useLocalStorage("callTicketByName", true) || null,
       myTable: localStorage.getItem("myTable") || null,
       myCalledTicketData:
-        useLocalStorage("myCalledTicketData", { _id: "", name: "", number: 0 }) || null,
+        useLocalStorage("myCalledTicketData", {
+          _id: "",
+          name: "",
+          number: 0,
+        }) || null,
       buttonDisabled: false,
 
       globalTicketData: {
@@ -133,7 +147,8 @@ export default {
       if (this.myTable < 1) return useToast().error("Selecione seu guichê");
 
       const loadResponse = await loadTicketsInQueue();
-      if (loadResponse.data.ticket.length < 1) return useToast().error("Nenhuma senha cadastrada");
+      if (loadResponse.data.ticket.length < 1)
+        return useToast().error("Nenhuma senha cadastrada");
       if (loadResponse.data.ticket[0].status == 2)
         return useToast().error("Todas as senhas já foram atendidas");
       this.nextTicketData = loadResponse.data.ticket[0];
@@ -151,15 +166,20 @@ export default {
           lastUser: this.globalTicketData.currentUser,
         },
       });
-      if (updateGlobalResponse.status != 200) return useToast().error("Ocorreu um erro");
+      if (updateGlobalResponse.status != 200)
+        return useToast().error("Ocorreu um erro");
 
       this.nextTicketData.status = 2;
       this.nextTicketData.servicedBy = this.userData.username;
       this.nextTicketData.dateServiced = new Date();
-      const updateTicketResponse = await updateTicketCalled(this.nextTicketData._id, {
-        ...this.nextTicketData,
-      });
-      if (updateTicketResponse.status != 200) return useToast().error("Ocorreu um erro");
+      const updateTicketResponse = await updateTicketCalled(
+        this.nextTicketData._id,
+        {
+          ...this.nextTicketData,
+        }
+      );
+      if (updateTicketResponse.status != 200)
+        return useToast().error("Ocorreu um erro");
 
       await socket.emit("signalUpdateValues");
       await socket.emit("signalUpdateMonitor", this.callTicketByName);
@@ -174,7 +194,9 @@ export default {
 
       await this.setGlobalTicketData();
 
-      if (this.myCalledTicketData.number != this.globalTicketData.currentNumber) {
+      if (
+        this.myCalledTicketData.number != this.globalTicketData.currentNumber
+      ) {
         const updateGlobalResponse = await updateGlobalTicketData({
           ticket: {
             nextToQueue: this.globalTicketData.nextToQueue,
@@ -186,7 +208,8 @@ export default {
             lastUser: this.globalTicketData.currentUser,
           },
         });
-        if (updateGlobalResponse.status != 200) return useToast().error("Ocorreu um erro");
+        if (updateGlobalResponse.status != 200)
+          return useToast().error("Ocorreu um erro");
       }
 
       await socket.emit("signalUpdateValues");

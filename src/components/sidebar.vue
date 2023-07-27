@@ -2,7 +2,9 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
+        <div
+          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
+        >
           <div class="px-3 pt-2" v-if="this.$route.name != 'index'">
             <router-link :to="{ name: 'index' }">
               <button type="button" class="btn btn-primary btn-sm">
@@ -26,35 +28,52 @@
                       data-bs-toggle="collapse"
                       data-bs-target="#collapseQueued"
                       :aria-expanded="this.collapseMenu.queued"
-                      aria-controls="#collapseQueued">
-                      <img v-if="this.collapseMenu.queued" src="../assets/icon_arrow_left.svg" />
-                      <img v-if="!this.collapseMenu.queued" src="../assets/icon_arrow_down.svg" />
+                      aria-controls="#collapseQueued"
+                    >
+                      <img
+                        v-if="this.collapseMenu.queued"
+                        src="../assets/icon_arrow_left.svg"
+                      />
+                      <img
+                        v-if="!this.collapseMenu.queued"
+                        src="../assets/icon_arrow_down.svg"
+                      />
                     </button>
                   </h5>
                 </span>
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
                   <div
                     class="collapse"
                     :class="{ show: this.collapseMenu.queued }"
-                    id="collapseQueued">
+                    id="collapseQueued"
+                  >
                     <div class="row" v-if="ticket.ticketStatus == 1">
                       <div class="col-auto px-0 py-1">
                         <button
                           @click="handleDeleteTicket(ticket.ticketID)"
                           type="button"
-                          class="btn btn-danger btn-sm">
+                          class="btn btn-danger btn-sm"
+                        >
                           <img src="../assets/trash.svg" />
                         </button>
                       </div>
                       <div class="col-auto align-middle px-2">
                         <span>
                           {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                          }}<span v-if="ticket.ticketPreferential" style="color: red"
+                          }}<span
+                            v-if="ticket.ticketPreferential"
+                            style="color: red"
                             >&nbsp;(P)</span
                           >
                         </span>
                         <br />
                         ({{ ticket.ticketType }})
+                        <br />
+                        CPF: {{ ticket.ticketDocNumber }}
                         <br />
                         {{ convertDate(new Date(ticket.ticketDateQueue)) }}
                       </div>
@@ -74,7 +93,11 @@
                   </h5>
                 </span>
 
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
                   <div class="row" v-if="ticket.ticketStatus == 2">
                     <div hidden class="col-auto px-0 py-1">
                       <button type="button" class="btn btn-info btn-sm">
@@ -84,10 +107,16 @@
                     <div class="col-auto align-middle px-2">
                       <span>
                         {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                        }}<span v-if="ticket.ticketPreferential" style="color: red">&nbsp;(P)</span>
+                        }}<span
+                          v-if="ticket.ticketPreferential"
+                          style="color: red"
+                          >&nbsp;(P)</span
+                        >
                       </span>
                       <div class="col small">
                         ({{ ticket.ticketType }})
+                        <br />
+                        CPF: {{ ticket.docNumber }}
                         <br />
                         por {{ ticket.ticketServicedBy }} ({{
                           convertDate(new Date(ticket.ticketDateServiced))
@@ -113,10 +142,16 @@ import { defineComponent, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
-import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+import {
+  loadTicketsInQueue,
+  deleteTicket,
+} from "../controllers/ticketController";
+
+import { vMaska } from "maska";
 
 export default defineComponent({
   name: "page_sidebar",
+  directives: { maska: vMaska },
   data() {
     return {
       collapseMenu: useLocalStorage("collapseMenu", {
@@ -129,6 +164,7 @@ export default defineComponent({
       ticketType: [],
       ticketPreferential: [],
       ticketName: [],
+      ticketDocNumber: [],
       ticketDateQueue: [],
       ticketDateServiced: [],
       ticketServicedBy: [],
@@ -149,6 +185,7 @@ export default defineComponent({
         ticketType: this.ticketType[index],
         ticketPreferential: this.ticketPreferential[index],
         ticketName: this.ticketName[index],
+        ticketDocNumber: this.ticketDocNumber[index],
         ticketDateQueue: this.ticketDateQueue[index],
         ticketDateServiced: this.ticketDateServiced[index],
         ticketServicedBy: this.ticketServicedBy[index],
@@ -156,19 +193,20 @@ export default defineComponent({
     },
   },
   methods: {
+    formatValue(value) {
+      return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    },
     toggleCollapseMenuQueued() {
-      console.log("123123213");
       this.collapseMenu.queued
         ? (this.collapseMenu.queued = false)
         : (this.collapseMenu.queued = true);
     },
     convertDate(date) {
-      const formatedDate = `${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString(
-        "pt-BR",
-        {
-          hour12: false,
-        }
-      )}`.slice(0, 19);
+      const formatedDate = `${date.toLocaleDateString(
+        "pt-BR"
+      )} às ${date.toLocaleTimeString("pt-BR", {
+        hour12: false,
+      })}`.slice(0, 19);
       return formatedDate;
     },
     async handleLoadTicketsInQueue() {
@@ -182,6 +220,7 @@ export default defineComponent({
         this.ticketType = [];
         this.ticketPreferential = [];
         this.ticketName = [];
+        this.ticketDocNumber = [];
         this.ticketDateQueue = [];
         this.ticketDateServiced = [];
         this.ticketServicedBy = [];
@@ -193,6 +232,7 @@ export default defineComponent({
           this.ticketType.push(queueData[i].type);
           this.ticketPreferential.push(queueData[i].preferential);
           this.ticketName.push(queueData[i].name);
+          this.ticketDocNumber.push(queueData[i].docNumber);
           this.ticketDateQueue.push(queueData[i].dateQueue);
           this.ticketDateServiced.push(queueData[i].dateServiced);
           this.ticketServicedBy.push(queueData[i].servicedBy);

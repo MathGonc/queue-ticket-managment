@@ -9,27 +9,32 @@
             <div class="col">
               <form @submit.prevent="handleRegisterTicket()">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
-                  <input
-                    type="text"
-                    class="form-control"
-                    aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm"
-                    v-model="inputTicket.name" />
-                </div>
-
-                <div class="input-group input-group-sm mb-3">
                   <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Documento de identificação:</span
+                    >Nome:</span
                   >
                   <input
                     type="text"
                     class="form-control"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
-                    maxlength="11"
-                    v-mask="'###.###.###-##'"
-                    v-model="docNumberMasked" />
+                    v-model="inputTicket.name"
+                  />
+                </div>
+
+                <div class="input-group input-group-sm mb-3">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >CPF:</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    maxlength="18"
+                    v-maska="inputTicket.docNumber"
+                    v-model="inputTicket.docNumber.masked"
+                    data-maska="###.###.###-##"
+                  />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
@@ -37,21 +42,26 @@
                     class="btn btn-secondary dropdown-toggle"
                     type="button"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                    aria-expanded="false"
+                  >
                     Tipo:
                   </button>
                   <ul class="dropdown-menu">
                     <li v-for="item in dropdownTicketTypes" :key="item.name">
-                      <a class="dropdown-item" href="#" @click="inputTicket.type = item.name">{{
-                        item.name
-                      }}</a>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        @click="inputTicket.type = item.name"
+                        >{{ item.name }}</a
+                      >
                     </li>
                   </ul>
                   <input
                     type="text"
                     class="form-control"
                     aria-label="Text input with dropdown button"
-                    v-model="inputTicket.type" />
+                    v-model="inputTicket.type"
+                  />
                 </div>
 
                 <div class="form-check form-switch">
@@ -60,11 +70,16 @@
                       class="form-check-input"
                       type="checkbox"
                       id="flexSwitchCheckDefault"
-                      v-model="inputTicket.preferential" />
+                      v-model="inputTicket.preferential"
+                    />
                     Preferencial</label
                   >
                 </div>
-                <button type="submit" class="btn btn-outline-primary" :disabled="buttonDisabled">
+                <button
+                  type="submit"
+                  class="btn btn-outline-primary"
+                  :disabled="buttonDisabled"
+                >
                   Cadastrar Senha {{ ticketGlobalData.nextToQueue }}
                 </button>
               </form>
@@ -82,7 +97,11 @@ import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
 import { insertTicket } from "../controllers/ticketController";
-import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
+import {
+  getGlobalTicketData,
+  updateGlobalTicketData,
+} from "../controllers/globalController";
+import { vMaska } from "maska";
 
 import topbar from "../components/topbar";
 
@@ -91,13 +110,17 @@ export default defineComponent({
   components: {
     topbar,
   },
+  directives: { maska: vMaska },
   data() {
     return {
       transitionFade: false,
       buttonDisabled: false,
       inputTicket: {
         name: "",
-        docNumber: "",
+        docNumber: {
+          masked: "",
+          unmasked: "",
+        },
         type: "",
         preferential: false,
       },
@@ -110,16 +133,6 @@ export default defineComponent({
         { name: "JUNTADA DE DOCUMENTOS" },
       ],
     };
-  },
-  computed: {
-    docNumberMasked: {
-      get() {
-        return this.formatValue(this.inputTicket.docNumber);
-      },
-      set(newValue) {
-        this.inputTicket.docNumber = this.unformatValue(newValue);
-      },
-    },
   },
   setup() {
     const userData = useLocalStorage("userData", { username: "" });
@@ -153,8 +166,12 @@ export default defineComponent({
       });
     },
     async handleRegisterTicket() {
-      if (this.inputTicket.name.length < 1) return useToast().error("Digite um nome");
-      if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
+      if (this.inputTicket.name.length < 1)
+        return useToast().error("Digite um nome");
+      if (!this.inputTicket.docNumber.masked.length)
+        return useToast().error("Digite um CPF");
+      if (this.inputTicket.type.length < 1)
+        return useToast().error("Digite ou selecione um tipo");
 
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
@@ -169,7 +186,7 @@ export default defineComponent({
         queuedBy: this.userData.username,
         preferential: this.inputTicket.preferential,
         name: this.inputTicket.name,
-        docNumber: this.inputTicket.docNumber,
+        docNumber: this.inputTicket.docNumber.unmasked,
         dateQueue: Date.now(),
       });
       if (insertResponse.status != 200)
@@ -178,6 +195,7 @@ export default defineComponent({
       this.nextTicketToQueue += 1;
 
       this.inputTicket.name = "";
+      this.inputTicket.docNumber.masked = "";
       this.inputTicket.type = "";
       this.inputTicket.preferential = false;
 

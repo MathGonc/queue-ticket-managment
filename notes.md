@@ -5,6 +5,7 @@
 ### To do: (DPU)
 
 - [ ] Campo CPF(docNumber) na triagem
+- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 - [ ] Somente administrador pode ver por quem foi atendido
 - [ ] Collapse na lista de fila e atendidos
 - [ ] Exibir somente informações principais do atendimento na lista, deixar as adicionais em menu collapse
