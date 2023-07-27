@@ -4,6 +4,8 @@
 
 ### To do: (DPU)
 
+- [ ] Campo CPF(docNumber) na triagem
+- [ ] Somente administrador pode ver por quem foi atendido
 - [ ] Collapse na lista de fila e atendidos
 - [ ] Exibir somente informações principais do atendimento na lista, deixar as adicionais em menu collapse
 - [ ] Organizar rotas e controller no "auth" e "user"

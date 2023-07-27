@@ -19,6 +19,20 @@
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >Documento de identificação:</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="Small"
+                    aria-describedby="inputGroup-sizing-sm"
+                    maxlength="11"
+                    v-mask="'###.###.###-##'"
+                    v-model="docNumberMasked" />
+                </div>
+
+                <div class="input-group input-group-sm mb-3">
                   <button
                     class="btn btn-secondary dropdown-toggle"
                     type="button"
@@ -83,6 +97,7 @@ export default defineComponent({
       buttonDisabled: false,
       inputTicket: {
         name: "",
+        docNumber: "",
         type: "",
         preferential: false,
       },
@@ -96,6 +111,16 @@ export default defineComponent({
       ],
     };
   },
+  computed: {
+    docNumberMasked: {
+      get() {
+        return this.formatValue(this.inputTicket.docNumber);
+      },
+      set(newValue) {
+        this.inputTicket.docNumber = this.unformatValue(newValue);
+      },
+    },
+  },
   setup() {
     const userData = useLocalStorage("userData", { username: "" });
     return { userData };
@@ -108,6 +133,12 @@ export default defineComponent({
     });
   },
   methods: {
+    formatValue(value) {
+      return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    },
+    unformatValue(value) {
+      return value.replace(/[.-]/g, "");
+    },
     setButtonDisabled() {
       if (process.env.VUE_APP_DEV == 1) return 0;
       this.buttonDisabled = true;
@@ -138,6 +169,7 @@ export default defineComponent({
         queuedBy: this.userData.username,
         preferential: this.inputTicket.preferential,
         name: this.inputTicket.name,
+        docNumber: this.inputTicket.docNumber,
         dateQueue: Date.now(),
       });
       if (insertResponse.status != 200)
