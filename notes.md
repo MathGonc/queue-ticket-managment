@@ -4,14 +4,16 @@
 
 ### To do: (DPU)
 
-- [ ] Campo CPF(docNumber) na triagem
-- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
-- [ ] Somente administrador pode ver por quem foi atendido
-- [ ] Collapse na lista de fila e atendidos
+- [x] Campo CPF(docNumber) na triagem
+- [x] Somente administrador pode ver por quem foi atendido
+- [x] Collapse na lista de fila e atendidos
+- [ ] Armazenar nome de usuario junto ao token
 - [ ] Exibir somente informações principais do atendimento na lista, deixar as adicionais em menu collapse
 - [ ] Organizar rotas e controller no "auth" e "user"
 - [ ] Colocar funções do mongodb dentro do modulo do mongodb
 - [ ] Colocar em modo de produção para ficar mais otimizado
+- [ ] Botão para copiar CPF
+- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 
 ### To do: (Portfolio)
 

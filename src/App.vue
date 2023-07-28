@@ -5,9 +5,7 @@
       <template v-if="auth.isAuth">
         <img src="./assets/person-fill.svg" />
         {{ this.userData.username }}
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">
-          Sair
-        </button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>
     <nav class="navbar fixed-bottom">
@@ -54,7 +52,6 @@ export default {
     socket.connect();
 
     if (this.auth.isAuth) {
-      this.userRole = 0;
       await this.auth.checkPermission().then((data) => {
         this.userRole = data.role;
       });
@@ -78,11 +75,7 @@ body {
   background-color: #ffffff;
   opacity: 1;
   background-attachment: fixed;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
