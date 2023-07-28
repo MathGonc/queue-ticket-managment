@@ -18,6 +18,19 @@ router.get("/loadTicketsInQueue", async (req, res) => {
   }
 });
 
+router.get("/loadTicket/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const ticket = await TicketModel.find({ _id: _id });
+
+    return res.status(200).json({ ticket });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+    throw error;
+  }
+});
+
 router.post("/insertTicket", async (req, res) => {
   try {
     const updatedData = req.body;

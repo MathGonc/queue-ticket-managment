@@ -2,88 +2,134 @@
   <div>
     <div class="container-fluid">
       <div class="row flex-nowrap">
-        <div class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100">
-          <div class="px-3 pt-2" v-if="this.$route.name != 'index'">
-            <router-link :to="{ name: 'index' }">
-              <button type="button" class="btn btn-primary btn-sm">
+        <div
+          class="sidebar col-3 col-md-auto col-xl-auto px-sm-auto px-2 min-vh-100"
+          style="min-width: 350px; max-width: 700px"
+        >
+          <div class="pt-2" v-if="this.$route.name != 'index'">
+            <router-link class="d-grid gap-2" :to="{ name: 'index' }">
+              <button class="btn btn-primary btn-sm" type="button">
                 <img src="../assets/arrow-left.svg" /> Voltar
               </button>
             </router-link>
             <hr class="separator" />
           </div>
 
-          <div class="sidebar-list d-0 px-3 pt-1 text-white">
-            <ul class="nav flex-column mb-0">
-              <div v-if="ticketStatus.filter((status) => status === 1).length">
-                <span class="fs-5 d-none d-sm-inline text-white">
-                  <h5 style="text-align: left">
-                    <img src="../assets/icon_queued.svg" /> Fila:
-                    <button
-                      @click="toggleCollapseMenuQueued()"
-                      type="button"
-                      class="btn btn-link btn-sm"
-                      style="float: right"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseQueued"
-                      :aria-expanded="this.collapseMenu.queued"
-                      aria-controls="#collapseQueued"
-                      :disabled="buttonDisabled">
-                      <img v-if="this.collapseMenu.queued" src="../assets/icon_arrow_down.svg" />
-                      <img v-else src="../assets/icon_arrow_left.svg" />
-                    </button>
-                  </h5>
-                </span>
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-                  <div
-                    :class="[
-                      isTransitioningQueued
-                        ? 'collapsing'
-                        : [collapseMenu.queued ? 'collapse show' : 'collapse'],
-                    ]"
-                    id="collapseQueued"
-                    @transitionend="onTransitionEndQueued">
-                    <div class="row" v-if="ticket.ticketStatus == 1">
-                      <div class="col-auto px-0 py-1" v-if="userRole >= 3">
-                        <button
-                          @click="handleDeleteTicket(ticket.ticketID)"
-                          type="button"
-                          class="btn btn-danger btn-sm"
-                          :disabled="buttonDisabled">
-                          <img src="../assets/trash.svg" />
-                        </button>
-                      </div>
-                      <div class="col-auto align-middle px-2">
-                        <span>
-                          {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                          }}<span v-if="ticket.ticketPreferential" style="color: red"
-                            >&nbsp;(P)</span
-                          >
-                        </span>
-                        <div class="col small">
-                          <div>({{ ticket.ticketType }})</div>
-                          <div v-if="ticket.ticketDocNumber">
-                            CPF: {{ ticket.ticketDocNumber }}
-                            <!-- <button
+          <ul class="list-unstyled">
+            <li v-if="ticketStatus.filter((status) => status === 1).length">
+              <span
+                class="fs-5 d-none d-sm-inline text-white"
+                style="text-align: left"
+              >
+                <h5>
+                  <img src="../assets/icon_queued.svg" /> Fila:
+                  <button
+                    @click="toggleCollapseMenuQueued()"
+                    type="button"
+                    class="btn btn-link btn-toggle btn-sm rounded"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseQueued"
+                    :aria-expanded="this.collapseMenu.queued"
+                    aria-controls="#collapseQueued"
+                    :disabled="buttonDisabled"
+                    style="float: right"
+                  >
+                    <img
+                      v-if="this.collapseMenu.queued"
+                      src="../assets/icon_arrow_down.svg"
+                    />
+                    <img v-else src="../assets/icon_arrow_left.svg" />
+                  </button>
+                </h5>
+              </span>
+
+              <div
+                :class="[
+                  isTransitioningQueued
+                    ? 'collapsing'
+                    : [collapseMenu.queued ? 'collapse show' : 'collapse'],
+                ]"
+                id="collapseQueued"
+                @transitionend="onTransitionEndQueued"
+              >
+                <div class="d-0 px-4 pt-1 text-white" style="text-align: left">
+                  <ul class="nav flex-column mb-0">
+                    <li
+                      class="nav-item"
+                      v-for="(ticket, index) in filteredTickets"
+                      :key="index"
+                    >
+                      <div class="row" v-if="ticket.ticketStatus == 1">
+                        <div class="position-relative">
+                          <div class="position-absolute top-0 end-0">
+                            <span class="px-2">
+                              <button
+                                v-if="userRole >= 3"
+                                @click="handleDeleteTicket(ticket.ticketID)"
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                :disabled="buttonDisabled"
+                              >
+                                <img src="../assets/trash.svg" />
+                              </button>
+                            </span>
+
+                            <button
+                              @click="handleDeleteTicket(ticket.ticketID)"
+                              type="button"
+                              class="btn btn-primary btn-sm"
+                              :disabled="buttonDisabled"
+                            >
+                              <img
+                                src="../assets/volume-up-fill.svg"
+                                style="filter: brightness(0) invert(1)"
+                              />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div
+                          class="col-auto align-middle px-2"
+                          style="text-align: left"
+                        >
+                          <span>
+                            {{ ticket.ticketNumber }} - {{ ticket.ticketName
+                            }}<span
+                              v-if="ticket.ticketPreferential"
+                              style="color: red"
+                              >&nbsp;(P)</span
+                            >
+                          </span>
+                          <div class="col small">
+                            <div>({{ ticket.ticketType }})</div>
+                            <div v-if="ticket.ticketDocNumber">
+                              CPF: {{ ticket.ticketDocNumber }}
+                              <!-- <button
                             @click="handleDeleteTicket(ticket.ticketID)"
                             type="button"
                             class="btn btn-primary btn-sm"
                             :disabled="buttonDisabled">
                             <img src="../assets/clipboard.svg" />
                           </button> -->
+                            </div>
+                            <div>
+                              {{
+                                convertDate(new Date(ticket.ticketDateQueue))
+                              }}
+                            </div>
                           </div>
-                          <div>{{ convertDate(new Date(ticket.ticketDateQueue)) }}</div>
                         </div>
+                        <hr class="separator" />
                       </div>
-                      <hr class="separator" />
-                    </div>
-                  </div>
-                </li>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </ul>
+            </li>
             <br />
 
-            <ul class="nav flex-column mb-0">
-              <div v-if="ticketStatus.filter((status) => status === 2).length">
+            <li v-if="ticketStatus.filter((status) => status === 2).length">
+              <ul class="nav flex-column mb-0">
                 <span class="fs-5 d-none d-sm-inline text-white">
                   <h5 style="text-align: left">
                     <img src="../assets/icon_serviced.svg" /> Atendidos:
@@ -96,54 +142,73 @@
                       data-bs-target="#collapseServiced"
                       :aria-expanded="this.collapseMenu.serviced"
                       aria-controls="#collapseServiced"
-                      :disabled="buttonDisabled">
-                      <img v-if="this.collapseMenu.serviced" src="../assets/icon_arrow_down.svg" />
+                      :disabled="buttonDisabled"
+                    >
+                      <img
+                        v-if="this.collapseMenu.serviced"
+                        src="../assets/icon_arrow_down.svg"
+                      />
                       <img v-else src="../assets/icon_arrow_left.svg" />
                     </button>
                   </h5>
                 </span>
-
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-                  <div
-                    :class="[
-                      isTransitioningServiced
-                        ? 'collapsing'
-                        : [collapseMenu.serviced ? 'collapse show' : 'collapse'],
-                    ]"
-                    id="collapseServiced"
-                    @transitionend="onTransitionEndServiced">
+                <div
+                  :class="[
+                    isTransitioningServiced
+                      ? 'collapsing'
+                      : [collapseMenu.serviced ? 'collapse show' : 'collapse'],
+                  ]"
+                  id="collapseServiced"
+                  @transitionend="onTransitionEndServiced"
+                  class="d-0 px-4 pt-1 text-white"
+                  style="text-align: left"
+                >
+                  <li
+                    class="nav-item"
+                    v-for="(ticket, index) in filteredTickets"
+                    :key="index"
+                  >
                     <div class="row" v-if="ticket.ticketStatus == 2">
                       <div hidden class="col-auto px-0 py-1">
                         <button
                           type="button"
                           class="btn btn-info btn-sm"
-                          :disabled="buttonDisabled">
+                          :disabled="buttonDisabled"
+                        >
                           <img src="../assets/button_recall.svg" />
                         </button>
                       </div>
                       <div class="col-auto align-middle px-2">
                         <span>
                           {{ ticket.ticketNumber }} - {{ ticket.ticketName
-                          }}<span v-if="ticket.ticketPreferential" style="color: red"
+                          }}<span
+                            v-if="ticket.ticketPreferential"
+                            style="color: red"
                             >&nbsp;(P)</span
                           >
                         </span>
                         <div class="col small">
                           <div>({{ ticket.ticketType }})</div>
-                          <div v-if="ticket.docNumber">CPF: {{ ticket.docNumber }}</div>
+                          <div v-if="ticket.docNumber">
+                            CPF: {{ ticket.docNumber }}
+                          </div>
                           <div>
-                            <span v-if="userRole >= 3"> por {{ ticket.ticketServicedBy }} </span>
-                            ({{ convertDate(new Date(ticket.ticketDateServiced)) }})
+                            <span v-if="userRole >= 3">
+                              por {{ ticket.ticketServicedBy }}
+                            </span>
+                            ({{
+                              convertDate(new Date(ticket.ticketDateServiced))
+                            }})
                           </div>
                         </div>
                       </div>
                       <hr class="separator" />
                     </div>
-                  </div>
-                </li>
-              </div>
-            </ul>
-          </div>
+                  </li>
+                </div>
+              </ul>
+            </li>
+          </ul>
           <span class="margin-bottom">&nbsp;</span>
         </div>
         <div class="col py-3"><router-view></router-view></div>
@@ -157,7 +222,10 @@ import { defineComponent, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
-import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+import {
+  loadTicketsInQueue,
+  deleteTicket,
+} from "../controllers/ticketController";
 import { vMaska } from "maska";
 import { useAuth } from "@/stores/auth.js";
 
@@ -237,7 +305,8 @@ export default defineComponent({
     },
     onTransitionEndServiced() {
       this.isTransitioningServiced
-        ? ((this.isTransitioningServiced = false), (this.buttonDisabled = false))
+        ? ((this.isTransitioningServiced = false),
+          (this.buttonDisabled = false))
         : "";
     },
     toggleCollapseMenuQueued() {
@@ -259,12 +328,11 @@ export default defineComponent({
         : (this.collapseMenu.serviced = true);
     },
     convertDate(date) {
-      const formatedDate = `${date.toLocaleDateString("pt-BR")} às ${date.toLocaleTimeString(
-        "pt-BR",
-        {
-          hour12: false,
-        }
-      )}`.slice(0, 19);
+      const formatedDate = `${date.toLocaleDateString(
+        "pt-BR"
+      )} às ${date.toLocaleTimeString("pt-BR", {
+        hour12: false,
+      })}`.slice(0, 19);
       return formatedDate;
     },
     async handleLoadTicketsInQueue() {

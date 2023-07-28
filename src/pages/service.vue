@@ -74,6 +74,7 @@ import {
 } from "../controllers/globalController";
 import {
   loadTicketsInQueue,
+  loadTicket,
   updateTicketCalled,
 } from "../controllers/ticketController";
 
@@ -141,26 +142,23 @@ export default {
         this.globalTicketData = responseTicketData.data.ticket;
       });
     },
-    async callNextTicket() {
+    async callTicket(_id) {
+      console.log("🚀 ~ file: service.vue:145 ~ callTicket ~ _id:", _id);
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
       if (this.myTable < 1) return useToast().error("Selecione seu guichê");
 
-      const loadResponse = await loadTicketsInQueue();
-      if (loadResponse.data.ticket.length < 1)
-        return useToast().error("Nenhuma senha cadastrada");
-      if (loadResponse.data.ticket[0].status == 2)
-        return useToast().error("Todas as senhas já foram atendidas");
-      this.nextTicketData = loadResponse.data.ticket[0];
+      const ticketData = await loadTicket(_id);
+      console.log(ticketData);
 
       await this.setGlobalTicketData();
 
       const updateGlobalResponse = await updateGlobalTicketData({
         ticket: {
           nextToQueue: this.globalTicketData.nextToQueue,
-          currentNumber: this.nextTicketData.number,
+          currentNumber: this.ticketData.number,
           currentTable: this.myTable,
-          currentUser: this.nextTicketData.name,
+          currentUser: this.ticketData.name,
           lastNumber: this.globalTicketData.currentNumber,
           lastTable: this.globalTicketData.currentTable,
           lastUser: this.globalTicketData.currentUser,
@@ -169,13 +167,13 @@ export default {
       if (updateGlobalResponse.status != 200)
         return useToast().error("Ocorreu um erro");
 
-      this.nextTicketData.status = 2;
-      this.nextTicketData.servicedBy = this.userData.username;
-      this.nextTicketData.dateServiced = new Date();
+      this.ticketData.status = 2;
+      this.ticketData.servicedBy = this.userData.username;
+      this.ticketData.dateServiced = new Date();
       const updateTicketResponse = await updateTicketCalled(
-        this.nextTicketData._id,
+        this.ticketData._id,
         {
-          ...this.nextTicketData,
+          ...this.ticketData,
         }
       );
       if (updateTicketResponse.status != 200)
@@ -184,7 +182,19 @@ export default {
       await socket.emit("signalUpdateValues");
       await socket.emit("signalUpdateMonitor", this.callTicketByName);
 
-      this.myCalledTicketData = this.nextTicketData;
+      this.myCalledTicketData = this.ticketData;
+    },
+    async callNextTicket() {
+      const loadResponse = await loadTicketsInQueue();
+      if (loadResponse.data.ticket.length < 1)
+        return useToast().error("Nenhuma senha cadastrada");
+
+      if (loadResponse.data.ticket[0].status == 2)
+        return useToast().error("Todas as senhas já foram atendidas");
+
+      this.nextTicketData = loadResponse.data.ticket[0];
+
+      this.callTicket(this.nextTicketData._id);
     },
     async callSameTicket() {
       if (this.buttonDisabled) return;

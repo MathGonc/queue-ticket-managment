@@ -5,7 +5,9 @@
       <template v-if="auth.isAuth">
         <img src="./assets/person-fill.svg" />
         {{ this.userData.username }}
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">
+          Sair
+        </button>
       </template>
     </nav>
     <nav class="navbar small p-1 fixed-bottom">
@@ -75,7 +77,11 @@ body {
   background-color: #ffffff;
   opacity: 1;
   background-attachment: fixed;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #ffffff 10px
+    ),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -92,10 +98,11 @@ body {
   background: #464646;
   overflow-y: auto;
   max-height: 500px;
-  position: fixed;
+  position: fixesd;
 }
-.sidebar .sidebar-list {
-  text-align: left;
+.sidebar-queue {
+  color: #42b983;
+  background-color: #42b983;
 }
 
 .navbar.fixed-bottom {
