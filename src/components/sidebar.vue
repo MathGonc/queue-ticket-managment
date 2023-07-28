@@ -60,18 +60,18 @@
                           >
                         </span>
                         <div class="col small">
-                          ({{ ticket.ticketType }})
-                          <br />
-                          CPF: {{ ticket.ticketDocNumber }}
-                          <!-- <button
+                          <div>({{ ticket.ticketType }})</div>
+                          <div v-if="ticket.ticketDocNumber">
+                            CPF: {{ ticket.ticketDocNumber }}
+                            <!-- <button
                             @click="handleDeleteTicket(ticket.ticketID)"
                             type="button"
                             class="btn btn-primary btn-sm"
                             :disabled="buttonDisabled">
                             <img src="../assets/clipboard.svg" />
                           </button> -->
-                          <br />
-                          {{ convertDate(new Date(ticket.ticketDateQueue)) }}
+                          </div>
+                          <div>{{ convertDate(new Date(ticket.ticketDateQueue)) }}</div>
                         </div>
                       </div>
                       <hr class="separator" />
@@ -129,12 +129,12 @@
                           >
                         </span>
                         <div class="col small">
-                          ({{ ticket.ticketType }})
-                          <br />
-                          CPF: {{ ticket.docNumber }}
-                          <br />
-                          <span v-if="userRole >= 3"> por {{ ticket.ticketServicedBy }} </span>
-                          ({{ convertDate(new Date(ticket.ticketDateServiced)) }})
+                          <div>({{ ticket.ticketType }})</div>
+                          <div v-if="ticket.docNumber">CPF: {{ ticket.docNumber }}</div>
+                          <div>
+                            <span v-if="userRole >= 3"> por {{ ticket.ticketServicedBy }} </span>
+                            ({{ convertDate(new Date(ticket.ticketDateServiced)) }})
+                          </div>
                         </div>
                       </div>
                       <hr class="separator" />

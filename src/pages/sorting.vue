@@ -148,7 +148,7 @@ export default defineComponent({
     },
     async handleRegisterTicket() {
       if (this.inputTicket.name.length < 1) return useToast().error("Digite um nome");
-      if (!this.inputTicket.docNumber.masked.length) return useToast().error("Digite um CPF");
+      //if (!this.inputTicket.docNumber.masked.length) return useToast().error("Digite um CPF");
       if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
 
       if (this.buttonDisabled) return;
