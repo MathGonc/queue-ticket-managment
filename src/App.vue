@@ -8,8 +8,8 @@
         <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>
-    <nav class="navbar fixed-bottom">
-      <span hidden class="col pt-auto px-3"
+    <nav class="navbar small p-1 fixed-bottom">
+      <span hidden class="col small pt-auto px-2"
         >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
       >
     </nav>
