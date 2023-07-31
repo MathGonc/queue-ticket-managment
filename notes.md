@@ -25,8 +25,9 @@
 - [x] Botão "collapse" totalmente na direita
 - [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
 - [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
+- [ ] Adicionar novamente o campo "atendido por" nos atendidos
 - [ ] Armazenar nome de usuario junto ao token
-- [ ] Limite de letras no nome
+- [ ] Limite de letras no nome e tipo
 - [ ] Pagina de atendimento com a borda central menor
 - [ ] Adicionar uma bibilhoteca de icones
 - [ ] Organizar rotas e controller no "auth" e "user"
