@@ -2,15 +2,11 @@
 
 ## **Tricks:**
 
-> Para executar "vue" sem as restrições do windows: _set-executionpolicy RemoteSignedvue_
-
-> Abrir google chrome com console: _"runtimeArgs": ["--auto-open-devtools-for-tabs"]_
-
-> Caso de erro com Nodemon: _npm install -g nodemon_
-
-> &nbsp; "Non-breaking space"
-
-> Console log: (Insert: ctrl + alt + L) | (Delete all: alt + shift + d)
+- Para executar "vue" sem as restrições do windows: _set-executionpolicy RemoteSignedvue_
+- Abrir google chrome com console: _"runtimeArgs": ["--auto-open-devtools-for-tabs"]_
+- Caso de erro com Nodemon: _npm install -g nodemon_
+- &nbsp; "Non-breaking space"
+- Console log: (Insert: ctrl + alt + L) | (Delete all: alt + shift + d)
 
 ## **To do:**
 
@@ -25,7 +21,8 @@
 - [x] Botão "collapse" totalmente na direita
 - [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
 - [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
-- [ ] Adicionar novamente o campo "atendido por" nos atendidos
+- [x] Corrirgir espaçamento entre botões e nome/tipo de atendimento
+- [x] Adicionar novamente o campo "atendido por" nos atendidos
 - [ ] Armazenar nome de usuario junto ao token
 - [ ] Limite de letras no nome e tipo
 - [ ] Pagina de atendimento com a borda central menor
