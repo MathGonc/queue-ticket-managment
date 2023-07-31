@@ -23,6 +23,7 @@
 - [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
 - [x] Corrirgir espaçamento entre botões e nome/tipo de atendimento
 - [x] Adicionar novamente o campo "atendido por" nos atendidos
+- [ ] Adicionar bibilhoteca de icones
 - [ ] Armazenar nome de usuario junto ao token
 - [ ] Limite de letras no nome e tipo
 - [ ] Pagina de atendimento com a borda central menor

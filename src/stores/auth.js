@@ -45,22 +45,6 @@ export const useAuth = defineStore("auth", () => {
     }
   }
 
-  async function checkPermission() {
-    try {
-      const tokenAuth = "Bearer " + token.value;
-      const { data } = await http.get("/auth/verifyPermission", {
-        headers: {
-          Authorization: tokenAuth,
-        },
-      });
-      return data;
-    } catch (error) {
-      clearToken();
-      router.push("/login");
-      console.log("error", error.response.data);
-    }
-  }
-
   function clearToken() {
     localStorage.clear();
     //localStorage.removeItem("token");
@@ -69,7 +53,10 @@ export const useAuth = defineStore("auth", () => {
 
   async function login(loginData) {
     try {
-      const response = await axios.post(`${config.url_server}/login`, loginData);
+      const response = await axios.post(
+        `${config.url_server}/login`,
+        loginData
+      );
       const data = response.data;
       setToken(data.token);
       isAuth.value = true;

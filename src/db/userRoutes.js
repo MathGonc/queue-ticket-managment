@@ -67,32 +67,8 @@ router.get("/auth/verify", (req, res) => {
       if (err) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      const { userId } = decoded;
-      res.status(200).json({ userId });
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-router.get("/auth/verifyPermission", (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    jwt.verify(token, "secret-key", (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const { role } = decoded;
-      res.status(200).json({ role });
+      const { userId, role } = decoded;
+      res.status(200).json({ userId, role });
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });

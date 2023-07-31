@@ -263,7 +263,7 @@ export default defineComponent({
       this.handleLoadTicketsInQueue();
     });
     if (this.auth.isAuth) {
-      await this.auth.checkPermission().then((data) => {
+      await this.auth.checkToken().then((data) => {
         this.userRole = data.role;
       });
     }
@@ -412,7 +412,7 @@ export default defineComponent({
   background: #2e2e2e;
   max-height: 100%;
   max-width: 30%;
-  min-width: 25%;
+  min-width: 20%;
   overflow-y: auto;
   position: fixed;
   padding: 5px;

@@ -14,7 +14,7 @@ export default async function routes(to, from, next) {
   if (to.meta?.auth) {
     if (auth.isAuth) {
       if (to.meta.role) {
-        await auth.checkPermission().then((data) => {
+        await auth.checkToken().then((data) => {
           const requiredRole = to.meta.role;
           requiredRole <= data.role
             ? next()

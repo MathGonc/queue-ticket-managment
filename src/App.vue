@@ -54,7 +54,7 @@ export default {
     socket.connect();
 
     if (this.auth.isAuth) {
-      await this.auth.checkPermission().then((data) => {
+      await this.auth.checkToken().then((data) => {
         this.userRole = data.role;
       });
     }
