@@ -26,6 +26,7 @@
 - [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
 - [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
 - [ ] Armazenar nome de usuario junto ao token
+- [ ] Adicionar uma bibilhoteca de icones
 - [ ] Organizar rotas e controller no "auth" e "user"
 - [ ] Colocar funções do mongodb dentro do modulo do mongodb
 - [ ] Colocar em modo de produção para ficar mais otimizado
