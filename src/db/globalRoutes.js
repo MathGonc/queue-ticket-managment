@@ -34,8 +34,6 @@ router.get("/getConfigsDB", async (req, res) => {
 router.get("/getGlobalTicketData", async (req, res) => {
   try {
     const response = await GlobalModel.findOne().select("ticket");
-    console.log("🚀 ~ file: globalRoutes.js:37 ~ router.get ~ req.params:", req.params);
-    console.log("🚀 ~ file: globalRoutes.js:37 ~ router.get ~ response:", response);
     if (response) {
       res.status(200).json({
         ticket: response.ticket,
@@ -70,14 +68,11 @@ router.put("/resetGlobalTicketData", async (req, res) => {
       lastTable: 0,
       lastUser: "",
     };
-    console.log("🚀 ~ file: globalRoutes.js:73 ~ router.put ~ ticketResetData:", ticketResetData);
     const config = await GlobalModel.findOneAndUpdate(
       {},
       { ticket: ticketResetData },
       { new: true }
     );
-    console.log("🚀 ~ file: globalRoutes.js:74 ~ router.put ~ config:", config);
-
     config ? res.status(200).json({}) : res.status(500).json({});
   } catch (error) {
     console.error(error);

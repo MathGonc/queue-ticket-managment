@@ -1,5 +1,17 @@
 # Notes:
 
+## **Tricks:**
+
+> Para executar "vue" sem as restrições do windows: _set-executionpolicy RemoteSignedvue_
+
+> Abrir google chrome com console: _"runtimeArgs": ["--auto-open-devtools-for-tabs"]_
+
+> Caso de erro com Nodemon: _npm install -g nodemon_
+
+> &nbsp; "Non-breaking space"
+
+> Console log: (Insert: ctrl + alt + L) | (Delete all: alt + shift + d)
+
 ## **To do:**
 
 ### To do: (DPU)
@@ -7,12 +19,16 @@
 - [x] Campo CPF(docNumber) na triagem
 - [x] Somente administrador pode ver por quem foi atendido
 - [x] Collapse na lista de fila e atendidos
+- [x] Impedir que as letras do nome entrem em contato com os botões
+- [x] Diferenciar lista de "Fila" de lista de "Atendidos" com um icone ou pela cor
+- [x] Corrigir BUG na pagina de configuração que surgiu novamente
+- [x] Botão "collapse" totalmente na direita
+- [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
+- [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
 - [ ] Armazenar nome de usuario junto ao token
-- [ ] Exibir somente informações principais do atendimento na lista, deixar as adicionais em menu collapse
 - [ ] Organizar rotas e controller no "auth" e "user"
 - [ ] Colocar funções do mongodb dentro do modulo do mongodb
 - [ ] Colocar em modo de produção para ficar mais otimizado
-- [ ] Botão para copiar CPF
 - [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 
 ### To do: (Portfolio)
@@ -100,13 +116,3 @@
 - [x] Criar "indices" das consultas realizadas nas funções para otimizar o processo
 - [x] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [x] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
-
-## **Tricks:**
-
-> Para executar "vue" sem as restrições do windows: _set-executionpolicy RemoteSignedvue_
-
-> Abrir google chrome com console: _"runtimeArgs": ["--auto-open-devtools-for-tabs"]_
-
-> Caso de erro com Nodemon: _npm install -g nodemon_
-
-> &nbsp; "Non-breaking space"

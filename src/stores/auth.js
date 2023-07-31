@@ -4,7 +4,7 @@ import http from "@/services/http.js";
 import axios from "axios";
 import router from "../router";
 import { useUserStore } from "@/stores/user.js";
-import config from "../../config";
+import config from "../config.js";
 
 export const useAuth = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token"));
@@ -69,10 +69,7 @@ export const useAuth = defineStore("auth", () => {
 
   async function login(loginData) {
     try {
-      const response = await axios.post(
-        `${config.url_server}/login`,
-        loginData
-      );
+      const response = await axios.post(`${config.url_server}/login`, loginData);
       const data = response.data;
       setToken(data.token);
       isAuth.value = true;

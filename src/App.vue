@@ -5,13 +5,11 @@
       <template v-if="auth.isAuth">
         <img src="./assets/person-fill.svg" />
         {{ this.userData.username }}
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">
-          Sair
-        </button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>
     <nav class="navbar small p-1 fixed-bottom">
-      <span hidden class="col small pt-auto px-2"
+      <span class="col small pt-auto px-2"
         >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
       >
     </nav>
@@ -77,11 +75,7 @@ body {
   background-color: #ffffff;
   opacity: 1;
   background-attachment: fixed;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -91,18 +85,6 @@ body {
   text-align: center;
   color: #2c3e50;
   margin-top: 0px; /* Adicione o valor desejado para criar espaço entre a topbar e o conteúdo abaixo */
-}
-
-.sidebar {
-  text-align: center;
-  background: #464646;
-  overflow-y: auto;
-  max-height: 500px;
-  position: fixesd;
-}
-.sidebar-queue {
-  color: #42b983;
-  background-color: #42b983;
 }
 
 .navbar.fixed-bottom {
@@ -152,5 +134,9 @@ nav a.router-link-exact-active {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.debug {
+  border: 1px solid rgba(247, 1, 1, 0.781);
 }
 </style>

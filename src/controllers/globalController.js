@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../../config";
+import config from "../config.js";
 
 export async function loadMonitorConfigs() {
   try {
@@ -34,7 +34,7 @@ export async function getGlobalTicketData() {
 export async function updateGlobalTicketData(data) {
   try {
     const response = await axios.put(`${config.url_server}/updateGlobalTicketData`, data);
-    console.log(data);
+    console.log("🚀 ~ file: globalController.js:38 ~ updateGlobalTicketData ~ response:", response);
     return response;
   } catch (error) {
     console.error(error);

@@ -2,10 +2,14 @@ const express = require("express");
 const router = express.Router();
 const TicketModel = require("./models/ticket");
 
+const limitDate = new Date();
+limitDate.setDate(limitDate.getDate() - 7);
+
 router.get("/loadTicketsInQueue", async (req, res) => {
   try {
     const ticket = await TicketModel.find({
-      $or: [{ preferential: true }, { preferential: false }],
+      dateQueue: { $gte: limitDate },
+      // $or: [{ preferential: true }, { preferential: false }],
     })
       .sort({ status: 1, preferential: -1, dateServiced: -1, dateQueue: 1 })
       .limit(50);
@@ -46,7 +50,6 @@ router.put("/updateTicketCalled/:id", async (req, res) => {
   try {
     const _id = req.params.id,
       data = req.body;
-    console.log("🚀 ~ file: ticketRoutes.js:36 ~ router.put ~ data:", data);
     response = await TicketModel.findByIdAndUpdate(_id, data);
 
     return res.status(200).json({});

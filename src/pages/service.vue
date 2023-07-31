@@ -21,8 +21,7 @@
                   min="00"
                   max="99"
                   maxlength="2"
-                  v-model="myTable"
-                />
+                  v-model="myTable" />
               </div>
               <div class="form-check form-switch py-2">
                 <label class="form-check-label" for="flexSwitchCheckDefault">
@@ -30,8 +29,7 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="this.callTicketByName"
-                  />Chamar pelo nome</label
+                    v-model="this.callTicketByName" />Chamar pelo nome</label
                 >
               </div>
               <span class="px-1"
@@ -39,8 +37,7 @@
                   type="button"
                   @click="callNextTicket"
                   :disabled="buttonDisabled"
-                  class="btn btn-outline-primary"
-                >
+                  class="btn btn-outline-primary">
                   Chamar Próxima Senha
                 </button></span
               >
@@ -50,8 +47,7 @@
                   type="button"
                   @click="callSameTicket"
                   :disabled="buttonDisabled || !myCalledTicketData.number"
-                  class="btn btn-outline-primary"
-                >
+                  class="btn btn-outline-primary">
                   Chamar senha {{ myCalledTicketData.number }} novamente
                 </button></span
               >
@@ -66,17 +62,11 @@
 <script>
 //import { computed } from "vue";
 import { useToast } from "vue-toastification";
-import { socket } from "@/socket";
+// import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
-import {
-  getGlobalTicketData,
-  updateGlobalTicketData,
-} from "../controllers/globalController";
-import {
-  loadTicketsInQueue,
-  loadTicket,
-  updateTicketCalled,
-} from "../controllers/ticketController";
+// import { getGlobalTicketData } from "../controllers/globalController";
+import { loadTicketsInQueue } from "../controllers/ticketController";
+import { callTicket } from "../utils";
 
 import topbar from "../components/topbar";
 
@@ -89,25 +79,23 @@ export default {
     return {
       transitionFade: false,
       callTicketByName: useLocalStorage("callTicketByName", true) || null,
-      myTable: localStorage.getItem("myTable") || null,
-      myCalledTicketData:
-        useLocalStorage("myCalledTicketData", {
-          _id: "",
-          name: "",
-          number: 0,
-        }) || null,
+      myTable: useLocalStorage("myTable", 0),
+      myCalledTicketData: useLocalStorage("myCalledTicketData", {
+        _id: "",
+        number: 0,
+      }),
       buttonDisabled: false,
 
-      globalTicketData: {
-        nextToQueue: -1,
-        currentNumber: -1,
-        currentTable: -1,
-        currentUser: "",
-        lastNumber: -1,
-        lastTable: -1,
-        lastUser: "",
-      },
-      nextTicketData: {},
+      // globalTicketData: {
+      //   nextToQueue: -1,
+      //   currentNumber: -1,
+      //   currentTable: -1,
+      //   currentUser: "",
+      //   lastNumber: -1,
+      //   lastTable: -1,
+      //   lastUser: "",
+      // },
+      // nextTicketData: {},
     };
   },
   setup() {
@@ -115,18 +103,11 @@ export default {
     return { userData };
   },
   async mounted() {
-    this.setGlobalTicketData();
-
+    // this.setGlobalTicketData();
     this.transitionFade = true;
-
-    socket.on("receiveUpdateGlobal", () => {
-      this.setGlobalTicketData();
-    });
-  },
-  watch: {
-    myTable(newValue) {
-      localStorage.setItem("myTable", newValue);
-    },
+    // socket.on("receiveUpdateGlobal", () => {
+    // this.setGlobalTicketData();
+    // });
   },
   methods: {
     setButtonDisabled() {
@@ -137,93 +118,30 @@ export default {
       }, 5000);
       return 1;
     },
-    async setGlobalTicketData() {
-      await getGlobalTicketData().then((responseTicketData) => {
-        this.globalTicketData = responseTicketData.data.ticket;
-      });
-    },
-    async callTicket(_id) {
-      console.log("🚀 ~ file: service.vue:145 ~ callTicket ~ _id:", _id);
+    // async setGlobalTicketData() {
+    //   await getGlobalTicketData().then((responseTicketData) => {
+    //     this.globalTicketData = responseTicketData.data.ticket;
+    //   });
+    // },
+    async callNextTicket() {
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
-      if (this.myTable < 1) return useToast().error("Selecione seu guichê");
 
-      const ticketData = await loadTicket(_id);
-      console.log(ticketData);
-
-      await this.setGlobalTicketData();
-
-      const updateGlobalResponse = await updateGlobalTicketData({
-        ticket: {
-          nextToQueue: this.globalTicketData.nextToQueue,
-          currentNumber: this.ticketData.number,
-          currentTable: this.myTable,
-          currentUser: this.ticketData.name,
-          lastNumber: this.globalTicketData.currentNumber,
-          lastTable: this.globalTicketData.currentTable,
-          lastUser: this.globalTicketData.currentUser,
-        },
-      });
-      if (updateGlobalResponse.status != 200)
-        return useToast().error("Ocorreu um erro");
-
-      this.ticketData.status = 2;
-      this.ticketData.servicedBy = this.userData.username;
-      this.ticketData.dateServiced = new Date();
-      const updateTicketResponse = await updateTicketCalled(
-        this.ticketData._id,
-        {
-          ...this.ticketData,
-        }
-      );
-      if (updateTicketResponse.status != 200)
-        return useToast().error("Ocorreu um erro");
-
-      await socket.emit("signalUpdateValues");
-      await socket.emit("signalUpdateMonitor", this.callTicketByName);
-
-      this.myCalledTicketData = this.ticketData;
-    },
-    async callNextTicket() {
       const loadResponse = await loadTicketsInQueue();
-      if (loadResponse.data.ticket.length < 1)
-        return useToast().error("Nenhuma senha cadastrada");
+      if (loadResponse.data.ticket.length < 1) return useToast().error("Nenhuma senha cadastrada");
 
       if (loadResponse.data.ticket[0].status == 2)
         return useToast().error("Todas as senhas já foram atendidas");
 
-      this.nextTicketData = loadResponse.data.ticket[0];
-
-      this.callTicket(this.nextTicketData._id);
+      callTicket(loadResponse.data.ticket[0]._id);
     },
     async callSameTicket() {
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
+      if (this.myTable < 1) return useToast().error("Selecione seu guichê");
       if (!this.myCalledTicketData.number)
         return useToast().error("Você não chamou nenhum ticket recentemente");
-
-      await this.setGlobalTicketData();
-
-      if (
-        this.myCalledTicketData.number != this.globalTicketData.currentNumber
-      ) {
-        const updateGlobalResponse = await updateGlobalTicketData({
-          ticket: {
-            nextToQueue: this.globalTicketData.nextToQueue,
-            currentNumber: this.myCalledTicketData.number,
-            currentTable: this.myTable,
-            currentUser: this.myCalledTicketData.name,
-            lastNumber: this.globalTicketData.currentNumber,
-            lastTable: this.globalTicketData.currentTable,
-            lastUser: this.globalTicketData.currentUser,
-          },
-        });
-        if (updateGlobalResponse.status != 200)
-          return useToast().error("Ocorreu um erro");
-      }
-
-      await socket.emit("signalUpdateValues");
-      await socket.emit("signalUpdateMonitor", this.callTicketByName);
+      callTicket(this.myCalledTicketData._id);
     },
   },
 };

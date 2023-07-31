@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../../config";
+import config from "../config.js";
 
 export async function loadTicketsInQueue() {
   try {
@@ -15,10 +15,6 @@ export async function loadTicketsInQueue() {
 export async function loadTicket(data) {
   try {
     const response = await axios.get(`${config.url_server}/loadTicket/${data}`);
-    console.log(
-      "🚀 ~ file: ticketController.js:21 ~ loadTicket ~ response:",
-      response
-    );
     return response;
   } catch (error) {
     console.error(error);
@@ -28,10 +24,7 @@ export async function loadTicket(data) {
 
 export async function insertTicket(updatedData) {
   try {
-    const response = await axios.post(
-      `${config.url_server}/insertTicket`,
-      updatedData
-    );
+    const response = await axios.post(`${config.url_server}/insertTicket`, updatedData);
     console.log(response);
     return response;
   } catch (error) {
@@ -42,10 +35,7 @@ export async function insertTicket(updatedData) {
 
 export async function updateTicketCalled(ticketID, data) {
   try {
-    const response = axios.put(
-      `${config.url_server}/updateTicketCalled/${ticketID}`,
-      data
-    );
+    const response = axios.put(`${config.url_server}/updateTicketCalled/${ticketID}`, data);
     return response;
   } catch (error) {
     console.error(error);
@@ -55,9 +45,7 @@ export async function updateTicketCalled(ticketID, data) {
 
 export async function deleteTicket(ticketID) {
   try {
-    const response = axios.delete(
-      `${config.url_server}/deleteTicket/${ticketID}`
-    );
+    const response = axios.delete(`${config.url_server}/deleteTicket/${ticketID}`);
     return response;
   } catch (error) {
     console.error(error);
