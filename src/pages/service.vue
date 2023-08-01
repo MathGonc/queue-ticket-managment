@@ -4,7 +4,7 @@
     <span class="title_page">Painel de atendimento</span>
     <transition-group>
       <div v-if="transitionFade">
-        <div class="container w-50 p-3">
+        <div class="container">
           <div class="row">
             <div class="col">
               <!-- <h5 v-if="globalTicketData.currentNumber != -1">
@@ -67,6 +67,7 @@ import { useLocalStorage } from "@vueuse/core";
 // import { getGlobalTicketData } from "../controllers/globalController";
 import { loadTicketsInQueue } from "../controllers/ticketController";
 import { callTicket } from "../utils";
+import { useAuth } from "@/stores/auth.js";
 
 import topbar from "../components/topbar";
 
@@ -99,15 +100,19 @@ export default {
     };
   },
   setup() {
-    const userData = useLocalStorage("userData", { username: "" });
-    return { userData };
+    const auth = useAuth();
+    return {
+      auth,
+    };
   },
   async mounted() {
-    // this.setGlobalTicketData();
+    if (this.auth.isAuth) {
+      await this.auth.checkToken().then((data) => {
+        this.userData = data.userData;
+      });
+    }
+
     this.transitionFade = true;
-    // socket.on("receiveUpdateGlobal", () => {
-    // this.setGlobalTicketData();
-    // });
   },
   methods: {
     setButtonDisabled() {

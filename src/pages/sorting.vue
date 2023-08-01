@@ -13,6 +13,7 @@
                   <input
                     type="text"
                     class="form-control"
+                    maxlength="50"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="inputTicket.name" />
@@ -23,9 +24,9 @@
                   <input
                     type="text"
                     class="form-control"
+                    maxlength="18"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
-                    maxlength="18"
                     v-maska="inputTicket.docNumber"
                     v-model="inputTicket.docNumber.masked"
                     data-maska="###.###.###-##" />
@@ -49,6 +50,7 @@
                   <input
                     type="text"
                     class="form-control"
+                    maxlength="50"
                     aria-label="Text input with dropdown button"
                     v-model="inputTicket.type" />
                 </div>
@@ -79,11 +81,11 @@
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { useLocalStorage } from "@vueuse/core";
 import { insertTicket } from "../controllers/ticketController";
 import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
 import { vMaska } from "maska";
 
+import { useAuth } from "@/stores/auth.js";
 import topbar from "../components/topbar";
 
 export default defineComponent({
@@ -96,6 +98,7 @@ export default defineComponent({
     return {
       transitionFade: false,
       buttonDisabled: false,
+      userData: {},
       inputTicket: {
         name: "",
         docNumber: {
@@ -116,10 +119,17 @@ export default defineComponent({
     };
   },
   setup() {
-    const userData = useLocalStorage("userData", { username: "" });
-    return { userData };
+    const auth = useAuth();
+    return {
+      auth,
+    };
   },
   async mounted() {
+    if (this.auth.isAuth) {
+      await this.auth.checkToken().then((data) => {
+        this.userData = data.userData;
+      });
+    }
     this.transitionFade = true;
     await this.handleGetGlobalTicketData();
     socket.on("receiveUpdateGlobal", () => {

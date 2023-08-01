@@ -4,37 +4,29 @@
     <span class="title_page">Painel de configuração</span>
     <transition-group>
       <div v-if="transitionFade">
-        <div class="row">
+        <div>
           <div class="container w-25 p-3">
             <h5>Monitor</h5>
             <div class="col">
-              <div
-                class="input-group input-group-sm mb-3 justify-content-center"
-              >
+              <div class="input-group input-group-sm mb-3 justify-content-center">
                 <span class="input-group-text" id="basic-addon1">Idioma:</span>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="displayLanguage"
-                  disabled
-                >
+                  disabled>
                   <option value="0">Português</option>
                   <option value="1">English</option>
                 </select>
               </div>
 
-              <div
-                class="input-group input-group-sm mb-3 justify-content-center"
-              >
-                <span class="input-group-text" id="basic-addon1"
-                  >Modo do monitor:</span
-                >
+              <div class="input-group input-group-sm mb-3 justify-content-center">
+                <span class="input-group-text" id="basic-addon1">Modo do monitor:</span>
                 <select
                   class="form-select"
                   aria-label="Default select example"
                   v-model="monitorConfig.monitorMode"
-                  disabled
-                >
+                  disabled>
                   <option value="0">Horizontal</option>
                   <option value="1">Vertical</option>
                 </select>
@@ -47,8 +39,7 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="monitorConfig.soundNotification"
-                    :disabled="buttonDisabled"
-                  />
+                    :disabled="buttonDisabled" />
                   Notificação ao chamar senha</label
                 >
               </div>
@@ -60,23 +51,18 @@
                     type="checkbox"
                     id="flexSwitchCheckDefault"
                     v-model="monitorConfig.soundCallTicket"
-                    :disabled="buttonDisabled"
-                  />
+                    :disabled="buttonDisabled" />
                   Voz ao chamar senha</label
                 >
               </div>
 
               <div v-if="monitorConfig.soundCallTicket">
-                <div
-                  class="input-group input-group-sm mb-3 justify-content-center"
-                >
-                  <span class="input-group-text" id="basic-addon1"
-                    >Tipo de voz:</span
+                <div class="input-group input-group-sm mb-3 justify-content-center">
+                  <span class="input-group-text" id="basic-addon1">Tipo de voz:</span
                   ><select
                     class="selectpicker"
                     v-model="monitorConfig.soundCallTicketVoice"
-                    :disabled="buttonDisabled"
-                  >
+                    :disabled="buttonDisabled">
                     <option v-for="value in 21" :key="value - 1">
                       {{ value - 1 }}
                     </option>
@@ -89,8 +75,7 @@
                   type="button"
                   class="btn btn-outline-primary"
                   @click="saveConfigs"
-                  :disabled="buttonDisabled"
-                >
+                  :disabled="buttonDisabled">
                   Salvar
                 </button>
               </span>
@@ -104,9 +89,7 @@
             <div class="col">
               <form @submit.prevent="handleRegister()">
                 <div class="input-group input-group-sm mb-1">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Nome:</span
-                  >
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
                   <input
                     type="text"
                     maxlength="30"
@@ -114,13 +97,10 @@
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="register.username"
-                    required
-                  />
+                    required />
                 </div>
                 <div class="input-group input-group-sm mb-1">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Login:</span
-                  >
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Login:</span>
                   <input
                     type="text"
                     maxlength="30"
@@ -128,32 +108,25 @@
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="register.login"
-                    required
-                  />
+                    required />
                 </div>
                 <div class="input-group input-group-sm mb-1">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Senha:</span
-                  >
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
                   <input
                     type="password"
                     class="form-control"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="register.pass"
-                    required
-                  />
+                    required />
                 </div>
                 <div class="input-group input-group-sm mb-2">
-                  <span class="input-group-text" for="inputGroupSelect01"
-                    >Função</span
-                  >
+                  <span class="input-group-text" for="inputGroupSelect01">Função</span>
                   <select
                     class="custom-select"
                     id="inputGroupSelect01"
                     v-model="register.role"
-                    required
-                  >
+                    required>
                     <option value="1">Monitor</option>
                     <option value="2">Atendente</option>
                     <option value="3">Administrador</option>
@@ -162,8 +135,7 @@
                 <button
                   type="submit"
                   class="btn btn-outline-primary btn-sm"
-                  :disabled="buttonDisabled"
-                >
+                  :disabled="buttonDisabled">
                   Cadastrar
                 </button>
               </form>
@@ -176,8 +148,7 @@
             type="button"
             class="btn btn-outline-danger"
             @click="handleResetGlobalTicketData"
-            :disabled="buttonDisabled"
-          >
+            :disabled="buttonDisabled">
             Resetar painel de senhas
           </button>
         </div>
@@ -212,9 +183,7 @@ export default defineComponent({
       const loginPattern = /^[a-zA-Z0-9]+[.][a-zA-Z0-9]+$/;
 
       if (!loginPattern.test(this.register.login))
-        return useToast().error(
-          "O login deve seguir o padrão 'nome.sobrenome'."
-        );
+        return useToast().error("O login deve seguir o padrão 'nome.sobrenome'.");
 
       const userData = {
         username: this.register.username,
@@ -281,8 +250,7 @@ export default defineComponent({
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
       await resetGlobalTicketData().then((response) => {
-        if (response.status != 200)
-          return useToast().error("Erro ao resetar as senhas");
+        if (response.status != 200) return useToast().error("Erro ao resetar as senhas");
         socket.emit("signalUpdateValues");
         useToast().success("Senhas resetadas");
       });

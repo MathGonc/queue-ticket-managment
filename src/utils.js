@@ -4,9 +4,18 @@ import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
 
+import { useAuth } from "@/stores/auth.js";
+
 export async function callTicket(_id) {
+  const auth = useAuth();
+  let userData = {};
+  if (auth.isAuth) {
+    await auth.checkToken().then((data) => {
+      userData = data.userData;
+    });
+  }
+
   const myTable = localStorage.getItem("myTable");
-  const userData = useLocalStorage("userData", { username: "" }).value;
   const callTicketByName = useLocalStorage("callTicketByName", true).value;
   const responseLoadTicket = await loadTicket(_id);
   const ticketData = responseLoadTicket.data.ticket[0];

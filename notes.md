@@ -23,14 +23,15 @@
 - [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
 - [x] Corrirgir espaçamento entre botões e nome/tipo de atendimento
 - [x] Adicionar novamente o campo "atendido por" nos atendidos
-- [ ] Adicionar bibilhoteca de icones
-- [ ] Armazenar nome de usuario junto ao token
-- [ ] Limite de letras no nome e tipo
+- [x] Armazenar nome de usuario junto ao token
+- [x] Limite de letras no nome e tipo
 - [ ] Pagina de atendimento com a borda central menor
 - [ ] Adicionar uma bibilhoteca de icones
 - [ ] Organizar rotas e controller no "auth" e "user"
 - [ ] Colocar funções do mongodb dentro do modulo do mongodb
 - [ ] Colocar em modo de produção para ficar mais otimizado
+- [ ] Adicionar um icone principal para o site
+- [ ] Adicionar bibilhoteca de icones
 - [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 
 ### To do: (Portfolio)

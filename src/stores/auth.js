@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import http from "@/services/http.js";
 import axios from "axios";
 import router from "../router";
-import { useUserStore } from "@/stores/user.js";
+// import { useUserStore } from "@/stores/user.js";
 import config from "../config.js";
 
 export const useAuth = defineStore("auth", () => {
@@ -19,10 +19,10 @@ export const useAuth = defineStore("auth", () => {
     isAuth.value = auth;
   }
 
-  function setUserData(data) {
-    const userStore = useUserStore();
-    userStore.userData = data;
-  }
+  // function setUserData(data) {
+  //   const userStore = useUserStore();
+  //   userStore.userData = data;
+  // }
 
   const isAuthenticated = computed(() => {
     return token.value;
@@ -37,6 +37,7 @@ export const useAuth = defineStore("auth", () => {
         },
       });
 
+      console.log("🚀 ~ file: auth.js:42 ~ checkToken ~ data:", data);
       return data;
     } catch (error) {
       clearToken();
@@ -53,14 +54,11 @@ export const useAuth = defineStore("auth", () => {
 
   async function login(loginData) {
     try {
-      const response = await axios.post(
-        `${config.url_server}/login`,
-        loginData
-      );
+      const response = await axios.post(`${config.url_server}/login`, loginData);
       const data = response.data;
       setToken(data.token);
       isAuth.value = true;
-      setUserData(data.user);
+      // setUserData(data.user);
       router.push({ name: "index" });
       return response;
     } catch (error) {
@@ -94,7 +92,6 @@ export const useAuth = defineStore("auth", () => {
     isAuthenticated,
     setToken,
     checkToken,
-    checkPermission,
     setIsAuth,
     clearToken,
     login,

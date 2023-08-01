@@ -5,11 +5,11 @@
       <template v-if="auth.isAuth">
         <img src="./assets/person-fill.svg" />
         {{ this.userData.username }}
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">
-          Sair
-        </button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
       </template>
     </nav>
+  </div>
+  <div class="navbar">
     <nav class="navbar small p-1 fixed-bottom">
       <span class="col small pt-auto px-2"
         >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
@@ -21,13 +21,12 @@
 <script>
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
-import { useLocalStorage } from "@vueuse/core";
 
 export default {
   name: "page_index",
   data() {
     return {
-      userRole: 0,
+      userData: {},
       showInterface: true,
     };
   },
@@ -42,9 +41,7 @@ export default {
   },
   setup() {
     const auth = useAuth();
-    const userData = useLocalStorage("userData", { username: "" });
     return {
-      userData,
       auth,
     };
   },
@@ -55,7 +52,7 @@ export default {
 
     if (this.auth.isAuth) {
       await this.auth.checkToken().then((data) => {
-        this.userRole = data.role;
+        this.userData = data.userData;
       });
     }
   },
@@ -77,11 +74,7 @@ body {
   background-color: #ffffff;
   opacity: 1;
   background-attachment: fixed;
-  background-image: repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      #ffffff 10px
-    ),
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -90,12 +83,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 0px; /* Adicione o valor desejado para criar espaço entre a topbar e o conteúdo abaixo */
 }
 
 .navbar.fixed-bottom {
   background: #242424;
-  color: #5c5c5c;
+  color: #838383c7;
   text-align: right;
 }
 

@@ -16,7 +16,7 @@ export default async function routes(to, from, next) {
       if (to.meta.role) {
         await auth.checkToken().then((data) => {
           const requiredRole = to.meta.role;
-          requiredRole <= data.role
+          requiredRole <= data.userData.role
             ? next()
             : (next({ name: "index" }), useToast().error("Sem permissão"));
         });
