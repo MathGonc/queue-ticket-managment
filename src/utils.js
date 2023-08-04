@@ -4,13 +4,14 @@ import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
 
-import { useAuth } from "@/stores/auth.js";
+import { useAuth } from "./stores/auth.js";
+import { checkToken } from "./controllers/userController";
 
 export async function callTicket(_id) {
   const auth = useAuth();
   let userData = {};
   if (auth.isAuth) {
-    await auth.checkToken().then((data) => {
+    await checkToken().then((data) => {
       userData = data.userData;
     });
   }

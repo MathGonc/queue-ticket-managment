@@ -25,14 +25,12 @@
 - [x] Adicionar novamente o campo "atendido por" nos atendidos
 - [x] Armazenar nome de usuario junto ao token
 - [x] Limite de letras no nome e tipo
-- [ ] Pagina de atendimento com a borda central menor
-- [ ] Adicionar uma bibilhoteca de icones
-- [ ] Organizar rotas e controller no "auth" e "user"
-- [ ] Colocar funções do mongodb dentro do modulo do mongodb
+- [x] Pagina de atendimento com a borda central menor
+- [x] Adicionar uma bibilhoteca de icones
+- [x] Organizar rotas e controller no "auth" e "user"
+- [x] Colocar funções do mongodb dentro do modulo do mongodb
 - [ ] Colocar em modo de produção para ficar mais otimizado
 - [ ] Adicionar um icone principal para o site
-- [ ] Adicionar bibilhoteca de icones
-- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 
 ### To do: (Portfolio)
 
@@ -41,6 +39,7 @@
 
 ### Maybe:
 
+- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 - [ ] Logs para verificação de atendimento, do tipo (logs de triagem, logs de atendimento e relatorio de senhas atendidas em um dia especifico)
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical e Horizontal

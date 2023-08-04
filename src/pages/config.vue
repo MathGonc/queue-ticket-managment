@@ -4,10 +4,10 @@
     <span class="title_page">Painel de configuração</span>
     <transition-group>
       <div v-if="transitionFade">
-        <div>
-          <div class="container w-25 p-3">
-            <h5>Monitor</h5>
-            <div class="col">
+        <div class="container">
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
+              <h5>Monitor</h5>
               <div class="input-group input-group-sm mb-3 justify-content-center">
                 <span class="input-group-text" id="basic-addon1">Idioma:</span>
                 <select
@@ -81,12 +81,10 @@
               </span>
             </div>
           </div>
-        </div>
-        <br />
-        <div class="container w-25 p-3">
-          <h5>Registro de usuario</h5>
-          <div class="row">
-            <div class="col">
+          <br />
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
+              <h5>Registro de usuario</h5>
               <form @submit.prevent="handleRegister()">
                 <div class="input-group input-group-sm mb-1">
                   <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
@@ -141,16 +139,19 @@
               </form>
             </div>
           </div>
-        </div>
-        <br />
-        <div class="container w-25 p-3">
-          <button
-            type="button"
-            class="btn btn-outline-danger"
-            @click="handleResetGlobalTicketData"
-            :disabled="buttonDisabled">
-            Resetar painel de senhas
-          </button>
+          <br />
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                @click="handleResetGlobalTicketData"
+                :disabled="buttonDisabled">
+                Resetar painel de senhas
+              </button>
+            </div>
+          </div>
+          <br />
         </div>
       </div>
     </transition-group>
@@ -161,12 +162,12 @@
 import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { useAuth } from "@/stores/auth.js";
 import {
   loadMonitorConfigs,
   saveMonitorConfigs,
   resetGlobalTicketData,
 } from "../controllers/globalController";
+import { registerUser } from "../controllers/userController";
 
 import topbar from "../components/topbar";
 
@@ -178,7 +179,6 @@ export default defineComponent({
   setup() {
     // const globalStore = useGlobalStore();
 
-    const auth = useAuth();
     function handleRegister() {
       const loginPattern = /^[a-zA-Z0-9]+[.][a-zA-Z0-9]+$/;
 
@@ -191,8 +191,7 @@ export default defineComponent({
         password: this.register.pass,
         role: this.register.role,
       };
-      auth
-        .register(userData)
+      registerUser(userData)
         .then((response) => {
           this.register.username = "";
           this.register.login = "";

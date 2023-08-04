@@ -1,4 +1,5 @@
 import { useAuth } from "@/stores/auth.js";
+import { checkToken } from "../controllers/userController";
 import { useToast } from "vue-toastification";
 
 export default async function routes(to, from, next) {
@@ -14,7 +15,7 @@ export default async function routes(to, from, next) {
   if (to.meta?.auth) {
     if (auth.isAuth) {
       if (to.meta.role) {
-        await auth.checkToken().then((data) => {
+        await checkToken().then((data) => {
           const requiredRole = to.meta.role;
           requiredRole <= data.userData.role
             ? next()

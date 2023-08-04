@@ -3,29 +3,40 @@
     <topbar></topbar>
     <transition-group>
       <div v-if="transitionFade">
+        <div class="container menu-default">
+          <Transition name="bounce">
+            <div v-if="transitionNewTicket">
+              <span v-if="ticketGlobalData.currentNumber" class="current-ticket">
+                <vue-feather type="user" size="48" class="icon" stroke-width="1" />
+                <div class="row">
+                  <span class="number"
+                    >Senha:
+                    {{ ticketGlobalData.currentNumber }}
+                  </span>
+                </div>
+                <div class="row">
+                  <span class="name">{{ ticketGlobalData.currentUser }} </span>
+                </div>
+                <div class="row">
+                  <span class="table">(Guichê: {{ ticketGlobalData.currentTable }}) </span>
+                </div>
+              </span>
+            </div>
+          </Transition>
+        </div>
+
+        <br />
+
         <div class="container">
-          <div class="row">
-            <div class="col">
-              <Transition name="bounce">
-                <p v-if="transitionNewTicket" style="text-align: center">
-                  <span v-if="ticketGlobalData.currentNumber">
-                    <h1 style="font-size: 48px">
-                      <b>
-                        Senha: {{ ticketGlobalData.currentNumber }}
-                        <br />
-                        {{ ticketGlobalData.currentUser }}
-                        <br />
-                        (Guichê {{ ticketGlobalData.currentTable }})
-                      </b>
-                    </h1></span
-                  >
-                </p>
-              </Transition>
-              <span v-if="ticketGlobalData.lastNumber">
-                <h3>
-                  Última Senha: {{ ticketGlobalData.lastNumber }} -
-                  {{ ticketGlobalData.lastUser }} (Guichê {{ ticketGlobalData.lastTable }})
-                </h3>
+          <div class="row justify-content-md-center">
+            <div class="col-sm-auto menu-default">
+              <span v-if="ticketGlobalData.lastNumber" class="last-ticket">
+                <vue-feather type="users" size="24" class="icon" />
+                <div class="number">Última Senha: {{ ticketGlobalData.lastNumber }}</div>
+                <span class="name">
+                  {{ ticketGlobalData.lastUser }}
+                </span>
+                (Guichê {{ ticketGlobalData.lastTable }})
               </span>
             </div>
           </div>
@@ -40,12 +51,13 @@
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { loadMonitorConfigs, getGlobalTicketData } from "../controllers/globalController";
-
+import VueFeather from "vue-feather";
 import topbar from "../components/topbar";
 
 export default {
   name: "page_monitor",
   components: {
+    "vue-feather": VueFeather,
     topbar,
   },
   data() {
@@ -130,6 +142,27 @@ export default {
 </script>
 
 <style scoped>
+.monitor {
+  text-align: center;
+  line-height: 1;
+}
+.monitor .current-ticket .name {
+  font-size: 72px;
+  font-weight: bold;
+}
+
+.monitor .current-ticket .number {
+  font-size: 48px;
+}
+
+.monitor .current-ticket .table {
+  font-size: 32px;
+}
+
+.monitor .last-ticket {
+  font-size: 24px;
+}
+
 .bounce-enter-active {
   animation: bounce-in 0.5s;
 }

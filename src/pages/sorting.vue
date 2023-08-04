@@ -4,12 +4,12 @@
     <span class="title_page">Painel de triagem</span>
     <transition-group>
       <div v-if="transitionFade">
-        <div class="container w-25 p-3">
-          <div class="row">
-            <div class="col">
+        <div class="container">
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
               <form @submit.prevent="handleRegisterTicket()">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Nome:</span>
+                  <span class="input-group-text" id="inputGroup-sizing-sm">*Nome:</span>
                   <input
                     type="text"
                     class="form-control"
@@ -85,7 +85,8 @@ import { insertTicket } from "../controllers/ticketController";
 import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
 import { vMaska } from "maska";
 
-import { useAuth } from "@/stores/auth.js";
+import { useAuth } from "../stores/auth.js";
+import { checkToken } from "../controllers/userController";
 import topbar from "../components/topbar";
 
 export default defineComponent({
@@ -126,7 +127,7 @@ export default defineComponent({
   },
   async mounted() {
     if (this.auth.isAuth) {
-      await this.auth.checkToken().then((data) => {
+      await checkToken().then((data) => {
         this.userData = data.userData;
       });
     }
@@ -159,7 +160,7 @@ export default defineComponent({
     async handleRegisterTicket() {
       if (this.inputTicket.name.length < 1) return useToast().error("Digite um nome");
       //if (!this.inputTicket.docNumber.masked.length) return useToast().error("Digite um CPF");
-      if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
+      // if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
 
       if (this.buttonDisabled) return;
       this.setButtonDisabled();

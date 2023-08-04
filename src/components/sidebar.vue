@@ -1,175 +1,196 @@
 <template>
   <!-- <div class="col"> -->
   <!-- <div class="col-sm-auto flex-nowrap"> -->
-  <div class="sidebar col-auto col-md-auto col-xl-auto px-sm-auto min-vh-100">
-    <div v-if="this.$route.name != 'index'">
-      <router-link class="d-grid gap-2" :to="{ name: 'index' }">
-        <button class="btn btn-primary btn-sm" type="button">
-          <img src="../assets/arrow-left.svg" /> Voltar
-        </button>
-      </router-link>
+
+  <div class="sidebar">
+    <div :class="[this.collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']">
+      <div class="container head-buttons">
+        <div class="row justify-content-between">
+          <div class="col-md-auto btn-sidebar">
+            <button class="btn btn-dark btn-sm" type="button" @click="toggleCollapseSidebar()">
+              <vue-feather type="menu" size="16" class="icon" stroke="white" />
+            </button>
+            <!-- <div class="position-relative">
+              <div v-if="this.collapseMenu.all">
+                <div class="position-absolute top-50 start-100 translate-middle">
+                  <span class="badge rounded">{{ this.ticketsInQueue }} </span>
+                </div>
+              </div>
+            </div> -->
+          </div>
+          <div class="col-md-auto btn-back" v-if="this.$route.name != 'index'">
+            <router-link :to="{ name: 'index' }">
+              <button class="btn btn-primary btn-sm" type="button">
+                <vue-feather type="arrow-left" size="16" class="icon" />
+              </button>
+            </router-link>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <ul class="list-unstyled">
+          <!-- Queue -->
+          <li class="list">
+            <div class="row justify-content-between title">
+              <div class="col-auto text-area">
+                <vue-feather type="users" class="icon" />
+                <span class="text"> Fila: </span>
+                <span class="badge rounded">{{ this.ticketsInQueue }} </span>
+              </div>
+              <div class="col-auto button-area">
+                <button
+                  @click="toggleCollapseMenuQueued()"
+                  type="button"
+                  class="btn btn-link btn-toggle btn-sm rounded"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseQueued"
+                  :aria-expanded="!this.collapseMenu.queued"
+                  aria-controls="#collapseQueued"
+                  :disabled="buttonDisabled">
+                  <vue-feather
+                    type="chevron-left"
+                    :class="[this.collapseMenu.queued ? 'icon collapsed' : 'icon display']" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              :class="[
+                isTransitioningQueued
+                  ? 'collapsing'
+                  : [collapseMenu.queued ? 'collapse' : 'collapse show'],
+              ]"
+              id="collapseQueued"
+              @transitionend="onTransitionEndQueued">
+              <div v-if="this.ticketsInQueue == 0" class="details">A fila está vazia</div>
+              <ul class="nav flex-column">
+                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                  <div class="ticket row" v-if="ticket.ticketStatus == 1">
+                    <div class="text-area col">
+                      <span class="name">
+                        {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
+                        <span v-if="ticket.ticketPreferential">
+                          <span class="badge rounded">P</span>
+                        </span>
+                      </span>
+                      <div class="details">
+                        <div v-if="ticket.ticketType">({{ ticket.ticketType }})</div>
+                        <div v-if="ticket.ticketDocNumber">CPF: {{ ticket.ticketDocNumber }}</div>
+                        <div>
+                          Cadastrada:
+                          {{ convertDate(new Date(ticket.ticketDateQueue)) }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="button-area col-sm-auto">
+                      <button
+                        v-if="userRole >= userRoleToDeleteTickets"
+                        @click="handleDeleteTicket(ticket.ticketID)"
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        :disabled="buttonDisabled">
+                        <vue-feather type="trash-2" size="16" class="icon" />
+                      </button>
+                      <button
+                        @click="handleCallTicket(ticket.ticketID)"
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        :disabled="buttonDisabled">
+                        <vue-feather type="bell" size="16" class="icon" />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- Serviced -->
+          <li class="list">
+            <div class="row justify-content-between title">
+              <div class="col-auto text-area">
+                <vue-feather type="user-check" class="icon" />
+                <span class="text"> Atendidas: </span>
+              </div>
+              <div class="col-auto button-area">
+                <button
+                  @click="toggleCollapseMenuServiced()"
+                  type="button"
+                  class="btn btn-link btn-toggle btn-sm rounded"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseServiced"
+                  :aria-expanded="!this.collapseMenu.serviced"
+                  aria-controls="#collapseServiced"
+                  :disabled="buttonDisabled">
+                  <vue-feather
+                    type="chevron-left"
+                    :class="[this.collapseMenu.serviced ? 'icon collapsed' : 'icon display']" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              :class="[
+                isTransitioningServiced
+                  ? 'collapsing'
+                  : [collapseMenu.serviced ? 'collapse' : 'collapse show'],
+              ]"
+              id="collapseServiced"
+              @transitionend="onTransitionEndServiced">
+              <ul class="nav flex-column">
+                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                  <div class="ticket row" v-if="ticket.ticketStatus == 2">
+                    <div class="text-area col">
+                      <span class="name">
+                        {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
+                        <span v-if="ticket.ticketPreferential">
+                          <span class="badge rounded">P</span>
+                        </span>
+                      </span>
+                      <div class="details">
+                        <div v-if="ticket.ticketType">({{ ticket.ticketType }})</div>
+                        <div v-if="ticket.ticketDocNumber">CPF: {{ ticket.ticketDocNumber }}</div>
+                        <div>
+                          Cadastrada:
+                          {{ convertDate(new Date(ticket.ticketDateQueue)) }}
+                        </div>
+                        <div>
+                          Atendida:
+                          {{ convertDate(new Date(ticket.ticketDateServiced)) }}
+                        </div>
+                        <div>
+                          Atendida por:
+                          {{ ticket.ticketServicedBy }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="button-area col-sm-auto">
+                      <button
+                        v-if="userRole >= userRoleToDeleteTickets"
+                        @click="handleDeleteTicket(ticket.ticketID)"
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        :disabled="buttonDisabled">
+                        <vue-feather type="trash-2" size="16" class="icon" />
+                      </button>
+                      <button
+                        @click="handleCallTicket(ticket.ticketID)"
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        :disabled="buttonDisabled">
+                        <vue-feather type="bell" size="16" class="icon" />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div class="details">(Resultados dos últimos 7 dias)</div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <ul class="list-unstyled">
-      <!-- Queue -->
-      <li class="list">
-        <div class="title position-relative">
-          <div class="textarea">
-            <img class="icon" src="../assets/queued.svg" />
-            <span class="text"> Fila: </span>
-            <span class="badge rounded">
-              {{ this.ticketsInQueue }}
-            </span>
-          </div>
-          <div class="position-absolute top-50 end-0 translate-middle-y">
-            <button
-              @click="toggleCollapseMenuQueued()"
-              type="button"
-              class="btn btn-link btn-toggle btn-sm rounded"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseQueued"
-              :aria-expanded="this.collapseMenu.queued"
-              aria-controls="#collapseQueued"
-              :disabled="buttonDisabled">
-              <img class="icon" v-if="this.collapseMenu.queued" src="../assets/arrow_down.svg" />
-              <img class="icon" v-else src="../assets/arrow_left.svg" />
-            </button>
-          </div>
-        </div>
-
-        <div
-          :class="[
-            isTransitioningQueued
-              ? 'collapsing'
-              : [collapseMenu.queued ? 'collapse show' : 'collapse'],
-          ]"
-          id="collapseQueued"
-          @transitionend="onTransitionEndQueued">
-          <div v-if="this.ticketsInQueue == 0" class="details">A fila está vazia</div>
-          <ul class="nav flex-column">
-            <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-              <div class="ticket row" v-if="ticket.ticketStatus == 1">
-                <div class="textarea col">
-                  <span class="name">
-                    {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
-                    <span v-if="ticket.ticketPreferential">
-                      <span class="badge rounded">P</span>
-                    </span>
-                  </span>
-                  <div class="details">
-                    <div>({{ ticket.ticketType }})</div>
-                    <div v-if="ticket.ticketDocNumber">CPF: {{ ticket.ticketDocNumber }}</div>
-                    <div>
-                      Cadastrada:
-                      {{ convertDate(new Date(ticket.ticketDateQueue)) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="button-area col-sm-auto">
-                  <button
-                    v-if="userRole >= userRoleToDeleteTickets"
-                    @click="handleDeleteTicket(ticket.ticketID)"
-                    type="button"
-                    class="btn btn-danger btn-sm"
-                    :disabled="buttonDisabled">
-                    <img class="icon" src="../assets/trash.svg" />
-                  </button>
-                  <button
-                    @click="handleCallTicket(ticket.ticketID)"
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    :disabled="buttonDisabled">
-                    <img class="icon" src="../assets/volume-up-fill.svg" />
-                  </button>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </li>
-
-      <!-- Serviced -->
-      <li class="list">
-        <div class="title position-relative">
-          <div class="textarea">
-            <img class="icon" src="../assets/serviced.svg" />
-            <span class="text"> Atendidas: </span>
-          </div>
-          <div class="position-absolute top-50 end-0 translate-middle-y">
-            <button
-              @click="toggleCollapseMenuServiced()"
-              type="button"
-              class="btn btn-link btn-toggle btn-sm rounded"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseServiced"
-              :aria-expanded="this.collapseMenu.serviced"
-              aria-controls="#collapseServiced"
-              :disabled="buttonDisabled">
-              <img class="icon" v-if="this.collapseMenu.serviced" src="../assets/arrow_down.svg" />
-              <img class="icon" v-else src="../assets/arrow_left.svg" />
-            </button>
-          </div>
-        </div>
-
-        <div
-          :class="[
-            isTransitioningServiced
-              ? 'collapsing'
-              : [collapseMenu.serviced ? 'collapse show' : 'collapse'],
-          ]"
-          id="collapseServiced"
-          @transitionend="onTransitionEndServiced">
-          <ul class="nav flex-column">
-            <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
-              <div class="ticket row" v-if="ticket.ticketStatus == 2">
-                <div class="textarea col">
-                  <span class="name">
-                    {{ ticket.ticketNumber }} - {{ ticket.ticketName }}
-                    <span v-if="ticket.ticketPreferential">
-                      <span class="badge rounded">P</span>
-                    </span>
-                  </span>
-                  <div class="details">
-                    <div>({{ ticket.ticketType }})</div>
-                    <div v-if="ticket.ticketDocNumber">CPF: {{ ticket.ticketDocNumber }}</div>
-                    <div>
-                      Cadastrada:
-                      {{ convertDate(new Date(ticket.ticketDateQueue)) }}
-                    </div>
-                    <div>
-                      Atendida:
-                      {{ convertDate(new Date(ticket.ticketDateServiced)) }}
-                    </div>
-                    <div v-if="userRole >= 3">
-                      Atendida por:
-                      {{ ticket.ticketServicedBy }}
-                    </div>
-                  </div>
-                </div>
-                <div class="button-area col-sm-auto">
-                  <button
-                    v-if="userRole >= userRoleToDeleteTickets"
-                    @click="handleDeleteTicket(ticket.ticketID)"
-                    type="button"
-                    class="btn btn-danger btn-sm"
-                    :disabled="buttonDisabled">
-                    <img class="icon" src="../assets/trash.svg" />
-                  </button>
-                  <button
-                    @click="handleCallTicket(ticket.ticketID)"
-                    type="button"
-                    class="btn btn-primary btn-sm"
-                    :disabled="buttonDisabled">
-                    <img class="icon" src="../assets/volume-up-fill.svg" />
-                  </button>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <div class="details">(Resultados dos últimos 7 dias)</div>
-        </div>
-      </li>
-    </ul>
   </div>
   <div class="col-auto"><router-view></router-view></div>
   <!-- </div> -->
@@ -185,19 +206,26 @@ import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketControlle
 import { vMaska } from "maska";
 import { useAuth } from "@/stores/auth.js";
 import { callTicket } from "../utils";
+import { checkToken } from "../controllers/userController";
+
+import VueFeather from "vue-feather";
 import config from "../config";
 
 export default defineComponent({
   name: "page_sidebar",
   directives: { maska: vMaska },
+  components: {
+    "vue-feather": VueFeather,
+  },
   data() {
     return {
       buttonDisabled: false,
       userRole: 0,
       isTransitioning: false,
       collapseMenu: useLocalStorage("collapseMenu", {
-        queued: ref(true),
-        serviced: ref(false),
+        all: ref(false),
+        queued: ref(false),
+        serviced: ref(true),
       }),
       ticketsInQueue: 0,
       ticketID: [],
@@ -218,7 +246,7 @@ export default defineComponent({
       this.handleLoadTicketsInQueue();
     });
     if (this.auth.isAuth) {
-      await this.auth.checkToken().then((data) => {
+      await checkToken().then((data) => {
         this.userRole = data.userData.role;
       });
     }
@@ -274,6 +302,15 @@ export default defineComponent({
       this.isTransitioningServiced
         ? ((this.isTransitioningServiced = false), (this.buttonDisabled = false))
         : "";
+    },
+    toggleCollapseSidebar() {
+      // if (this.buttonDisabled) return;
+      // this.buttonDisabled = true;
+
+      //this.collapseMenu.queued = true;
+      //this.collapseMenu.serviced = true;
+
+      this.collapseMenu.all ? (this.collapseMenu.all = false) : (this.collapseMenu.all = true);
     },
     toggleCollapseMenuQueued() {
       if (this.buttonDisabled) return;
@@ -361,31 +398,65 @@ export default defineComponent({
 </script>
 
 <style>
-.sidebar {
+.sidebar-collapsed {
+  transition: all 0.7s ease-out;
   background: #2e2e2e;
-  max-height: 100%;
-  max-width: 30%;
-  min-width: 20%;
-  overflow-y: auto;
+  min-height: 100vh !important;
+  max-width: 45px;
+  border-top-right-radius: 3px;
   position: fixed;
   padding: 5px;
-  border-top-right-radius: 3px;
 }
 
-.sidebar::-webkit-scrollbar {
+.sidebar-display {
+  transition: all 0.3s ease-out;
+  background: #2e2e2e;
+  min-height: 100vh !important;
+  max-width: 30%;
+  position: fixed;
+  padding: 5px 5px;
+  border-top-right-radius: 3px;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* overflow: hidden; */
+}
+
+.sidebar-collapsed .content {
+  transition: opacity 0.3s ease-out, visibility 0.5s ease-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sidebar-display .content {
+  transition: opacity 0.3s ease-out, visibility 0.5s ease-out;
+  opacity: 100;
+  visibility: visible;
+}
+
+.sidebar-collapsed .head-buttons .btn {
+  margin-bottom: 5px;
+}
+
+/* .sidebar::-webkit-scrollbar {
   display: none;
+} */
+
+.head-buttons {
+  display: contents;
 }
 
 .sidebar .list {
   color: white;
-  margin-block-end: 10%;
+  margin-top: 10px;
+  margin-bottom: 25px;
 }
 
 .sidebar .list .nav {
-  padding-inline: 25px;
+  padding-inline: 20px;
 }
 
-.sidebar .list .badge {
+.badge {
   background-color: rgba(255, 19, 19, 0.432);
 }
 
@@ -393,13 +464,7 @@ export default defineComponent({
   filter: brightness(0) invert(1); /*white*/
 }
 
-.sidebar .list .title {
-  align-items: center;
-  display: flex;
-  margin-top: 10px;
-}
-
-.sidebar .title .textarea {
+.sidebar .title .text-area {
   text-align: left;
 }
 
@@ -407,16 +472,27 @@ export default defineComponent({
   width: 24px;
   height: 24px;
 }
+
 .sidebar .list .title .btn {
-  text-align: right;
+  float: right;
+}
+
+.sidebar .list .title .button-area .icon.collapsed {
+  transition: all 0.5s ease-out;
+  transform: rotate(0deg);
+}
+
+.sidebar .list .title .button-area .icon.display {
+  transition: all 0.5s ease-out;
+  transform: rotate(-90deg);
 }
 
 .sidebar .ticket {
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.082);
-  margin-top: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
+  margin-bottom: 5px;
   text-align: left;
 }
 
@@ -431,14 +507,6 @@ export default defineComponent({
 .sidebar .list .nav-item .btn {
   margin-top: 2px;
   margin-right: 5px;
-}
-
-.sidebar .list .ticket .textarea {
-  line-break: anywhere;
-}
-
-.sidebar .list .ticket .textarea .name {
-  font-size: 16px;
 }
 
 .sidebar .list .details {

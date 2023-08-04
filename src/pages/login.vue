@@ -4,41 +4,33 @@
     <span class="title_page">Autenticação</span>
     <transition-group>
       <div v-if="transitionFade">
-        <div class="container w-25 p-3">
-          <div class="row">
-            <div class="col">
+        <div class="container">
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
               <form @submit.prevent="handleLogin">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Login:</span
-                  >
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Login:</span>
                   <input
                     type="text"
                     class="form-control"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="login"
-                    required
-                  />
+                    required />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
-                    >Senha:</span
-                  >
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
                   <input
                     type="password"
                     class="form-control"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
                     v-model="password"
-                    required
-                  />
+                    required />
                 </div>
 
-                <button type="submit" class="btn btn-outline-primary">
-                  Login
-                </button>
+                <button type="submit" class="btn btn-outline-primary">Login</button>
               </form>
             </div>
           </div>
@@ -51,8 +43,10 @@
 <script>
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
-import { useAuth } from "@/stores/auth.js";
 import topbar from "../components/topbar";
+import { loginUser } from "../controllers/userController";
+import { useAuth } from "../stores/auth";
+import router from "../router";
 
 export default {
   name: "page_login",
@@ -65,16 +59,17 @@ export default {
     };
   },
   setup() {
-    const auth = useAuth();
     const login = ref("");
     const password = ref("");
-
+    const auth = useAuth();
     async function handleLogin() {
       try {
-        await auth.login({ login: login.value, password: password.value });
+        await loginUser({ login: login.value, password: password.value }).then((response) => {
+          auth.setToken(response.data.token);
+          router.push({ name: "index" });
+        });
       } catch (error) {
-        if (error.response.status == 401)
-          useToast().error("Conta não encontrada");
+        if (error.response.status == 401) useToast().error("Conta não encontrada");
       }
     }
 

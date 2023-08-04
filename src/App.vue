@@ -3,9 +3,11 @@
     <router-view></router-view>
     <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth">
-        <img src="./assets/person-fill.svg" />
+        <vue-feather type="user" size="16" class="icon" />
         {{ this.userData.username }}
-        <button class="btn btn-outline-dark btn-sm" @click="logout()">Sair</button>
+        <button class="btn btn-outline-dark btn-sm" @click="logout()">
+          <vue-feather type="log-out" size="16" class="icon" />
+        </button>
       </template>
     </nav>
   </div>
@@ -21,9 +23,14 @@
 <script>
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
+import { checkToken } from "./controllers/userController";
+import VueFeather from "vue-feather";
 
 export default {
   name: "page_index",
+  components: {
+    "vue-feather": VueFeather,
+  },
   data() {
     return {
       userData: {},
@@ -51,7 +58,7 @@ export default {
     socket.connect();
 
     if (this.auth.isAuth) {
-      await this.auth.checkToken().then((data) => {
+      await checkToken().then((data) => {
         this.userData = data.userData;
       });
     }
@@ -105,11 +112,12 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 
-.container {
+.menu-default {
   text-align: center;
-  background: #e0e0e0b2;
+  background: #e0e0e067;
   border-radius: 10px;
-  padding: 20px; /* Adicione um valor de espaçamento desejado */
+  padding: 20px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
 
 /*.col > *:not(:last-child) {
@@ -132,6 +140,10 @@ nav a.router-link-exact-active {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.icon {
+  vertical-align: sub;
 }
 
 .debug {

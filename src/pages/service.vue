@@ -5,8 +5,8 @@
     <transition-group>
       <div v-if="transitionFade">
         <div class="container">
-          <div class="row">
-            <div class="col">
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
               <!-- <h5 v-if="globalTicketData.currentNumber != -1">
                 Senha atual: {{ globalTicketData.currentNumber }} ({{
                   globalTicketData.currentUser
@@ -68,6 +68,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { loadTicketsInQueue } from "../controllers/ticketController";
 import { callTicket } from "../utils";
 import { useAuth } from "@/stores/auth.js";
+import { checkToken } from "../controllers/userController";
 
 import topbar from "../components/topbar";
 
@@ -107,7 +108,7 @@ export default {
   },
   async mounted() {
     if (this.auth.isAuth) {
-      await this.auth.checkToken().then((data) => {
+      await checkToken().then((data) => {
         this.userData = data.userData;
       });
     }

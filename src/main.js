@@ -4,6 +4,7 @@ import App from "./App.vue";
 import Toast from "vue-toastification";
 import router from "./router";
 import { useAuth } from "@/stores/auth.js";
+import { checkToken } from "./controllers/userController";
 import { vMaska } from "maska";
 
 import "bootstrap/dist/css/bootstrap.css";
@@ -26,7 +27,7 @@ if (localStorage.getItem("token")) {
     const auth = useAuth();
     try {
       auth.setIsAuth(true);
-      await auth.checkToken();
+      await checkToken();
     } catch (error) {
       auth.clearToken();
     }
