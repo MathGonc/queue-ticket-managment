@@ -4,7 +4,7 @@
     <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth">
         <vue-feather type="user" size="16" class="icon" />
-        {{ this.userData.username }}
+        {{ this.username }}
         <button class="btn btn-outline-dark btn-sm" @click="logout()">
           <vue-feather type="log-out" size="16" class="icon" />
         </button>
@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      userData: {},
+      username: "",
       showInterface: true,
     };
   },
@@ -59,7 +59,7 @@ export default {
 
     if (this.auth.isAuth) {
       await checkToken().then((data) => {
-        this.userData = data.userData;
+        this.username = data.userData.username;
       });
     }
   },
