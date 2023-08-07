@@ -29,6 +29,8 @@
 - [x] Adicionar uma bibilhoteca de icones
 - [x] Organizar rotas e controller no "auth" e "user"
 - [x] Colocar funções do mongodb dentro do modulo do mongodb
+- [ ] Ao logar, o nome não aparece na navbar
+- [ ] Criar uma pagina de erro
 - [ ] Colocar em modo de produção para ficar mais otimizado
 - [ ] Adicionar um icone principal para o site
 

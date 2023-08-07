@@ -127,8 +127,8 @@ export default defineComponent({
   },
   async mounted() {
     if (this.auth.isAuth) {
-      await checkToken().then((data) => {
-        this.userData = data.userData;
+      await checkToken().then((response) => {
+        this.userData = response.data.userData;
       });
     }
     this.transitionFade = true;

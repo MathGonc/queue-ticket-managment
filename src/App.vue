@@ -58,8 +58,8 @@ export default {
     socket.connect();
 
     if (this.auth.isAuth) {
-      await checkToken().then((data) => {
-        this.username = data.userData.username;
+      await checkToken().then((response) => {
+        if (response.status == 200) this.username = response.data.userData.username;
       });
     }
   },

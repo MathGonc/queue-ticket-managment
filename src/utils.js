@@ -11,8 +11,8 @@ export async function callTicket(_id) {
   const auth = useAuth();
   let userData = {};
   if (auth.isAuth) {
-    await checkToken().then((data) => {
-      userData = data.userData;
+    await checkToken().then((response) => {
+      userData = response.data.userData;
     });
   }
 

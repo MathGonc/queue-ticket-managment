@@ -1,6 +1,5 @@
 import axios from "axios";
 import config from "../config.js";
-import router from "../router";
 import { useAuth } from "../stores/auth.js";
 
 export async function checkToken() {
@@ -12,11 +11,10 @@ export async function checkToken() {
         Authorization: tokenAuth,
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
     auth.clearToken();
-    router.push("/login");
-    throw error;
+    return error.response;
   }
 }
 

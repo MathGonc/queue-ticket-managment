@@ -16,6 +16,7 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: login,
+      meta: { auth: false, role: 0 },
     },
     {
       path: "/monitor",

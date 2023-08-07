@@ -13,18 +13,19 @@ export default async function routes(to, from, next) {
   }
 
   if (to.meta?.auth) {
-    if (auth.isAuth) {
-      if (to.meta.role) {
-        await checkToken().then((data) => {
-          const requiredRole = to.meta.role;
-          requiredRole <= data.userData.role
-            ? next()
-            : (next({ name: "index" }), useToast().error("Sem permissão"));
-        });
-      }
-    } else {
-      if (to.name != "index") useToast().error("Faça login primeiro");
-      next({ name: "login" });
+    if (to.meta.role) {
+      if (!auth.isAuth) return next({ name: "login" }), useToast().error("Faça login primeiro");
+      const requiredRole = to.meta.role;
+      await checkToken().then((response) => {
+        console.log("🚀 ~ file: routes.js:20 ~ awaitcheckToken ~ response:", response);
+        if (response.status !== 200)
+          return next({ name: "login" }), useToast().error("Faça login novamente");
+
+        if (requiredRole > response.data.userData.role)
+          return next({ name: "index" }), useToast().error("Sem permissão");
+
+        next();
+      });
     }
   }
 }

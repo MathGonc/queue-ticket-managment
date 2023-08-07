@@ -221,12 +221,15 @@ export default defineComponent({
     return {
       buttonDisabled: false,
       userRole: 0,
-      isTransitioning: false,
+
+      isTransitioningQueued: false,
+      isTransitioningServiced: false,
       collapseMenu: useLocalStorage("collapseMenu", {
         all: ref(false),
         queued: ref(false),
         serviced: ref(true),
       }),
+
       ticketsInQueue: 0,
       ticketID: [],
       ticketNumber: [],
@@ -246,8 +249,8 @@ export default defineComponent({
       this.handleLoadTicketsInQueue();
     });
     if (this.auth.isAuth) {
-      await checkToken().then((data) => {
-        this.userRole = data.userData.role;
+      await checkToken().then((response) => {
+        this.userRole = response.data.userData.role;
       });
     }
   },

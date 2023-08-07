@@ -5,7 +5,12 @@ export const useAuth = defineStore("auth", () => {
   const token = ref(localStorage.getItem("token"));
   const isAuth = ref(false);
 
-  function clearToken() {}
+  function clearToken() {
+    setIsAuth(false);
+    localStorage.clear();
+    //localStorage.removeItem("token");
+    token.value = null;
+  }
 
   function setToken(tokenValue) {
     localStorage.setItem("token", tokenValue);

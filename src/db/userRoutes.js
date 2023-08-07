@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid login or password" });
     }
 
-    const token = jwt.sign({ userData: user }, "secret-key", { expiresIn: "48h" });
+    const token = jwt.sign({ userData: user }, "secret-key", { expiresIn: "72h" });
     return res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -55,17 +55,17 @@ router.get("/auth/verify", (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ error: "Unauthorized" });
+      res.status(401).json({ error: "Unauthorized" });
     }
 
     const token = authHeader.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ error: "Unauthorized" });
+      res.status(401).json({ error: "Unauthorized" });
     }
 
     jwt.verify(token, "secret-key", (err, decoded) => {
       if (err) {
-        return res.status(401).json({ error: "Unauthorized" });
+        res.status(401).json({ error: "Unauthorized" });
       }
       const { userData } = decoded;
       res.status(200).json({ userData });
