@@ -63,14 +63,13 @@ export default {
     const password = ref("");
     const auth = useAuth();
     async function handleLogin() {
-      try {
-        await loginUser({ login: login.value, password: password.value }).then((response) => {
-          auth.setToken(response.data.token);
-          router.push({ name: "index" });
-        });
-      } catch (error) {
-        if (error.response.status == 401) useToast().error("Conta não encontrada");
-      }
+      await loginUser({ login: login.value, password: password.value }).then((response) => {
+        console.log("🚀 ~ file: login.vue:68 ~ awaitloginUser ~ response:", response);
+        if (response.status == 401) return useToast().error("Conta não encontrada");
+        auth.setToken(response.data.token);
+        auth.setUserData(response.data.user);
+        router.push({ name: "index" });
+      });
     }
 
     return {

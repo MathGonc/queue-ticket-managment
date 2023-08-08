@@ -22,12 +22,14 @@ app.use("maska", vMaska);
 app.use(router);
 app.use(Toast, options);
 
-if (localStorage.getItem("token")) {
+const auth = useAuth();
+if (auth.token) {
   (async () => {
-    const auth = useAuth();
     try {
       auth.setIsAuth(true);
-      await checkToken();
+      await checkToken().then((response) => {
+        auth.setUserData(response.data.userData);
+      });
     } catch (error) {
       auth.clearToken();
     }

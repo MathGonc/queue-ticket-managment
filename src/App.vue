@@ -4,7 +4,7 @@
     <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth">
         <vue-feather type="user" size="16" class="icon" />
-        {{ this.username }}
+        {{ this.auth.userData.username }}
         <button class="btn btn-outline-dark btn-sm" @click="logout()">
           <vue-feather type="log-out" size="16" class="icon" />
         </button>
@@ -23,7 +23,6 @@
 <script>
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
-import { checkToken } from "./controllers/userController";
 import VueFeather from "vue-feather";
 
 export default {
@@ -56,12 +55,6 @@ export default {
   async mounted() {
     this.transitionFade = true;
     socket.connect();
-
-    if (this.auth.isAuth) {
-      await checkToken().then((response) => {
-        if (response.status == 200) this.username = response.data.userData.username;
-      });
-    }
   },
   methods: {
     async logout() {

@@ -12,27 +12,10 @@
 
 ### To do: (DPU)
 
-- [x] Campo CPF(docNumber) na triagem
-- [x] Somente administrador pode ver por quem foi atendido
-- [x] Collapse na lista de fila e atendidos
-- [x] Impedir que as letras do nome entrem em contato com os botões
-- [x] Diferenciar lista de "Fila" de lista de "Atendidos" com um icone ou pela cor
-- [x] Corrigir BUG na pagina de configuração que surgiu novamente
-- [x] Botão "collapse" totalmente na direita
-- [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
-- [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
-- [x] Corrirgir espaçamento entre botões e nome/tipo de atendimento
-- [x] Adicionar novamente o campo "atendido por" nos atendidos
-- [x] Armazenar nome de usuario junto ao token
-- [x] Limite de letras no nome e tipo
-- [x] Pagina de atendimento com a borda central menor
-- [x] Adicionar uma bibilhoteca de icones
-- [x] Organizar rotas e controller no "auth" e "user"
-- [x] Colocar funções do mongodb dentro do modulo do mongodb
-- [ ] Ao logar, o nome não aparece na navbar
+- [ ] As vezes ao dar F5 não aparece algumas opções que dependem de cargo (provavelmente é algo ao carregar os dados)
 - [ ] Criar uma pagina de erro
-- [ ] Colocar em modo de produção para ficar mais otimizado
 - [ ] Adicionar um icone principal para o site
+- [ ] Colocar em modo de produção para ficar mais otimizado
 
 ### To do: (Portfolio)
 
@@ -42,14 +25,14 @@
 ### Maybe:
 
 - [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
-- [ ] Logs para verificação de atendimento, do tipo (logs de triagem, logs de atendimento e relatorio de senhas atendidas em um dia especifico)
+- [ ] Exibir historico em "Todos, ultimos 7 dias, 1 mês, 6 meses, 1 ano"
+- [ ] "Histórico de ações de usuarios(entrou, saiu, excluiu)"
+- [ ] Transformar o histórico de atendimento em um PDF ou planilha
 - [ ] Adaptação do HTML para o celular
-- [ ] Monitor: modo Vertical e Horizontal
-- [ ] **Monitor:** Informações de contato abaixo da senha e acima da Bottombar
-- [ ] **Topbar:** Relogio no canto superior direito da janela
+- [ ] Monitor: modo Vertical
 - [ ] Seleção de idioma: _Português_ e _Inglês_
 
-### Done:
+## **Done:**
 
 - [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
 - [x] **Monitor:** Som ao atualizar a pagina
@@ -103,7 +86,7 @@
 - [x] Função de repetir a chamada do ultimo ticket, salvar em localstorage
 - [x] Ao chamar a senha, não apagar ela e sim só mudar o status para atendida
 - [x] Lista de tickets já atendidos
-- [x] callTicketByName in service page
+- [x] callByName in service page
 - [x] Botão de zerar as senhas exibidas no painel
 - [x] Criar a conta dos usuarios para utilizar na segunda-feira
 - [x] Quando entra no /monitor, sai e vai para outra pagina, o evento do /monitor continua ali (Ao apertar F5 sai)
@@ -120,3 +103,23 @@
 - [x] Criar "indices" das consultas realizadas nas funções para otimizar o processo
 - [x] Restringir nomes de usuarios para ter . no meio e limite de caracteres
 - [x] Separação de branch entre **main**(portfolio) e **DPU**(trabalho)
+- [x] Campo CPF(docNumber) na triagem
+- [x] Somente administrador pode ver por quem foi atendido
+- [x] Collapse na lista de fila e atendidos
+- [x] Impedir que as letras do nome entrem em contato com os botões
+- [x] Diferenciar lista de "Fila" de lista de "Atendidos" com um icone ou pela cor
+- [x] Corrigir BUG na pagina de configuração que surgiu novamente
+- [x] Botão "collapse" totalmente na direita
+- [x] Deixar o espaçamento de fora pra dentro, seguindo a ordem: Sidebar > titulo e collapse > itens dentro do collapse
+- [x] Finalizar lista de Fila e replicar modelo para lista de Atendidos
+- [x] Corrirgir espaçamento entre botões e nome/tipo de atendimento
+- [x] Adicionar novamente o campo "atendido por" nos atendidos
+- [x] Armazenar nome de usuario junto ao token
+- [x] Limite de letras no nome e tipo
+- [x] Pagina de atendimento com a borda central menor
+- [x] Adicionar uma bibilhoteca de icones
+- [x] Organizar rotas e controller no "auth" e "user"
+- [x] Colocar funções do mongodb dentro do modulo do mongodb
+- [x] Fix: Ao expirar o token, é exibido um erro para o usuario ao inves de voltar para tela de login
+- [x] Ao logar, o nome não aparece na navbar
+- [x] "Historico de atendimento"

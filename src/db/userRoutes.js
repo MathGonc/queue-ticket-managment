@@ -36,16 +36,18 @@ router.post("/login", async (req, res) => {
     console.log(req.body);
     const user = await User.findOne({ login });
     if (!user) {
-      return res.status(401).json({ error: "Invalid login or password" });
+      res.status(401).json({ error: "Invalid login or password" });
+      return;
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid login or password" });
+      res.status(401).json({ error: "Invalid login or password" });
+      return;
     }
 
     const token = jwt.sign({ userData: user }, "secret-key", { expiresIn: "72h" });
-    return res.status(200).json({ token, user });
+    res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }

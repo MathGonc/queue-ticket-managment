@@ -86,7 +86,6 @@ import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/glob
 import { vMaska } from "maska";
 
 import { useAuth } from "../stores/auth.js";
-import { checkToken } from "../controllers/userController";
 import topbar from "../components/topbar";
 
 export default defineComponent({
@@ -99,7 +98,6 @@ export default defineComponent({
     return {
       transitionFade: false,
       buttonDisabled: false,
-      userData: {},
       inputTicket: {
         name: "",
         docNumber: {
@@ -126,11 +124,6 @@ export default defineComponent({
     };
   },
   async mounted() {
-    if (this.auth.isAuth) {
-      await checkToken().then((response) => {
-        this.userData = response.data.userData;
-      });
-    }
     this.transitionFade = true;
     await this.handleGetGlobalTicketData();
     socket.on("receiveUpdateGlobal", () => {
@@ -138,12 +131,12 @@ export default defineComponent({
     });
   },
   methods: {
-    formatValue(value) {
-      return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    },
-    unformatValue(value) {
-      return value.replace(/[.-]/g, "");
-    },
+    // formatValue(value) {
+    //   return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    // },
+    // unformatValue(value) {
+    //   return value.replace(/[.-]/g, "");
+    // },
     setButtonDisabled() {
       if (process.env.VUE_APP_DEV == 1) return 0;
       this.buttonDisabled = true;
@@ -172,7 +165,7 @@ export default defineComponent({
         number: this.ticketGlobalData.nextToQueue,
         status: 1,
         type: this.inputTicket.type,
-        queuedBy: this.userData.username,
+        queuedBy: this.auth.userData.username,
         preferential: this.inputTicket.preferential,
         name: this.inputTicket.name,
         docNumber: this.inputTicket.docNumber.unmasked,

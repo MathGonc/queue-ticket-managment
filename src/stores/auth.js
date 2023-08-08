@@ -1,37 +1,36 @@
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 
-export const useAuth = defineStore("auth", () => {
-  const token = ref(localStorage.getItem("token"));
-  const isAuth = ref(false);
+export const useAuth = defineStore("auth", {
+  state: () => ({
+    token: ref(localStorage.getItem("token")),
+    isAuth: ref(false),
+    userData: ref({}),
+  }),
+  actions: {
+    clearToken() {
+      this.setIsAuth(false);
+      localStorage.clear();
+      //localStorage.removeItem("token");
+      this.token = null;
+    },
 
-  function clearToken() {
-    setIsAuth(false);
-    localStorage.clear();
-    //localStorage.removeItem("token");
-    token.value = null;
-  }
+    setToken(tokenValue) {
+      localStorage.setItem("token", tokenValue);
+      this.token = tokenValue;
+      this.isAuth = true;
+    },
 
-  function setToken(tokenValue) {
-    localStorage.setItem("token", tokenValue);
-    token.value = tokenValue;
-    isAuth.value = true;
-  }
+    setIsAuth(auth) {
+      this.isAuth = auth;
+    },
 
-  function setIsAuth(auth) {
-    isAuth.value = auth;
-  }
+    setUserData(userdata) {
+      this.userData = userdata;
+    },
+  },
 
-  const isAuthenticated = computed(() => {
-    return token.value;
-  });
-
-  return {
-    token,
-    isAuth,
-    isAuthenticated,
-    clearToken,
-    setToken,
-    setIsAuth,
-  };
+  getters: {
+    isAuthenticated: (state) => state.token,
+  },
 });

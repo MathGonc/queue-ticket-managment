@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import routes from "@/router/routes.js";
 
+import config from "../pages/config.vue";
+import history from "../pages/history.vue";
 import index from "../pages/index.vue";
 import login from "../pages/login.vue";
 import monitor from "../pages/monitor.vue";
-import sorting from "../pages/sorting.vue";
 import service from "../pages/service.vue";
-import config from "../pages/config.vue";
+import sorting from "../pages/sorting.vue";
+
 import sidebar from "../components/sidebar.vue";
 
 const router = createRouter({
@@ -48,6 +50,12 @@ const router = createRouter({
           path: "service",
           name: "service",
           component: service,
+          meta: { role: 2 },
+        },
+        {
+          path: "history",
+          name: "history",
+          component: history,
           meta: { role: 2 },
         },
         {

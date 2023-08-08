@@ -52,3 +52,14 @@ export async function deleteTicket(ticketID) {
     throw error;
   }
 }
+
+export async function loadTicketHistory() {
+  try {
+    const response = await axios.get(`${config.url_server}/loadTicketHistory`);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

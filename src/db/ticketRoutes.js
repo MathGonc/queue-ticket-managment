@@ -71,4 +71,18 @@ router.delete("/deleteTicket/:id", async (req, res) => {
   }
 });
 
+router.get("/loadTicketHistory", async (req, res) => {
+  try {
+    const ticket = await TicketModel.find({})
+      .sort({ status: 1, dateServiced: -1, dateQueue: -1 })
+      .limit(200);
+
+    return res.status(200).json({ ticket });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+    throw error;
+  }
+});
+
 module.exports = router;

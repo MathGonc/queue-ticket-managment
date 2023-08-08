@@ -5,33 +5,38 @@ import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
 
 import { useAuth } from "./stores/auth.js";
-import { checkToken } from "./controllers/userController";
+
+export function convertDate(date) {
+  if (!date) return;
+  const dateString = new Date(date);
+  const formatedDate = `${dateString.toLocaleDateString(
+    "pt-BR"
+  )} às ${dateString.toLocaleTimeString("pt-BR", {
+    hour12: false,
+  })}`.slice(0, 19);
+  return formatedDate;
+}
 
 export async function callTicket(_id) {
   const auth = useAuth();
-  let userData = {};
-  if (auth.isAuth) {
-    await checkToken().then((response) => {
-      userData = response.data.userData;
-    });
-  }
 
-  const myTable = localStorage.getItem("myTable");
-  const callTicketByName = useLocalStorage("callTicketByName", true).value;
+  const callByName = useLocalStorage("callByName", true).value;
+  const userTable = useLocalStorage("userTable", 0).value;
+  if (!userTable) return useToast().error("Selecione seu guichê");
+
   const responseLoadTicket = await loadTicket(_id);
   const ticketData = responseLoadTicket.data.ticket[0];
 
-  if (myTable < 1) return useToast().error("Selecione seu guichê");
-
   const responseGlobalTicketData = await getGlobalTicketData();
   const globalTicketData = responseGlobalTicketData.data.ticket;
+
   if (ticketData.number != globalTicketData.currentNumber) {
     globalTicketData.lastNumber = globalTicketData.currentNumber;
     globalTicketData.lastTable = globalTicketData.currentTable;
     globalTicketData.lastUser = globalTicketData.currentUser;
 
     globalTicketData.currentNumber = ticketData.number;
-    globalTicketData.currentTable = myTable;
+    globalTicketData.currentTable = userTable;
     globalTicketData.currentUser = ticketData.name;
   }
   const updateGlobalResponse = await updateGlobalTicketData({
@@ -40,11 +45,7 @@ export async function callTicket(_id) {
   if (updateGlobalResponse.status != 200) return useToast().error("Ocorreu um erro");
 
   ticketData.status = 2;
-  ticketData.servicedBy = userData.username;
-  console.log(
-    "🚀 ~ file: utils.js:32 ~ callTicket ~ ticketData.servicedBy:",
-    ticketData.servicedBy
-  );
+  ticketData.servicedBy = auth.userData.username;
   ticketData.dateServiced = new Date();
   const updateTicketResponse = await updateTicketCalled(ticketData._id, {
     ...ticketData,
@@ -52,8 +53,7 @@ export async function callTicket(_id) {
   if (updateTicketResponse.status != 200) return useToast().error("Ocorreu um erro");
 
   await socket.emit("signalUpdateValues");
-  await socket.emit("signalUpdateMonitor", callTicketByName);
+  await socket.emit("signalUpdateMonitor", callByName);
 
-  const myCalledTicketData = useLocalStorage("myCalledTicketData", {});
-  myCalledTicketData.value = ticketData;
+  localStorage.setItem("userCalledTicket", ticketData._id);
 }

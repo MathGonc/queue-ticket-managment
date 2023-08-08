@@ -21,7 +21,7 @@ export default async function routes(to, from, next) {
         if (response.status !== 200)
           return next({ name: "login" }), useToast().error("Faça login novamente");
 
-        if (requiredRole > response.data.userData.role)
+        if (requiredRole > auth.userData.role)
           return next({ name: "index" }), useToast().error("Sem permissão");
 
         next();

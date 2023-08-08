@@ -91,7 +91,7 @@ export default {
       this.fetchMonitorConfigs();
     });
 
-    socket.on("receiveUpdateMonitor", (callTicketByName) => {
+    socket.on("receiveUpdateMonitor", (callByName) => {
       getGlobalTicketData().then((response) => {
         this.ticketGlobalData = response.data.ticket;
 
@@ -110,7 +110,7 @@ export default {
               return console.log("o navegador não suporta a API Web Speech.");
             speechSynthesis.cancel(); // Encerra todas as falas em andamento
             var message = new SpeechSynthesisUtterance();
-            callTicketByName
+            callByName
               ? (message.text =
                   this.ticketGlobalData.currentUser +
                   ", dirija-se ao guichê " +

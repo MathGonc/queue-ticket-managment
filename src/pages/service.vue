@@ -21,7 +21,7 @@
                   min="00"
                   max="99"
                   maxlength="2"
-                  v-model="myTable" />
+                  v-model="this.userTable" />
               </div>
               <div class="form-check form-switch py-2">
                 <label class="form-check-label" for="flexSwitchCheckDefault">
@@ -29,7 +29,7 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="this.callTicketByName" />Chamar pelo nome</label
+                    v-model="this.callByName" />Chamar pelo nome</label
                 >
               </div>
               <span class="px-1"
@@ -42,13 +42,13 @@
                 </button></span
               >
 
-              <span class="px-1" v-if="myCalledTicketData.number"
+              <span class="px-1" v-if="userCalledTicket"
                 ><button
                   type="button"
                   @click="callSameTicket"
-                  :disabled="buttonDisabled || !myCalledTicketData.number"
+                  :disabled="buttonDisabled || !userCalledTicket"
                   class="btn btn-outline-primary">
-                  Chamar senha {{ myCalledTicketData.number }} novamente
+                  Chamar ultima senha novamente
                 </button></span
               >
             </div>
@@ -68,7 +68,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { loadTicketsInQueue } from "../controllers/ticketController";
 import { callTicket } from "../utils";
 import { useAuth } from "@/stores/auth.js";
-import { checkToken } from "../controllers/userController";
+// import { checkToken } from "../controllers/userController";
 
 import topbar from "../components/topbar";
 
@@ -80,12 +80,9 @@ export default {
   data() {
     return {
       transitionFade: false,
-      callTicketByName: useLocalStorage("callTicketByName", true) || null,
-      myTable: useLocalStorage("myTable", 0),
-      myCalledTicketData: useLocalStorage("myCalledTicketData", {
-        _id: "",
-        number: 0,
-      }),
+      callByName: useLocalStorage("callByName", true),
+      userTable: useLocalStorage("userTable", 0),
+      userCalledTicket: useLocalStorage("userCalledTicket", null),
       buttonDisabled: false,
 
       // globalTicketData: {
@@ -106,13 +103,17 @@ export default {
       auth,
     };
   },
+  // watch: {
+  //   table(newValue) {
+  //     this.auth.setUserTable(newValue);
+  //   },
+  // },
   async mounted() {
-    if (this.auth.isAuth) {
-      await checkToken().then((response) => {
-        this.userData = response.data.userData;
-      });
-    }
-
+    // if (this.auth.isAuth) {
+    //   await checkToken().then((response) => {
+    //     this.userData = response.data.userData;
+    //   });
+    // }
     this.transitionFade = true;
   },
   methods: {
@@ -144,10 +145,9 @@ export default {
     async callSameTicket() {
       if (this.buttonDisabled) return;
       this.setButtonDisabled();
-      if (this.myTable < 1) return useToast().error("Selecione seu guichê");
-      if (!this.myCalledTicketData.number)
+      if (!this.userCalledTicket)
         return useToast().error("Você não chamou nenhum ticket recentemente");
-      callTicket(this.myCalledTicketData._id);
+      callTicket(this.userCalledTicket);
     },
   },
 };

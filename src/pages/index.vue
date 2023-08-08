@@ -5,17 +5,35 @@
     <transition-group>
       <div v-if="transitionFade">
         <div class="buttons">
-          <button type="button" class="btn btn-outline-primary" @click="goToService">
-            <b>Atendimento</b>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="this.$router.push({ name: 'service' })">
+            Atendimento
           </button>
-          <button type="button" class="btn btn-outline-primary" @click="goToSorting">
-            <b>Triagem</b>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="this.$router.push({ name: 'sorting' })">
+            Triagem
           </button>
-          <button type="button" class="btn btn-outline-primary" @click="goToMonitor">
-            <b>Monitor</b>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="this.$router.push({ name: 'monitor' })">
+            Monitor
           </button>
-          <button type="button" class="btn btn-outline-primary" @click="goToConfig">
-            <b>Configurações</b>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="this.$router.push({ name: 'history' })">
+            Histórico de atendimentos
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            @click="this.$router.push({ name: 'config' })">
+            Configurações
           </button>
         </div>
       </div>
@@ -38,20 +56,7 @@ export default {
   mounted() {
     this.transitionFade = true;
   },
-  methods: {
-    goToMonitor() {
-      this.$router.push({ name: "monitor" });
-    },
-    goToService() {
-      this.$router.push({ name: "service" });
-    },
-    goToSorting() {
-      this.$router.push({ name: "sorting" });
-    },
-    goToConfig() {
-      this.$router.push({ name: "config" });
-    },
-  },
+  methods: {},
 };
 </script>
 
@@ -67,9 +72,10 @@ export default {
 }
 
 .btn {
+  font-weight: bold;
   display: block;
-  width: 200px;
-  height: 50px;
-  margin-bottom: 10px;
+  min-width: 300px;
+  min-height: 50px;
+  margin: 10px;
 }
 </style>
