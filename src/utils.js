@@ -17,6 +17,11 @@ export function convertDate(date) {
   return formatedDate;
 }
 
+export function isValidDate(dateStr) {
+  const date = new Date(dateStr);
+  return !isNaN(date) && date instanceof Date;
+}
+
 export async function callTicket(_id) {
   const auth = useAuth();
 

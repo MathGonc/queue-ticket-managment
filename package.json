@@ -1,5 +1,5 @@
 {
-  "name": "queue-ticket-managment",
+  "name": "gonc-ticket-managment",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vuepic/vue-datepicker": "^5.4.0",
     "@vueuse/core": "^10.2.1",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",

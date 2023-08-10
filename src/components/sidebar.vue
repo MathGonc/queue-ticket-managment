@@ -348,6 +348,11 @@ export default defineComponent({
 </script>
 
 <style>
+.sidebar {
+  z-index: 1000;
+  position: fixed;
+}
+
 .sidebar-collapsed {
   transition: all 0.7s ease-out;
   background: #2e2e2e;
@@ -359,7 +364,7 @@ export default defineComponent({
 }
 
 .sidebar-display {
-  transition: all 0.7s ease-out;
+  transition: max-width 0.7s ease-out;
   background: #2e2e2e;
   min-height: 100vh !important;
   max-width: 30%;
@@ -527,5 +532,18 @@ hr.separator {
   margin-top: 5px;
   margin-bottom: 5px;
   padding: 0px;
+}
+
+.sidebar ::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidebar ::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
+  border-radius: 50px;
+}
+
+.sidebar ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
 }
 </style>

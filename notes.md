@@ -14,20 +14,16 @@
 
 - [ ] As vezes ao dar F5 não aparece algumas opções que dependem de cargo (provavelmente é algo ao carregar os dados)
 - [ ] Criar uma pagina de erro
-- [ ] Adicionar um icone principal para o site
 - [ ] Colocar em modo de produção para ficar mais otimizado
 
 ### To do: (Portfolio)
 
-- [ ] Logo personalizado
 - [ ] Mudar os tipos de atendimento na triagem para algo mais generico
 
 ### Maybe:
 
 - [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
-- [ ] Exibir historico em "Todos, ultimos 7 dias, 1 mês, 6 meses, 1 ano"
 - [ ] "Histórico de ações de usuarios(entrou, saiu, excluiu)"
-- [ ] Transformar o histórico de atendimento em um PDF ou planilha
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical
 - [ ] Seleção de idioma: _Português_ e _Inglês_
@@ -123,3 +119,7 @@
 - [x] Fix: Ao expirar o token, é exibido um erro para o usuario ao inves de voltar para tela de login
 - [x] Ao logar, o nome não aparece na navbar
 - [x] "Historico de atendimento"
+- [x] Icone personalizado
+- [x] Exibir historico com opção de data personalizada
+- [x] Transformar o histórico de atendimento em um PDF ou planilha
+- [x] Sortear historico por categoria
