@@ -22,6 +22,7 @@
 
 ### Maybe:
 
+- [ ] Fix: barra de rolagem continua após ocultar as duas abas da sidebar (remover o elemento ao terminar a animação)
 - [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
 - [ ] "Histórico de ações de usuarios(entrou, saiu, excluiu)"
 - [ ] Adaptação do HTML para o celular
