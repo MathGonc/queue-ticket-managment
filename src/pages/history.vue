@@ -63,7 +63,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="ticket in displayedTickets" :key="ticket._id">
+              <tr v-for="ticket in filterTickets" :key="ticket._id">
                 <td>{{ ticket.number }}</td>
                 <!-- <td>{{ ticket.status }}</td> -->
                 <!-- <td>{{ ticket.preferential }}</td> -->
@@ -78,6 +78,18 @@
             </tbody>
           </table>
         </div>
+
+        <!-- <ul class="pagination">
+          <li @click="changePage('prev')">Anterior</li>
+          <li
+            v-for="page in pages"
+            :key="page"
+            :class="{ active: currentPage === page }"
+            @click="changePage(page)">
+            {{ page }}
+          </li>
+          <li @click="changePage('next')">Próxima</li>
+        </ul> -->
       </div>
     </transition-group>
   </div>
@@ -149,8 +161,11 @@ export default {
     this.transitionFade = true;
   },
   computed: {
-    displayedTickets() {
-      const filteredTickets = this.ticketData.filter((ticket) => {
+    // pages() {
+    //   return Math.ceil(this.ticketData.length / this.itemsPerPage);
+    // },
+    filterTickets() {
+      const searchedTickets = this.ticketData.filter((ticket) => {
         return Object.values(ticket).some((value) => {
           const searchTermMatch = value
             .toString()
@@ -168,7 +183,7 @@ export default {
         });
       });
 
-      const sortedTickets = [...filteredTickets];
+      const sortedTickets = [...searchedTickets];
       if (this.sortColumn) {
         sortedTickets.sort((a, b) => {
           if (a[this.sortColumn] > b[this.sortColumn]) {
@@ -180,12 +195,36 @@ export default {
         });
       }
 
+      // const filteredTickets = sortedTickets.map((row, index) => ({
+      //   ...row,
+      //   id: index + 1,
+      //   isVisible:
+      //     index >= (this.currentPage - 1) * this.itemsPerPage &&
+      //     index < this.currentPage * this.itemsPerPage,
+      // }));
+
       return sortedTickets.slice(0, this.itemsPerPage);
     },
   },
   methods: {
     convertDate(date) {
       return convertDate(date);
+    },
+    handleitemsPerPageChange() {
+      this.currentPage = 1;
+    },
+    changePage(newPage) {
+      if (newPage === "prev" && this.currentPage > 1) {
+        this.currentPage--;
+      } else if (newPage === "next" && this.currentPage < this.pages) {
+        this.currentPage++;
+      } else if (typeof newPage === "number" && newPage >= 1 && newPage <= this.pages) {
+        this.currentPage = newPage;
+      }
+      this.limitPagination();
+    },
+    limitPagination() {
+      // Implemente sua lógica de limitação de paginação aqui
     },
     sortTable(col) {
       if (this.sortColumn === col) {
