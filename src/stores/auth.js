@@ -5,7 +5,9 @@ export const useAuth = defineStore("auth", {
   state: () => ({
     token: ref(localStorage.getItem("token")),
     isAuth: ref(false),
-    userData: ref({}),
+    userData: ref({
+      username: "",
+    }),
   }),
   actions: {
     clearToken() {
@@ -32,5 +34,6 @@ export const useAuth = defineStore("auth", {
 
   getters: {
     isAuthenticated: (state) => state.token,
+    getUsername: (state) => state.userData.username,
   },
 });

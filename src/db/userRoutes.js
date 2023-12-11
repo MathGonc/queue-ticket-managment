@@ -46,7 +46,9 @@ router.post("/login", async (req, res) => {
       return;
     }
 
-    const token = jwt.sign({ userData: user }, "secret-key", { expiresIn: "72h" });
+    const token = jwt.sign({ userData: user }, "secret-key", {
+      expiresIn: "72h",
+    });
     res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -68,9 +70,16 @@ router.get("/auth/verify", (req, res) => {
     jwt.verify(token, "secret-key", (err, decoded) => {
       if (err) {
         res.status(401).json({ error: "Unauthorized" });
+        return;
       }
       const { userData } = decoded;
-      res.status(200).json({ userData });
+      if (userData) {
+        console.log(
+          "🚀 ~ file: userRoutes.js:76 ~ jwt.verify ~ userData:",
+          userData
+        );
+        res.status(200).json({ userData });
+      }
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });

@@ -17,7 +17,8 @@
               cancel-text="Cancelar"
               show-now-button
               now-button-label="Hoje"
-              format="dd/MM/yyyy" />
+              format="dd/MM/yyyy"
+            />
           </div>
           <div class="col-auto">
             <div class="input-group">
@@ -26,18 +27,24 @@
                   type="text"
                   class="form-control"
                   v-model="searchTerm"
-                  placeholder="Procurar" />
+                  placeholder="Procurar"
+                />
               </div>
               <select class="custom-select" v-model="itemsPerPage">
-                <option v-for="option in itemsPerPageOptions" :key="option">{{ option }}</option>
+                <option v-for="option in itemsPerPageOptions" :key="option">
+                  {{ option }}
+                </option>
               </select>
             </div>
           </div>
           <div class="col-auto">
             <button class="btn btn-primary" @click="createPDF()">
-              <vue-feather type="airplay" size="16" class="icon" stroke-width="3" /><b>
-                Salvar como PDF</b
-              >
+              <vue-feather
+                type="airplay"
+                size="16"
+                class="icon"
+                stroke-width="3"
+              /><b> Salvar como PDF</b>
             </button>
           </div>
         </div>
@@ -50,14 +57,16 @@
                   <a
                     href="#"
                     @click="sortTable(columns.field[index])"
-                    :class="{ active: sortColumn == columns.field[index] }">
+                    :class="{ active: sortColumn == columns.field[index] }"
+                  >
                     {{ column }}
                     <vue-feather
                       v-if="this.sortColumn == columns.field[index]"
                       :type="[this.ascending ? 'arrow-down' : 'arrow-up']"
                       size="16"
                       class="icon"
-                      stroke-width="3" />
+                      stroke-width="3"
+                    />
                   </a>
                 </th>
               </tr>
@@ -79,17 +88,27 @@
           </table>
         </div>
 
-        <!-- <ul class="pagination">
-          <li @click="changePage('prev')">Anterior</li>
+        <ul class="pagination">
+          <li>
+            <button class="btn btn-primary btn-sm" @click="changePage('prev')">
+              <vue-feather type="arrow-left" size="16" class="icon" />
+            </button>
+          </li>
           <li
             v-for="page in pages"
             :key="page"
             :class="{ active: currentPage === page }"
-            @click="changePage(page)">
-            {{ page }}
+          >
+            <button class="btn btn-primary btn-sm" @click="changePage(page)">
+              {{ page }}
+            </button>
           </li>
-          <li @click="changePage('next')">Próxima</li>
-        </ul> -->
+          <li>
+            <button class="btn btn-primary btn-sm" @click="changePage('next')">
+              <vue-feather type="arrow-right" size="16" class="icon" />
+            </button>
+          </li>
+        </ul>
       </div>
     </transition-group>
   </div>
@@ -153,7 +172,7 @@ export default {
   mounted() {
     this.handleLoadTicketHistory();
 
-    //To show queued tickets
+    //Comment to show queued tickets
     // const startDate = new Date(new Date().setDate(new Date().getDate() - 365));
     // const endDate = new Date(new Date().setDate(startDate.getDate()));
     // this.dateServiced = [startDate, endDate];
@@ -161,9 +180,9 @@ export default {
     this.transitionFade = true;
   },
   computed: {
-    // pages() {
-    //   return Math.ceil(this.ticketData.length / this.itemsPerPage);
-    // },
+    pages() {
+      return Math.ceil(this.ticketData.length / this.itemsPerPage);
+    },
     filterTickets() {
       const searchedTickets = this.ticketData.filter((ticket) => {
         return Object.values(ticket).some((value) => {
@@ -195,15 +214,15 @@ export default {
         });
       }
 
-      // const filteredTickets = sortedTickets.map((row, index) => ({
-      //   ...row,
-      //   id: index + 1,
-      //   isVisible:
-      //     index >= (this.currentPage - 1) * this.itemsPerPage &&
-      //     index < this.currentPage * this.itemsPerPage,
-      // }));
+      const filteredTickets = sortedTickets.map((row, index) => ({
+        ...row,
+        id: index + 1,
+        isVisible:
+          index >= (this.currentPage - 1) * this.itemsPerPage &&
+          index < this.currentPage * this.itemsPerPage,
+      }));
 
-      return sortedTickets.slice(0, this.itemsPerPage);
+      return filteredTickets.slice(0, this.itemsPerPage);
     },
   },
   methods: {
@@ -218,7 +237,11 @@ export default {
         this.currentPage--;
       } else if (newPage === "next" && this.currentPage < this.pages) {
         this.currentPage++;
-      } else if (typeof newPage === "number" && newPage >= 1 && newPage <= this.pages) {
+      } else if (
+        typeof newPage === "number" &&
+        newPage >= 1 &&
+        newPage <= this.pages
+      ) {
         this.currentPage = newPage;
       }
       this.limitPagination();
@@ -245,7 +268,9 @@ export default {
 
       var style = "<style>";
       style = style + "table {width: 100%;font: 17px Calibri;}";
-      style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
+      style =
+        style +
+        "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
       style = style + "padding: 2px 3px;text-align: center;}";
       style = style + "</style>";
 
@@ -268,6 +293,9 @@ export default {
 </script>
 
 <style scoped>
+.pagination .btn {
+  margin-inline: 1px;
+}
 .table-utils {
   align-items: center;
 }

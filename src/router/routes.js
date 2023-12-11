@@ -14,12 +14,18 @@ export default async function routes(to, from, next) {
 
   if (to.meta?.auth) {
     if (to.meta.role) {
-      if (!auth.isAuth) return next({ name: "login" }), useToast().error("Faça login primeiro");
+      if (!auth.isAuth)
+        return next({ name: "login" }), useToast().error("Faça login primeiro");
       const requiredRole = to.meta.role;
       await checkToken().then((response) => {
-        console.log("🚀 ~ file: routes.js:20 ~ awaitcheckToken ~ response:", response);
+        console.log(
+          "🚀 ~ file: routes.js:20 ~ awaitcheckToken ~ response:",
+          response
+        );
         if (response.status !== 200)
-          return next({ name: "login" }), useToast().error("Faça login novamente");
+          return (
+            next({ name: "login" }), useToast().error("Faça login novamente")
+          );
 
         if (requiredRole > auth.userData.role)
           return next({ name: "index" }), useToast().error("Sem permissão");

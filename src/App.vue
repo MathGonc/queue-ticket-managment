@@ -4,7 +4,7 @@
     <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth">
         <vue-feather type="user" size="16" class="icon" />
-        {{ this.auth.userData.username }}
+        {{ this.username }}
         <button class="btn btn-outline-dark btn-sm" @click="logout()">
           <vue-feather type="log-out" size="16" class="icon" />
         </button>
@@ -24,6 +24,7 @@
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
 import VueFeather from "vue-feather";
+import { checkToken } from "./controllers/userController";
 
 export default {
   name: "page_index",
@@ -53,6 +54,9 @@ export default {
   },
   computed: {},
   async mounted() {
+    await checkToken().then((response) => {
+      if (response.data.userData) this.username = this.auth.userData.username;
+    });
     this.transitionFade = true;
     socket.connect();
   },
@@ -74,7 +78,11 @@ body {
   background-color: #ffffff;
   opacity: 1;
   background-attachment: fixed;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 10px),
+  background-image: repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      #ffffff 10px
+    ),
     repeating-linear-gradient(#eaeaea55, #eaeaea);
 }
 #app {
@@ -110,7 +118,8 @@ nav a.router-link-exact-active {
   background: #e0e0e067;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
 
 /*.col > *:not(:last-child) {
