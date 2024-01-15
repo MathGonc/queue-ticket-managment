@@ -9,18 +9,23 @@
             <div class="col-md-auto menu-default">
               <form @submit.prevent="handleRegisterTicket()">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">*Nome:</span>
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >*Nome:</span
+                  >
                   <input
                     type="text"
                     class="form-control"
                     maxlength="50"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
-                    v-model="inputTicket.name" />
+                    v-model="inputTicket.name"
+                  />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">CPF:</span>
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >CPF:</span
+                  >
                   <input
                     type="text"
                     class="form-control"
@@ -29,7 +34,8 @@
                     aria-describedby="inputGroup-sizing-sm"
                     v-maska="inputTicket.docNumber"
                     v-model="inputTicket.docNumber.masked"
-                    data-maska="###.###.###-##" />
+                    data-maska="###.###.###-##"
+                  />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
@@ -37,14 +43,18 @@
                     class="btn btn-secondary dropdown-toggle"
                     type="button"
                     data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                    aria-expanded="false"
+                  >
                     Tipo:
                   </button>
                   <ul class="dropdown-menu">
                     <li v-for="item in dropdownTicketTypes" :key="item.name">
-                      <a class="dropdown-item" href="#" @click="inputTicket.type = item.name">{{
-                        item.name
-                      }}</a>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        @click="inputTicket.type = item.name"
+                        >{{ item.name }}</a
+                      >
                     </li>
                   </ul>
                   <input
@@ -52,7 +62,8 @@
                     class="form-control"
                     maxlength="50"
                     aria-label="Text input with dropdown button"
-                    v-model="inputTicket.type" />
+                    v-model="inputTicket.type"
+                  />
                 </div>
 
                 <div class="form-check form-switch">
@@ -61,11 +72,16 @@
                       class="form-check-input"
                       type="checkbox"
                       id="flexSwitchCheckDefault"
-                      v-model="inputTicket.preferential" />
+                      v-model="inputTicket.preferential"
+                    />
                     Preferencial</label
                   >
                 </div>
-                <button type="submit" class="btn btn-outline-primary" :disabled="buttonDisabled">
+                <button
+                  type="submit"
+                  class="btn btn-outline-primary"
+                  :disabled="buttonDisabled"
+                >
                   Cadastrar Senha {{ ticketGlobalData.nextToQueue }}
                 </button>
               </form>
@@ -82,7 +98,10 @@ import { defineComponent } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { insertTicket } from "../controllers/ticketController";
-import { getGlobalTicketData, updateGlobalTicketData } from "../controllers/globalController";
+import {
+  getGlobalTicketData,
+  updateGlobalTicketData,
+} from "../controllers/globalController";
 import { vMaska } from "maska";
 
 import { useAuth } from "../stores/auth.js";
@@ -151,7 +170,8 @@ export default defineComponent({
       });
     },
     async handleRegisterTicket() {
-      if (this.inputTicket.name.length < 1) return useToast().error("Digite um nome");
+      if (this.inputTicket.name.length < 1)
+        return useToast().error("Digite um nome");
       //if (!this.inputTicket.docNumber.masked.length) return useToast().error("Digite um CPF");
       // if (this.inputTicket.type.length < 1) return useToast().error("Digite ou selecione um tipo");
 

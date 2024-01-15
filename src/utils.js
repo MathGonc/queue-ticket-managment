@@ -1,5 +1,8 @@
 import { loadTicket, updateTicketCalled } from "./controllers/ticketController";
-import { getGlobalTicketData, updateGlobalTicketData } from "./controllers/globalController";
+import {
+  getGlobalTicketData,
+  updateGlobalTicketData,
+} from "./controllers/globalController";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
@@ -26,6 +29,7 @@ export async function callTicket(_id) {
   const auth = useAuth();
 
   const callByName = useLocalStorage("callByName", true).value;
+  const showAttendantName = useLocalStorage("showAttendantName", true).value;
   const userTable = useLocalStorage("userTable", 0).value;
   if (!userTable) return useToast().error("Selecione seu guichê");
 
@@ -39,15 +43,21 @@ export async function callTicket(_id) {
     globalTicketData.lastNumber = globalTicketData.currentNumber;
     globalTicketData.lastTable = globalTicketData.currentTable;
     globalTicketData.lastUser = globalTicketData.currentUser;
+    globalTicketData.lastShowAttendant = globalTicketData.currentShowAttendant;
+    globalTicketData.lastServicedBy = globalTicketData.currentServicedBy;
 
     globalTicketData.currentNumber = ticketData.number;
     globalTicketData.currentTable = userTable;
     globalTicketData.currentUser = ticketData.name;
+    globalTicketData.currentShowAttendant = showAttendantName;
+    globalTicketData.currentServicedBy = ticketData.servicedBy;
   }
   const updateGlobalResponse = await updateGlobalTicketData({
     ticket: globalTicketData,
   });
-  if (updateGlobalResponse.status != 200) return useToast().error("Ocorreu um erro");
+  console.log("🚀 ~ callTicket ~ globalTicketData:", globalTicketData);
+  if (updateGlobalResponse.status != 200)
+    return useToast().error("Ocorreu um erro");
 
   ticketData.status = 2;
   ticketData.servicedBy = auth.userData.username;
@@ -55,10 +65,12 @@ export async function callTicket(_id) {
   const updateTicketResponse = await updateTicketCalled(ticketData._id, {
     ...ticketData,
   });
-  if (updateTicketResponse.status != 200) return useToast().error("Ocorreu um erro");
+  if (updateTicketResponse.status != 200)
+    return useToast().error("Ocorreu um erro");
 
   await socket.emit("signalUpdateValues");
   await socket.emit("signalUpdateMonitor", callByName);
+  console.log("🚀 ~ callTicket ~ callByName:", callByName);
 
   localStorage.setItem("userCalledTicket", ticketData._id);
 }

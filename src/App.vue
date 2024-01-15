@@ -101,7 +101,7 @@ body {
 
 nav {
   /*background-color: #f1f1f1;*/
-  padding: 10px;
+  padding: 5px;
 }
 
 nav a {

@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("signalUpdateMonitor", (callByName) => {
+    console.log("🚀 ~ socket.on ~ callByName:", callByName);
     io.emit("receiveUpdateMonitor", callByName);
   });
 

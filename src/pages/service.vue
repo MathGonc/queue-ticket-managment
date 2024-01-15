@@ -18,10 +18,11 @@
                 ><input
                   type="number"
                   id="counter"
-                  min="00"
+                  min="01"
                   max="99"
                   maxlength="2"
-                  v-model="this.userTable" />
+                  v-model="this.userTable"
+                />
               </div>
               <div class="form-check form-switch py-2">
                 <label class="form-check-label" for="flexSwitchCheckDefault">
@@ -29,7 +30,18 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
-                    v-model="this.callByName" />Chamar pelo nome</label
+                    v-model="this.callByName"
+                  />Chamar pelo nome</label
+                >
+              </div>
+              <div class="form-check form-switch py-2">
+                <label class="form-check-label" for="flexSwitchCheckDefault">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="flexSwitchCheckDefault"
+                    v-model="this.showAttendantName"
+                  />Exibir nome do(a) atendente</label
                 >
               </div>
               <span class="px-1"
@@ -37,7 +49,8 @@
                   type="button"
                   @click="callNextTicket"
                   :disabled="buttonDisabled"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar Próxima Senha
                 </button></span
               >
@@ -47,7 +60,8 @@
                   type="button"
                   @click="callSameTicket"
                   :disabled="buttonDisabled || !userCalledTicket"
-                  class="btn btn-outline-primary">
+                  class="btn btn-outline-primary"
+                >
                   Chamar ultima senha novamente
                 </button></span
               >
@@ -81,6 +95,7 @@ export default {
     return {
       transitionFade: false,
       callByName: useLocalStorage("callByName", true),
+      showAttendantName: useLocalStorage("showAttendantName", false),
       userTable: useLocalStorage("userTable", 0),
       userCalledTicket: useLocalStorage("userCalledTicket", null),
       buttonDisabled: false,
@@ -135,7 +150,8 @@ export default {
       this.setButtonDisabled();
 
       const loadResponse = await loadTicketsInQueue();
-      if (loadResponse.data.ticket.length < 1) return useToast().error("Nenhuma senha cadastrada");
+      if (loadResponse.data.ticket.length < 1)
+        return useToast().error("Nenhuma senha cadastrada");
 
       if (loadResponse.data.ticket[0].status == 2)
         return useToast().error("Todas as senhas já foram atendidas");

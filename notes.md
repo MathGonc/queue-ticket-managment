@@ -124,3 +124,4 @@
 - [x] Exibir historico com opção de data personalizada
 - [x] Transformar o histórico de atendimento em um PDF ou planilha
 - [x] Sortear historico por categoria
+- [x] Opção de chamar pelo nome do atendente

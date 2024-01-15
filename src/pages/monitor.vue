@@ -6,8 +6,16 @@
         <div class="container menu-default">
           <Transition name="bounce">
             <div v-if="transitionNewTicket">
-              <span v-if="ticketGlobalData.currentNumber" class="current-ticket">
-                <vue-feather type="user" size="48" class="icon" stroke-width="1" />
+              <span
+                v-if="ticketGlobalData.currentNumber"
+                class="current-ticket"
+              >
+                <vue-feather
+                  type="user"
+                  size="48"
+                  class="icon"
+                  stroke-width="1"
+                />
                 <div class="row">
                   <span class="number"
                     >Senha:
@@ -18,7 +26,16 @@
                   <span class="name">{{ ticketGlobalData.currentUser }} </span>
                 </div>
                 <div class="row">
-                  <span class="table">(Guichê: {{ ticketGlobalData.currentTable }}) </span>
+                  <span class="table"
+                    >(Guichê: {{ ticketGlobalData.currentTable }}
+                    <span
+                      v-if="ticketGlobalData.currentShowAttendant == true"
+                      class="nameAttendant"
+                    >
+                      - Atendente:
+                      {{ ticketGlobalData.currentServicedBy }} </span
+                    >)
+                  </span>
                 </div>
               </span>
             </div>
@@ -32,11 +49,20 @@
             <div class="col-sm-auto menu-default">
               <span v-if="ticketGlobalData.lastNumber" class="last-ticket">
                 <vue-feather type="users" size="24" class="icon" />
-                <div class="number">Última Senha: {{ ticketGlobalData.lastNumber }}</div>
+                <div class="number">
+                  Última Senha: {{ ticketGlobalData.lastNumber }}
+                </div>
                 <span class="name">
                   {{ ticketGlobalData.lastUser }}
                 </span>
-                (Guichê {{ ticketGlobalData.lastTable }})
+                (Guichê {{ ticketGlobalData.lastTable
+                }}<span
+                  v-if="ticketGlobalData.lastShowAttendant == true"
+                  class="nameAttendant"
+                >
+                  - Atendente:
+                  {{ ticketGlobalData.lastServicedBy }} </span
+                >)
               </span>
             </div>
           </div>
@@ -50,7 +76,10 @@
 // import { computed } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
-import { loadMonitorConfigs, getGlobalTicketData } from "../controllers/globalController";
+import {
+  loadMonitorConfigs,
+  getGlobalTicketData,
+} from "../controllers/globalController";
 import VueFeather from "vue-feather";
 import topbar from "../components/topbar";
 
@@ -71,9 +100,13 @@ export default {
         currentNumber: -1,
         currentTable: -1,
         currentUser: "",
+        currentShowAttendant: false,
+        currentServicedBy: "",
         lastNumber: -1,
         lastTable: -1,
         lastUser: "",
+        lastShowAttendant: false,
+        lastServicedBy: "",
       },
     };
   },
@@ -92,8 +125,13 @@ export default {
     });
 
     socket.on("receiveUpdateMonitor", (callByName) => {
+      console.log("🚀 ~ socket.on ~ callByName:", callByName);
       getGlobalTicketData().then((response) => {
         this.ticketGlobalData = response.data.ticket;
+        console.log(
+          "🚀 ~ getGlobalTicketData ~ this.ticketGlobalData:",
+          this.ticketGlobalData
+        );
 
         useToast().info("Nova senha!", { position: "bottom-center" });
         this.transitionNewTicket = false;
@@ -121,7 +159,10 @@ export default {
                   ", dirija-se ao guichê " +
                   this.ticketGlobalData.currentTable);
 
-            message.voice = speechSynthesis.getVoices()[this.monitorConfig.soundCallTicketVoice];
+            message.voice =
+              speechSynthesis.getVoices()[
+                this.monitorConfig.soundCallTicketVoice
+              ];
             speechSynthesis.speak(message);
           }
         }, 1000);
