@@ -188,7 +188,7 @@ export default {
       dateServiced: null,
       searchTerm: "",
       itemsPerPage: 50,
-      itemsPerPageOptions: [10, 50, 100, 250, 500, 2500, 5000],
+      itemsPerPageOptions: [10, 50, 100, 250, 500, 2500, 5000, 10000],
       totalExpectedTime: 0,
       totalServiceComplete: 0,
       results: 0,
