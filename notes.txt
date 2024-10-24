@@ -1,0 +1,3 @@
+Para executar "vue" sem as restrições do windows: set-executionpolicy RemoteSignedvue
+
+MongoDB: connect EACCES 127.0.0.1:2701 >> Reiniciar serviço no gerenciador de tarefas
