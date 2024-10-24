@@ -20,6 +20,15 @@ export function convertDate(date) {
   return formatedDate;
 }
 
+export function convertHours(ms) {
+  const hours = Math.floor(ms / 1000 / 60 / 60);
+  const minutes = Math.floor((ms / 1000 / 60) % 60);
+  const seconds = Math.floor((ms / 1000) % 60);
+
+  const formatedDate = `${hours}h ${minutes}m ${seconds}s`;
+  return formatedDate;
+}
+
 export function isValidDate(dateStr) {
   const date = new Date(dateStr);
   return !isNaN(date) && date instanceof Date;

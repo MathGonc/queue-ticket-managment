@@ -19,6 +19,16 @@
               now-button-label="Hoje"
               format="dd/MM/yyyy"
             />
+            <div class="text-sm-start">
+              Atendimentos: {{ this.results }} (Completos:
+              {{ this.totalServiceComplete }})
+            </div>
+            <div v-if="this.totalExpectedTime" class="text-sm-start">
+              Tempo de espera médio nesse periodo:
+              {{
+                convertHours(this.totalExpectedTime / this.totalServiceComplete)
+              }}
+            </div>
           </div>
           <div class="col-auto">
             <div class="input-group">
@@ -83,6 +93,16 @@
                 <td>{{ convertDate(ticket.dateQueue) }}</td>
                 <td>{{ ticket.servicedBy }}</td>
                 <td>{{ convertDate(ticket.dateServiced) }}</td>
+                <td>
+                  <span v-if="ticket.dateServiced">
+                    {{
+                      convertHours(
+                        new Date(ticket.dateServiced) -
+                          new Date(ticket.dateQueue)
+                      )
+                    }}
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -118,7 +138,7 @@
 import topbar from "../components/topbar";
 
 import { loadTicketHistory } from "../controllers/ticketController";
-import { convertDate } from "../utils";
+import { convertDate, convertHours } from "../utils";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import VueFeather from "vue-feather";
@@ -147,6 +167,7 @@ export default {
           "Horario",
           "Atendente",
           "Horario",
+          "Espera",
         ],
         field: [
           "number",
@@ -159,6 +180,7 @@ export default {
           "dateQueue",
           "servicedBy",
           "dateServiced",
+          "timeWaited",
         ],
       },
       ascending: false,
@@ -166,7 +188,10 @@ export default {
       dateServiced: null,
       searchTerm: "",
       itemsPerPage: 50,
-      itemsPerPageOptions: [10, 50, 100, 250, 500],
+      itemsPerPageOptions: [10, 50, 100, 250, 500, 2500, 5000],
+      totalExpectedTime: 0,
+      totalServiceComplete: 0,
+      results: 0,
     };
   },
   mounted() {
@@ -186,6 +211,10 @@ export default {
     filterTickets() {
       const searchedTickets = this.ticketData.filter((ticket) => {
         return Object.values(ticket).some((value) => {
+          this.totalServiceComplete = 0; // reset atendimentos completos
+          this.totalExpectedTime = 0;
+          this.results = 0;
+
           const searchTermMatch = value
             .toString()
             .toLowerCase()
@@ -197,7 +226,6 @@ export default {
               new Date(this.dateServiced[1]) >= new Date(ticket.dateServiced);
             return searchTermMatch && isDateInRange;
           }
-
           return searchTermMatch;
         });
       });
@@ -214,20 +242,34 @@ export default {
         });
       }
 
-      const filteredTickets = sortedTickets.map((row, index) => ({
-        ...row,
-        id: index + 1,
-        isVisible:
-          index >= (this.currentPage - 1) * this.itemsPerPage &&
-          index < this.currentPage * this.itemsPerPage,
-      }));
+      const filteredTickets = sortedTickets.map((row, index) => {
+        this.results = sortedTickets.length;
+        if (sortedTickets[index].dateServiced) {
+          this.totalServiceComplete++;
+          this.totalExpectedTime +=
+            new Date(sortedTickets[index].dateServiced).getTime() -
+            new Date(sortedTickets[index].dateQueue).getTime();
 
+          console.log(this.totalExpectedTime);
+        }
+
+        return {
+          ...row,
+          id: index + 1,
+          isVisible:
+            index >= (this.currentPage - 1) * this.itemsPerPage &&
+            index < this.currentPage * this.itemsPerPage,
+        };
+      });
       return filteredTickets.slice(0, this.itemsPerPage);
     },
   },
   methods: {
     convertDate(date) {
       return convertDate(date);
+    },
+    convertHours(ms) {
+      return convertHours(ms);
     },
     handleitemsPerPageChange() {
       this.currentPage = 1;
