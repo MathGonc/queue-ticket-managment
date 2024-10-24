@@ -73,7 +73,9 @@ router.delete("/deleteTicket/:id", async (req, res) => {
 
 router.get("/loadTicketHistory", async (req, res) => {
   try {
-    const ticket = await TicketModel.find({}).sort({ dateServiced: -1, dateQueue: -1 }).limit(500);
+    const ticket = await TicketModel.find({})
+      .sort({ dateServiced: -1, dateQueue: -1 })
+      .limit(5000);
 
     return res.status(200).json({ ticket });
   } catch (error) {
