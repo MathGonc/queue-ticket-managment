@@ -75,7 +75,7 @@ router.get("/loadTicketHistory", async (req, res) => {
   try {
     const ticket = await TicketModel.find({})
       .sort({ dateServiced: -1, dateQueue: -1 })
-      .limit(5000);
+      .limit(10000);
 
     return res.status(200).json({ ticket });
   } catch (error) {
