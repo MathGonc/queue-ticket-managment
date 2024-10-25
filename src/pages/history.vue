@@ -19,15 +19,23 @@
               now-button-label="Hoje"
               format="dd/MM/yyyy"
             />
-            <div class="text-sm-start">
-              Atendimentos: {{ this.results }} (Completos:
-              {{ this.totalServiceComplete }})
-            </div>
-            <div v-if="this.totalExpectedTime" class="text-sm-start">
-              Tempo de espera médio nesse periodo:
-              {{
-                convertHours(this.totalExpectedTime / this.totalServiceComplete)
-              }}
+            <div id="tab-summary">
+              <div v-if="dateServiced" format="dd/MM/yyyy">
+                Periodo: {{ convertDate(dateServiced[0]) }} até
+                {{ convertDate(dateServiced[1]) }}
+              </div>
+              <div class="text-sm-start">
+                Atendimentos: {{ this.results }} (Completos:
+                {{ this.totalServiceComplete }})
+              </div>
+              <div v-if="this.totalExpectedTime" class="text-sm-start">
+                Tempo de espera médio nesse periodo:
+                {{
+                  convertHours(
+                    this.totalExpectedTime / this.totalServiceComplete
+                  )
+                }}
+              </div>
             </div>
           </div>
           <div class="col-auto">
@@ -135,7 +143,8 @@
 </template>
 
 <script>
-import topbar from "../components/topbar";
+import { useAuth } from "../stores/auth.js";
+import topbar from "../components/topbar.vue";
 
 import { loadTicketHistory } from "../controllers/ticketController";
 import { convertDate, convertHours } from "../utils";
@@ -180,7 +189,7 @@ export default {
           "dateQueue",
           "servicedBy",
           "dateServiced",
-          "timeWaited",
+          "timeWaited", //no use
         ],
       },
       ascending: false,
@@ -192,6 +201,12 @@ export default {
       totalExpectedTime: 0,
       totalServiceComplete: 0,
       results: 0,
+    };
+  },
+  setup() {
+    const auth = useAuth();
+    return {
+      auth,
     };
   },
   mounted() {
@@ -307,6 +322,7 @@ export default {
     },
     createPDF() {
       var sTable = document.getElementById("tab").innerHTML;
+      var dTable = document.getElementById("tab-summary").innerHTML;
 
       var style = "<style>";
       style = style + "table {width: 100%;font: 17px Calibri;}";
@@ -319,7 +335,18 @@ export default {
       var win = window.open("", "", "height=700,width=700");
 
       win.document.write("<html><head>");
-      win.document.write("<title>Profile</title>");
+      win.document.write("<div align='center'>");
+      win.document.write(
+        '<img src="http://172.30.24.32:8080/img/logo.c8355536.png">'
+      );
+      win.document.write(
+        "<p style='margin:0;font-family:times new roman,times,serif;font-size:10pt;' > NÚCLEO REGIONAL DA DEFENSORIA PÚBLICA DA UNIÃO NO ESTADO DE MATO GROSSO DO SUL </p> <br> "
+      );
+
+      win.document.write("<title>Relátorio de atendimento gerado por: ");
+      win.document.write(this.auth.userData.username);
+      win.document.write("</title></div>");
+      win.document.write(dTable);
       win.document.write(style);
       win.document.write("</head>");
       win.document.write("<body>");
