@@ -12,14 +12,16 @@
               >
                 <vue-feather
                   type="user"
-                  size="48"
+                  size="100"
                   class="icon"
                   stroke-width="1"
                 />
                 <div class="row">
-                  <span class="number"
-                    >Senha:
-                    {{ ticketGlobalData.currentNumber }}
+                  <span class="number">
+                    Senha atual:
+                    <span v-if="monitorConfig.showTicketNumber == true">
+                      {{ ticketGlobalData.currentNumber }}
+                    </span>
                   </span>
                 </div>
                 <div class="row">
@@ -27,13 +29,13 @@
                 </div>
                 <div class="row">
                   <span class="table"
-                    >(Guichê: {{ ticketGlobalData.currentTable }}
-                    <span
+                    >(Guichê: {{ ticketGlobalData.currentTable
+                    }}<span
                       v-if="ticketGlobalData.currentShowAttendant == true"
                       class="nameAttendant"
                     >
                       - Atendente:
-                      {{ ticketGlobalData.currentServicedBy }} </span
+                      {{ ticketGlobalData.currentServicedBy }}</span
                     >)
                   </span>
                 </div>
@@ -48,9 +50,12 @@
           <div class="row justify-content-md-center">
             <div class="col-sm-auto menu-default">
               <span v-if="ticketGlobalData.lastNumber" class="last-ticket">
-                <vue-feather type="users" size="24" class="icon" />
+                <vue-feather type="users" size="48" class="icon" />
                 <div class="number">
-                  Última Senha: {{ ticketGlobalData.lastNumber }}
+                  Última Senha:
+                  <span v-if="monitorConfig.showTicketNumber == true">
+                    {{ ticketGlobalData.lastNumber }}
+                  </span>
                 </div>
                 <span class="name">
                   {{ ticketGlobalData.lastUser }}
@@ -193,15 +198,15 @@ export default {
 }
 
 .monitor .current-ticket .number {
-  font-size: 48px;
+  font-size: 100px;
 }
 
 .monitor .current-ticket .table {
-  font-size: 32px;
+  font-size: 72px;
 }
 
 .monitor .last-ticket {
-  font-size: 24px;
+  font-size: 48px;
 }
 
 .bounce-enter-active {

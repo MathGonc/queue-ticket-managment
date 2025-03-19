@@ -46,6 +46,19 @@
                     class="form-check-input"
                     type="checkbox"
                     id="flexSwitchCheckDefault"
+                    v-model="monitorConfig.showTicketNumber"
+                    :disabled="buttonDisabled"
+                  />
+                  Mostrar numero da senha no painel</label
+                >
+              </div>
+
+              <div class="form-check form-switch">
+                <label class="form-check-label" for="flexSwitchCheckDefault"
+                  ><input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="flexSwitchCheckDefault"
                     v-model="monitorConfig.soundNotification"
                     :disabled="buttonDisabled"
                   />
