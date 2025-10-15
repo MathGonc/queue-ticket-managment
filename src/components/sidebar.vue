@@ -3,11 +3,17 @@
   <!-- <div class="col-sm-auto flex-nowrap"> -->
 
   <div class="sidebar">
-    <div :class="[this.collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']">
+    <div
+      :class="[this.collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']"
+    >
       <div class="container head-buttons">
         <div class="row justify-content-between">
           <div class="col-md-auto btn-sidebar">
-            <button class="btn btn-dark btn-sm" type="button" @click="toggleCollapseSidebar()">
+            <button
+              class="btn btn-dark btn-sm"
+              type="button"
+              @click="toggleCollapseSidebar()"
+            >
               <vue-feather type="menu" size="16" class="icon" stroke="white" />
             </button>
             <!-- <div class="position-relative">
@@ -47,10 +53,16 @@
                   data-bs-target="#collapseQueued"
                   :aria-expanded="!this.collapseMenu.queued"
                   aria-controls="#collapseQueued"
-                  :disabled="buttonDisabled">
+                  :disabled="buttonDisabled"
+                >
                   <vue-feather
                     type="chevron-left"
-                    :class="[this.collapseMenu.queued ? 'icon collapsed' : 'icon display']" />
+                    :class="[
+                      this.collapseMenu.queued
+                        ? 'icon collapsed'
+                        : 'icon display',
+                    ]"
+                  />
                 </button>
               </div>
             </div>
@@ -58,20 +70,30 @@
             <div
               :class="[collapseMenu.queued ? 'collapse' : 'collapse show']"
               id="collapseQueued"
-              @transitionend="onTransitionEndQueued">
-              <div v-if="this.ticketsInQueue == 0" class="details">A fila está vazia</div>
+              @transitionend="onTransitionEndQueued"
+            >
+              <div v-if="this.ticketsInQueue == 0" class="details">
+                A fila está vazia
+              </div>
               <ul class="nav flex-column">
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
                   <div class="ticket row" v-if="ticket.ticketList.status == 1">
                     <div class="text-area col">
                       <span class="name">
-                        {{ ticket.ticketList.number }} - {{ ticket.ticketList.name }}
+                        {{ ticket.ticketList.number }} -
+                        {{ ticket.ticketList.name }}
                         <span v-if="ticket.ticketList.preferential">
                           <span class="badge rounded">P</span>
                         </span>
                       </span>
                       <div class="details">
-                        <div v-if="ticket.ticketList.type">({{ ticket.ticketList.type }})</div>
+                        <div v-if="ticket.ticketList.type">
+                          ({{ ticket.ticketList.type }})
+                        </div>
                         <div v-if="ticket.ticketList.docNumber">
                           CPF: {{ ticket.ticketList.docNumber }}
                         </div>
@@ -87,14 +109,16 @@
                         @click="handleDeleteTicket(ticket.ticketList._id)"
                         type="button"
                         class="btn btn-danger btn-sm"
-                        :disabled="buttonDisabled">
+                        :disabled="buttonDisabled"
+                      >
                         <vue-feather type="trash-2" size="16" class="icon" />
                       </button>
                       <button
                         @click="handleCallTicket(ticket.ticketList._id)"
                         type="button"
                         class="btn btn-primary btn-sm"
-                        :disabled="buttonDisabled">
+                        :disabled="buttonDisabled"
+                      >
                         <vue-feather type="bell" size="16" class="icon" />
                       </button>
                     </div>
@@ -120,10 +144,16 @@
                   data-bs-target="#collapseServiced"
                   :aria-expanded="!this.collapseMenu.serviced"
                   aria-controls="#collapseServiced"
-                  :disabled="buttonDisabled">
+                  :disabled="buttonDisabled"
+                >
                   <vue-feather
                     type="chevron-left"
-                    :class="[this.collapseMenu.serviced ? 'icon collapsed' : 'icon display']" />
+                    :class="[
+                      this.collapseMenu.serviced
+                        ? 'icon collapsed'
+                        : 'icon display',
+                    ]"
+                  />
                 </button>
               </div>
             </div>
@@ -131,19 +161,27 @@
             <div
               :class="[collapseMenu.serviced ? 'collapse' : 'collapse show']"
               id="collapseServiced"
-              @transitionend="onTransitionEndServiced">
+              @transitionend="onTransitionEndServiced"
+            >
               <ul class="nav flex-column">
-                <li class="nav-item" v-for="(ticket, index) in filteredTickets" :key="index">
+                <li
+                  class="nav-item"
+                  v-for="(ticket, index) in filteredTickets"
+                  :key="index"
+                >
                   <div class="ticket row" v-if="ticket.ticketList.status == 2">
                     <div class="text-area col">
                       <span class="name">
-                        {{ ticket.ticketList.number }} - {{ ticket.ticketList.name }}
+                        {{ ticket.ticketList.number }} -
+                        {{ ticket.ticketList.name }}
                         <span v-if="ticket.ticketList.preferential">
                           <span class="badge rounded">P</span>
                         </span>
                       </span>
                       <div class="details">
-                        <div v-if="ticket.ticketList.type">({{ ticket.ticketList.type }})</div>
+                        <div v-if="ticket.ticketList.type">
+                          ({{ ticket.ticketList.type }})
+                        </div>
                         <div v-if="ticket.ticketList.docNumber">
                           CPF: {{ ticket.ticketList.docNumber }}
                         </div>
@@ -167,14 +205,16 @@
                         @click="handleDeleteTicket(ticket.ticketList._id)"
                         type="button"
                         class="btn btn-danger btn-sm"
-                        :disabled="buttonDisabled">
+                        :disabled="buttonDisabled"
+                      >
                         <vue-feather type="trash-2" size="16" class="icon" />
                       </button>
                       <button
                         @click="handleCallTicket(ticket.ticketList._id)"
                         type="button"
                         class="btn btn-primary btn-sm"
-                        :disabled="buttonDisabled">
+                        :disabled="buttonDisabled"
+                      >
                         <vue-feather type="bell" size="16" class="icon" />
                       </button>
                     </div>
@@ -198,7 +238,10 @@ import { defineComponent, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { socket } from "@/socket";
 import { useLocalStorage } from "@vueuse/core";
-import { loadTicketsInQueue, deleteTicket } from "../controllers/ticketController";
+import {
+  loadTicketsInQueue,
+  deleteTicket,
+} from "../controllers/ticketController";
 import { vMaska } from "maska";
 import { useAuth } from "@/stores/auth.js";
 import { callTicket, convertDate } from "../utils";
@@ -278,7 +321,8 @@ export default defineComponent({
     },
     onTransitionEndServiced() {
       this.isTransitioningServiced
-        ? ((this.isTransitioningServiced = false), (this.buttonDisabled = false))
+        ? ((this.isTransitioningServiced = false),
+          (this.buttonDisabled = false))
         : "";
     },
     toggleCollapseSidebar() {
@@ -288,7 +332,9 @@ export default defineComponent({
       //this.collapseMenu.queued = true;
       //this.collapseMenu.serviced = true;
 
-      this.collapseMenu.all ? (this.collapseMenu.all = false) : (this.collapseMenu.all = true);
+      this.collapseMenu.all
+        ? (this.collapseMenu.all = false)
+        : (this.collapseMenu.all = true);
     },
     toggleCollapseMenuQueued() {
       if (this.buttonDisabled) return;
@@ -311,7 +357,9 @@ export default defineComponent({
     async handleLoadTicketsInQueue() {
       await loadTicketsInQueue().then((response) => {
         this.ticketData = response.data.ticket;
-        this.ticketsInQueue = this.ticketData.filter((ticket) => ticket.status === 1).length;
+        this.ticketsInQueue = this.ticketData.filter(
+          (ticket) => ticket.status === 1
+        ).length;
       });
     },
     async handleDeleteTicket(ticketID) {

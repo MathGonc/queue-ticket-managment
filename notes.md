@@ -31,6 +31,10 @@
 
 ## **Done:**
 
+- [x] Fila de espera e atendimento com prioridades diferentes
+
+---
+
 - [x] **Monitor:** Atualização em tempo real da pagina para todos os clientes
 - [x] **Monitor:** Som ao atualizar a pagina
 - [x] **Admin:** Limite de guichês entre 00 e 99

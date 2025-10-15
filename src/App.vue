@@ -14,7 +14,7 @@
   <div class="navbar">
     <nav class="navbar small p-1 fixed-bottom">
       <span class="col small pt-auto px-2"
-        >© 2023 - Matheus Gonçalves - Todos os direitos reservados.</span
+        >© 2025 - Matheus Gonçalves - Todos os direitos reservados.</span
       >
     </nav>
   </div>

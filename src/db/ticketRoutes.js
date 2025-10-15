@@ -9,16 +9,41 @@ router.get("/loadTicketsInQueue", async (req, res) => {
   try {
     const ticket = await TicketModel.find({
       dateQueue: { $gte: limitDate },
-      // $or: [{ preferential: true }, { preferential: false }],
-    })
-      .sort({ status: 1, preferential: -1, dateServiced: -1, dateQueue: 1 })
-      .limit(50);
+    }).sort({
+      status: 1, // continua agrupando status 1 e 2
+      // se for status 1 → ordena por preferencial e dataQueue
+      // se for status 2 → ordena por dataServiced
+      ...(await (async () => {
+        // como o sort não aceita função diretamente, fazemos lógica antes
+        const baseSort = {};
+        baseSort["status"] = 1;
+        baseSort["preferential"] = -1;
+        baseSort["dateQueue"] = 1;
+        baseSort["dateServiced"] = -1;
+        return baseSort;
+      })()),
+    });
 
-    return res.status(200).json({ ticket });
+    // após ordenar, refinamos dentro do array retornado
+    const sortedTickets = ticket.sort((a, b) => {
+      if (a.status === 1 && b.status === 1) {
+        // fila: preferenciais primeiro, depois por dataQueue
+        if (a.preferential !== b.preferential)
+          return b.preferential - a.preferential;
+        return new Date(a.dateQueue) - new Date(b.dateQueue);
+      } else if (a.status === 2 && b.status === 2) {
+        // atendidas: apenas por dataServiced (mais recente primeiro)
+        return new Date(b.dateServiced) - new Date(a.dateServiced);
+      } else {
+        // status diferentes: fila primeiro, depois atendidos
+        return a.status - b.status;
+      }
+    });
+
+    return res.status(200).json({ ticket: sortedTickets });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
-    throw error;
   }
 });
 
