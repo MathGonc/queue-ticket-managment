@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 async function connect() {
-  mongoose.connect(`mongodb://${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}`, {
+  mongoose.connect(`mongodb://${process.env.VUE_APP_DB_USER}:${process.env.VUE_APP_DB_PASS}@${process.env.VUE_APP_DB_IP}/${process.env.VUE_APP_DB_NAME}?authSource=admin`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
