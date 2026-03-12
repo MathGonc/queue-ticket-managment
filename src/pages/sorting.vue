@@ -37,6 +37,21 @@
                     data-maska="###.###.###-##"
                   />
                 </div>
+                <div class="input-group input-group-sm mb-3">
+                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                    >Nasc.:</span
+                  >
+                  <div class="col-auto DatePicker">
+                    <VueDatePicker
+                      v-model="this.assistedAge"
+                      text-input
+                      locale="br"
+                      select-text="Selecionar"
+                      cancel-text="Cancelar"
+                      format="dd/MM/yyyy"
+                    />
+                  </div>
+                </div>
 
                 <div class="input-group input-group-sm mb-3">
                   <button
@@ -101,16 +116,21 @@ import { insertTicket } from "../controllers/ticketController";
 import {
   getGlobalTicketData,
   updateGlobalTicketData,
-} from "../controllers/globalController";
+} from "../controllers/globalController.js";
 import { vMaska } from "maska";
 
 import { useAuth } from "../stores/auth.js";
 import topbar from "../components/topbar";
+import {calculateAge} from "../utils.js";
+
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 export default defineComponent({
   name: "page_sorting",
   components: {
     topbar,
+    VueDatePicker,
   },
   directives: { maska: vMaska },
   data() {
@@ -134,7 +154,17 @@ export default defineComponent({
         { name: "INFORMAÇÕES" },
         { name: "JUNTADA DE DOCUMENTOS" },
       ],
+        assistedAge: null,
     };
+  },
+  watch: {
+    assistedAge(newValue) {
+      if (newValue) {
+        this.inputTicket.preferential = this.calculateAge(newValue) >= 60;
+      } else {
+        this.inputTicket.preferential = false;
+      }
+    },
   },
   setup() {
     const auth = useAuth();
@@ -150,6 +180,7 @@ export default defineComponent({
     });
   },
   methods: {
+    calculateAge,
     // formatValue(value) {
     //   return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     // },
@@ -190,6 +221,7 @@ export default defineComponent({
         name: this.inputTicket.name,
         docNumber: this.inputTicket.docNumber.unmasked,
         dateQueue: Date.now(),
+        assistedAge: this.assistedAge,
       });
       if (insertResponse.status != 200)
         return useToast().error("Ocorreu um erro ao cadastrar a senha");

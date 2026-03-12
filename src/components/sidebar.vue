@@ -36,199 +36,241 @@
 
       <div class="content">
         <ul class="list-unstyled">
-          <!-- Queue -->
-          <li class="list">
-            <div class="row justify-content-between title">
-              <div class="col-auto text-area">
-                <vue-feather type="users" class="icon" />
-                <span class="text"> Fila: </span>
-                <span class="badge rounded">{{ this.ticketsInQueue }} </span>
-              </div>
-              <div class="col-auto button-area">
-                <button
-                  @click="toggleCollapseMenuQueued()"
-                  type="button"
-                  class="btn btn-link btn-sm rounded"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseQueued"
-                  :aria-expanded="!this.collapseMenu.queued"
-                  aria-controls="#collapseQueued"
-                  :disabled="buttonDisabled"
-                >
-                  <vue-feather
-                    type="chevron-left"
-                    :class="[
-                      this.collapseMenu.queued
-                        ? 'icon collapsed'
-                        : 'icon display',
-                    ]"
-                  />
-                </button>
-              </div>
-            </div>
+          <div class="container"> 
+            <div class="row">
+              <!-- Queue -->
+              <li class="list">
+                <div class="row justify-content-between title">
+                  <div class="col-auto text-area">
+                    <vue-feather type="users" class="icon" />
+                    <span class="text"> Fila: </span>
+                    <span class="badge rounded">{{ this.ticketsInQueue }} </span>
+                  </div>
+                  <div class="col-auto button-area">
+                    <button
+                      @click="toggleCollapseMenuQueued()"
+                      type="button"
+                      class="btn btn-link btn-sm rounded"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseQueued"
+                      :aria-expanded="!this.collapseMenu.queued"
+                      aria-controls="#collapseQueued"
+                      :disabled="buttonDisabled"
+                    >
+                      <vue-feather
+                        type="chevron-left"
+                        :class="[
+                          this.collapseMenu.queued
+                            ? 'icon collapsed'
+                            : 'icon display',
+                        ]"
+                      />
+                    </button>
+                  </div>
+                </div>
 
-            <div
-              :class="[collapseMenu.queued ? 'collapse' : 'collapse show']"
-              id="collapseQueued"
-              @transitionend="onTransitionEndQueued"
-            >
-              <div v-if="this.ticketsInQueue == 0" class="details">
-                A fila está vazia
-              </div>
-              <ul class="nav flex-column">
-                <li
-                  class="nav-item"
-                  v-for="(ticket, index) in filteredTickets"
-                  :key="index"
+                <div
+                  :class="[collapseMenu.queued ? 'collapse' : 'collapse show']"
+                  id="collapseQueued"
+                  @transitionend="onTransitionEndQueued"
                 >
-                  <div class="ticket row" v-if="ticket.ticketList.status == 1">
-                    <div class="text-area col">
-                      <span class="name">
-                        {{ ticket.ticketList.number }} -
-                        {{ ticket.ticketList.name }}
-                        <span v-if="ticket.ticketList.preferential">
-                          <span class="badge rounded">P</span>
-                        </span>
-                      </span>
-                      <div class="details">
-                        <div v-if="ticket.ticketList.type">
-                          ({{ ticket.ticketList.type }})
+                  <div v-if="this.ticketsInQueue == 0" class="details">
+                    A fila está vazia
+                  </div>
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      v-for="(ticket, index) in filteredTickets"
+                      :key="index"
+                    >
+                      <div class="ticket row" v-if="ticket.ticketList.status == 1">
+                        <div class="text-area col">
+                          <span class="name">
+                            {{ ticket.ticketList.number }} -
+                            {{ ticket.ticketList.name }}
+                            <span v-if="ticket.ticketList.preferential">
+                              <span class="badge rounded">P</span>
+                            </span>
+
+                            <span style="padding-left: 5px" v-if="this.calculateAge(ticket.ticketList.assistedAge) >= 60">
+                              <span class="AgeBadge badge rounded">60+</span>
+                            </span>
+
+                          </span>
+                          <div class="details">
+                            <div v-if="ticket.ticketList.type">
+                              ({{ ticket.ticketList.type }})
+                            </div>
+                            <div v-if="ticket.ticketList.docNumber">
+                              CPF: {{ ticket.ticketList.docNumber }} - Idade: {{ this.calculateAge(ticket.ticketList.assistedAge) }} anos
+                            </div>
+                            <div>
+                              Cadastrada:
+                              {{ convertDate(ticket.ticketList.dateQueue) }}
+                            </div>
+                          </div>
                         </div>
-                        <div v-if="ticket.ticketList.docNumber">
-                          CPF: {{ ticket.ticketList.docNumber }}
-                        </div>
-                        <div>
-                          Cadastrada:
-                          {{ convertDate(ticket.ticketList.dateQueue) }}
+                        <div class="button-area col-sm-auto">
+                          <button
+                            v-if="userRole >= userRoleToDeleteTickets"
+                            @click="handleDeleteTicket(ticket.ticketList._id)"
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            :disabled="buttonDisabled"
+                          >
+                            <vue-feather type="trash-2" size="16" class="icon" />
+                          </button>
+                          <button
+                            @click="handleCallTicket(ticket.ticketList._id)"
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            :disabled="buttonDisabled"
+                          >
+                            <vue-feather type="bell" size="16" class="icon" />
+                          </button>
                         </div>
                       </div>
-                    </div>
-                    <div class="button-area col-sm-auto">
-                      <button
-                        v-if="userRole >= userRoleToDeleteTickets"
-                        @click="handleDeleteTicket(ticket.ticketList._id)"
-                        type="button"
-                        class="btn btn-danger btn-sm"
-                        :disabled="buttonDisabled"
-                      >
-                        <vue-feather type="trash-2" size="16" class="icon" />
-                      </button>
-                      <button
-                        @click="handleCallTicket(ticket.ticketList._id)"
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        :disabled="buttonDisabled"
-                      >
-                        <vue-feather type="bell" size="16" class="icon" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              </ul>
+                    </li>
+                  </ul>
+                </div>
+              </li>
             </div>
-          </li>
-
-          <!-- Serviced -->
-          <li class="list">
-            <div class="row justify-content-between title">
-              <div class="col-auto text-area">
-                <vue-feather type="user-check" class="icon" />
-                <span class="text"> Atendidas: </span>
-              </div>
-              <div class="col-auto button-area">
-                <button
-                  @click="toggleCollapseMenuServiced()"
-                  type="button"
-                  class="btn btn-link btn-sm rounded"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseServiced"
-                  :aria-expanded="!this.collapseMenu.serviced"
-                  aria-controls="#collapseServiced"
-                  :disabled="buttonDisabled"
-                >
-                  <vue-feather
-                    type="chevron-left"
-                    :class="[
-                      this.collapseMenu.serviced
-                        ? 'icon collapsed'
-                        : 'icon display',
-                    ]"
-                  />
-                </button>
-              </div>
-            </div>
-
-            <div
-              :class="[collapseMenu.serviced ? 'collapse' : 'collapse show']"
-              id="collapseServiced"
-              @transitionend="onTransitionEndServiced"
-            >
-              <ul class="nav flex-column">
-                <li
-                  class="nav-item"
-                  v-for="(ticket, index) in filteredTickets"
-                  :key="index"
-                >
-                  <div class="ticket row" v-if="ticket.ticketList.status == 2">
-                    <div class="text-area col">
-                      <span class="name">
-                        {{ ticket.ticketList.number }} -
-                        {{ ticket.ticketList.name }}
-                        <span v-if="ticket.ticketList.preferential">
-                          <span class="badge rounded">P</span>
-                        </span>
-                      </span>
-                      <div class="details">
-                        <div v-if="ticket.ticketList.type">
-                          ({{ ticket.ticketList.type }})
-                        </div>
-                        <div v-if="ticket.ticketList.docNumber">
-                          CPF: {{ ticket.ticketList.docNumber }}
-                        </div>
-                        <div>
-                          Cadastrada:
-                          {{ convertDate(ticket.ticketList.dateQueue) }}
-                        </div>
-                        <div>
-                          Atendida:
-                          {{ convertDate(ticket.ticketList.dateServiced) }}
-                        </div>
-                        <div>
-                          Atendida por:
-                          {{ ticket.ticketList.servicedBy }}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="button-area col-sm-auto">
-                      <button
-                        v-if="userRole >= userRoleToDeleteTickets"
-                        @click="handleDeleteTicket(ticket.ticketList._id)"
-                        type="button"
-                        class="btn btn-danger btn-sm"
-                        :disabled="buttonDisabled"
-                      >
-                        <vue-feather type="trash-2" size="16" class="icon" />
-                      </button>
-                      <button
-                        @click="handleCallTicket(ticket.ticketList._id)"
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        :disabled="buttonDisabled"
-                      >
-                        <vue-feather type="bell" size="16" class="icon" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-              <div class="details">(Resultados dos últimos 7 dias)</div>
-            </div>
-          </li>
+          </div>
         </ul>
       </div>
     </div>
   </div>
-  <div class="col-auto"><router-view></router-view></div>
+  
+  <!-- Sidebar Right -->
+  <div class="sidebar">
+    <div style="right: 0"
+      :class="[this.collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']"
+    >
+      <div class="container head-buttons">
+        <div class="row" style="justify-content: flex-end">
+          <div class="col-md-auto btn-sidebar">
+            <div v-if="this.showInterface" style="color: white; position: relative; right:0;">
+              <template v-if="auth.isAuth">
+                <vue-feather type="user" size="16" class="icon" />
+                {{ this.username }}
+                <button class="btn btn-outline-light btn-sm" @click="logout()">
+                  <vue-feather type="log-out" size="16" class="icon" />
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <ul class="list-unstyled">
+          <div class="container"> 
+              <!-- Removed queue -->
+               <div class="row">
+              <!-- Serviced -->
+              <li class="list">
+                <div class="row justify-content-between title">
+                  <div class="col-auto text-area">
+                    <vue-feather type="user-check" class="icon" />
+                    <span class="text"> Atendidas: </span>
+                  </div>
+                  <div class="col-auto button-area">
+                    <button
+                      @click="toggleCollapseMenuServiced()"
+                      type="button"
+                      class="btn btn-link btn-sm rounded"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapseServiced"
+                      :aria-expanded="!this.collapseMenu.serviced"
+                      aria-controls="#collapseServiced"
+                      :disabled="buttonDisabled"
+                    >
+                      <vue-feather
+                        type="chevron-left"
+                        :class="[
+                          this.collapseMenu.serviced
+                            ? 'icon collapsed'
+                            : 'icon display',
+                        ]"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  :class="[collapseMenu.serviced ? 'collapse' : 'collapse show']"
+                  id="collapseServiced"
+                  @transitionend="onTransitionEndServiced"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      v-for="(ticket, index) in filteredTickets"
+                      :key="index"
+                    >
+                      <div class="ticket row" v-if="ticket.ticketList.status == 2">
+                        <div class="text-area col">
+                          <span class="name">
+                            {{ ticket.ticketList.number }} -
+                            {{ ticket.ticketList.name }}
+                            <span v-if="ticket.ticketList.preferential">
+                              <span class="badge rounded">P</span>
+                            </span>
+                          </span>
+                          <div class="details">
+                            <div v-if="ticket.ticketList.type">
+                              ({{ ticket.ticketList.type }})
+                            </div>
+                            <div v-if="ticket.ticketList.docNumber">
+                              CPF: {{ ticket.ticketList.docNumber }}
+                            </div>
+                            <div>
+                              Cadastrada:
+                              {{ convertDate(ticket.ticketList.dateQueue) }}
+                            </div>
+                            <div>
+                              Atendida:
+                              {{ convertDate(ticket.ticketList.dateServiced) }}
+                            </div>
+                            <div>
+                              Atendida por:
+                              {{ ticket.ticketList.servicedBy }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="button-area col-sm-auto">
+                          <button
+                            v-if="userRole >= userRoleToDeleteTickets"
+                            @click="handleDeleteTicket(ticket.ticketList._id)"
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            :disabled="buttonDisabled"
+                          >
+                            <vue-feather type="trash-2" size="16" class="icon" />
+                          </button>
+                          <button
+                            @click="handleCallTicket(ticket.ticketList._id)"
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            :disabled="buttonDisabled"
+                          >
+                            <vue-feather type="bell" size="16" class="icon" />
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                    <div class="details">(Resultados dos últimos 7 dias)</div>
+                  </ul>
+                </div>
+              </li>
+              <!-- (End)Serviced -->
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div><router-view></router-view></div>
   <!-- </div> -->
   <!-- </div> -->
 </template>
@@ -244,7 +286,9 @@ import {
 } from "../controllers/ticketController";
 import { vMaska } from "maska";
 import { useAuth } from "@/stores/auth.js";
-import { callTicket, convertDate } from "../utils";
+import { callTicket, convertDate, calculateAge } from "../utils";
+
+import { checkToken } from "../controllers/userController";
 
 import VueFeather from "vue-feather";
 import config from "../config";
@@ -257,6 +301,9 @@ export default defineComponent({
   },
   data() {
     return {
+      
+      username: "",
+      showInterface: true,
       buttonDisabled: false,
       userRole: 0,
 
@@ -272,6 +319,10 @@ export default defineComponent({
     };
   },
   async mounted() {
+    await checkToken().then((response) => {
+      if (response.data.userData) this.username = this.auth.userData.username;
+    });
+    
     this.handleLoadTicketsInQueue();
     socket.on("receiveUpdateGlobal", () => {
       this.handleLoadTicketsInQueue();
@@ -282,6 +333,7 @@ export default defineComponent({
     const auth = useAuth();
     return {
       auth,
+      calculateAge,
     };
   },
   computed: {
@@ -295,6 +347,12 @@ export default defineComponent({
     },
   },
   methods: {
+    
+    async logout() {
+      await this.auth.clearToken();
+      await this.auth.setIsAuth(false);
+      await this.$router.push({ name: "login" });
+    },
     convertDate(date) {
       return convertDate(date);
     },
@@ -390,6 +448,11 @@ export default defineComponent({
   watch: {
     $route() {
       if (this.$route.name == "history") this.collapseMenu.all = true;
+      this.$route.name == "monitor"
+        ? (this.showInterface = false)
+        : this.showInterface == false
+        ? (this.showInterface = true)
+        : false;
     },
   },
 });
@@ -504,14 +567,19 @@ export default defineComponent({
   color: white;
   margin-top: 10px;
   margin-bottom: 25px;
+  
 }
 
 .sidebar .list .nav {
   padding-inline: 20px;
+  padding-bottom: 15%;
 }
 
 .badge {
   background-color: rgba(255, 19, 19, 0.432);
+}
+.AgeBadge {
+  background-color: rgba(31, 255, 19, 0.43);
 }
 
 .sidebar .list .icon {

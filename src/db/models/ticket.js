@@ -12,6 +12,7 @@ const TicketSchema = new mongoose.Schema(
     dateQueue: { type: Date, required: true },
     servicedBy: { type: String },
     dateServiced: { type: Date },
+    assistedAge: { type: Date },
   },
   { versionKey: false }
 );
@@ -19,6 +20,7 @@ const TicketSchema = new mongoose.Schema(
 TicketSchema.index({
   status: 1,
   preferential: -1,
+  assistedAge: -1,
   dateServiced: -1,
   dateQueue: 1,
 });

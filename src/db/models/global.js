@@ -20,7 +20,8 @@ const globalSchema = new mongoose.Schema(
     soundCallTicket: { type: Boolean, default: 0 },
     soundCallTicketVoice: { type: Number, default: 0 },
   },
-  { versionKey: false }
+  { versionKey: false },
+  { unique: true }
 );
 
 const Global = mongoose.model("Global", globalSchema);

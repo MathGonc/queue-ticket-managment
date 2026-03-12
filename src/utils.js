@@ -83,3 +83,14 @@ export async function callTicket(_id) {
 
   localStorage.setItem("userCalledTicket", ticketData._id);
 }
+
+export function calculateAge(date) {
+  const birth = new Date(date);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}

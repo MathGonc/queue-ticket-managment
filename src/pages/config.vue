@@ -208,7 +208,7 @@ import {
   loadMonitorConfigs,
   saveMonitorConfigs,
   resetGlobalTicketData,
-} from "../controllers/globalController";
+} from "../controllers/globalController.js";
 import { registerUser } from "../controllers/userController";
 
 import topbar from "../components/topbar";

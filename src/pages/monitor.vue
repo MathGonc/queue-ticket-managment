@@ -84,7 +84,7 @@ import { socket } from "@/socket";
 import {
   loadMonitorConfigs,
   getGlobalTicketData,
-} from "../controllers/globalController";
+} from "../controllers/globalController.js";
 import VueFeather from "vue-feather";
 import topbar from "../components/topbar";
 

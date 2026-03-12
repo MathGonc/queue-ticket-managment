@@ -19,4 +19,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 .env
-.env
+.env.production

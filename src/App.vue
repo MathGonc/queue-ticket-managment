@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
+    <!-- <nav v-if="this.showInterface" class="position-absolute top-0 end-0">
       <template v-if="auth.isAuth">
         <vue-feather type="user" size="16" class="icon" />
         {{ this.username }}
@@ -9,7 +9,7 @@
           <vue-feather type="log-out" size="16" class="icon" />
         </button>
       </template>
-    </nav>
+    </nav> -->
   </div>
   <div class="navbar">
     <nav class="navbar small p-1 fixed-bottom">
@@ -23,27 +23,27 @@
 <script>
 import { socket } from "./socket";
 import { useAuth } from "@/stores/auth.js";
-import VueFeather from "vue-feather";
-import { checkToken } from "./controllers/userController";
+// import VueFeather from "vue-feather";
+// import { checkToken } from "./controllers/userController";
 
 export default {
   name: "page_index",
   components: {
-    "vue-feather": VueFeather,
+    // "vue-feather": VueFeather,
   },
   data() {
     return {
-      username: "",
-      showInterface: true,
+      // username: "",
+      // showInterface: true,
     };
   },
   watch: {
     $route() {
-      this.$route.name == "monitor"
-        ? (this.showInterface = false)
-        : this.showInterface == false
-        ? (this.showInterface = true)
-        : false;
+      // this.$route.name == "monitor"
+      //   ? (this.showInterface = false)
+      //   : this.showInterface == false
+      //   ? (this.showInterface = true)
+      //   : false;
     },
   },
   setup() {
@@ -54,9 +54,9 @@ export default {
   },
   computed: {},
   async mounted() {
-    await checkToken().then((response) => {
-      if (response.data.userData) this.username = this.auth.userData.username;
-    });
+    // await checkToken().then((response) => {
+    //   if (response.data.userData) this.username = this.auth.userData.username;
+    // });
     this.transitionFade = true;
     socket.connect();
   },
