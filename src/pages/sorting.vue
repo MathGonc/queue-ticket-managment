@@ -88,6 +88,7 @@
                       type="checkbox"
                       id="flexSwitchCheckDefault"
                       v-model="inputTicket.preferential"
+                      :disabled="calculateAge(assistedAge) >= 60"
                     />
                     Preferencial</label
                   >

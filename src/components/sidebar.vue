@@ -152,7 +152,7 @@
             <div v-if="this.showInterface" style="color: white; position: relative; right:0;">
               <template v-if="auth.isAuth">
                 <vue-feather type="user" size="16" class="icon" />
-                {{ this.username }}
+                <span v-if="this.collapseMenu.all == false" style="padding: 5px"> {{ this.username }} </span>
                 <button class="btn btn-outline-light btn-sm" @click="logout()">
                   <vue-feather type="log-out" size="16" class="icon" />
                 </button>
