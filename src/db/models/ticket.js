@@ -4,7 +4,7 @@ const TicketSchema = new mongoose.Schema(
   {
     number: { type: Number, required: true },
     status: { type: Number, required: true },
-    preferential: { type: Boolean, required: true },
+    preferential: { type: Number, required: true },
     name: { type: String, require: true },
     docNumber: { type: String, require: true },
     type: { type: String, require: true },

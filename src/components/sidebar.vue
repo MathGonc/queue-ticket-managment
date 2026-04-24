@@ -92,8 +92,8 @@
                               <span class="badge rounded">P</span>
                             </span>
 
-                            <span style="padding-left: 5px" v-if="this.calculateAge(ticket.ticketList.assistedAge) >= 60">
-                              <span class="AgeBadge badge rounded">60+</span>
+                            <span style="padding-left: 5px" v-if="this.calculateAge(ticket.ticketList.assistedAge) >= 80">
+                              <span class="AgeBadge badge rounded">80+</span>
                             </span>
 
                           </span>
@@ -101,8 +101,9 @@
                             <div v-if="ticket.ticketList.type">
                               ({{ ticket.ticketList.type }})
                             </div>
-                            <div v-if="ticket.ticketList.docNumber">
-                              CPF: {{ ticket.ticketList.docNumber }} - Idade: {{ this.calculateAge(ticket.ticketList.assistedAge) }} anos
+                            <div>
+                              <div v-if="ticket.ticketList.docNumber">CPF: {{ ticket.ticketList.docNumber }}</div>
+                              <div v-if="ticket.ticketList.assistedAge">Idade: {{ this.calculateAge(ticket.ticketList.assistedAge) }} anos </div>
                             </div>
                             <div>
                               Cadastrada:

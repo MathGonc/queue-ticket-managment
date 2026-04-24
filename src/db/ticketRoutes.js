@@ -10,9 +10,8 @@ router.get("/loadTicketsInQueue", async (req, res) => {
     const ticket = await TicketModel.find({
       dateQueue: { $gte: limitDate },
     }).sort({
-      status: 1,
-      preferential: -1,
-      assistedAge: -1,
+      status: 1, // In Queue
+      preferential: -1, // 0 = No, 1 = Yes, 2 = Super preferential, 80+
       dateQueue: 1,
       dateServiced: -1,
 });
@@ -20,19 +19,17 @@ router.get("/loadTicketsInQueue", async (req, res) => {
     // após ordenar, refinamos dentro do array retornado
     const sortedTickets = ticket.sort((a, b) => {
       if (a.status === 1 && b.status === 1) {
-        // fila: preferenciais primeiro, depois por dataQueue
-        if (a.preferential !== b.preferential)
-          return b.preferential - a.preferential;
-
-        if (a.preferential == 1 & b.preferential == 1)
-          return new Date(a.assistedAge) - new Date(b.assistedAge);
+        // fila: prioridade primeiro, depois por dataQueue
+        if (a.preferential !== b.preferential) {
+          return b.preferential - a.preferential; // 2 > 1 > 0
+        }
 
         return new Date(a.dateQueue) - new Date(b.dateQueue);
       } else if (a.status === 2 && b.status === 2) {
-        // atendidas: apenas por dataServiced (mais recente primeiro)
+        // atendidas: mais recente primeiro
         return new Date(b.dateServiced) - new Date(a.dateServiced);
       } else {
-        // status diferentes: fila primeiro, depois atendidos
+        // fila (1) antes de atendidos (2)
         return a.status - b.status;
       }
     });

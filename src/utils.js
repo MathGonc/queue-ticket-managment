@@ -85,6 +85,8 @@ export async function callTicket(_id) {
 }
 
 export function calculateAge(date) {
+  if (date == null)
+    return false
   const birth = new Date(date);
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();

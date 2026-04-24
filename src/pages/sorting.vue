@@ -87,11 +87,13 @@
                       class="form-check-input"
                       type="checkbox"
                       id="flexSwitchCheckDefault"
-                      v-model="inputTicket.preferential"
+                      v-model="(preferentialBool)"
                       :disabled="calculateAge(assistedAge) >= 60"
                     />
                     Preferencial</label
                   >
+                  <!-- Ordem de preferencia: 80+ >>> Preferencial (gravidas, 60+, crianças de colo, etc...) >>>> Sem preferencia -->
+                   <!-- Dentro desses 3, ordenar por ordem de chegada -->
                 </div>
                 <button
                   type="submit"
@@ -138,6 +140,7 @@ export default defineComponent({
     return {
       transitionFade: false,
       buttonDisabled: false,
+      preferentialBool: false,
       inputTicket: {
         name: "",
         docNumber: {
@@ -145,7 +148,7 @@ export default defineComponent({
           unmasked: "",
         },
         type: "",
-        preferential: false,
+        preferential: 0,
       },
       ticketGlobalData: {},
       dropdownTicketTypes: [
@@ -159,11 +162,29 @@ export default defineComponent({
     };
   },
   watch: {
+    preferentialBool(newValue)
+    {
+      if (newValue)
+      {
+        this.inputTicket.preferential = +newValue;
+      }
+    },
     assistedAge(newValue) {
       if (newValue) {
-        this.inputTicket.preferential = this.calculateAge(newValue) >= 60;
+
+        if (this.calculateAge(newValue) >= 80)
+        {
+          this.inputTicket.preferential = 2;
+          this.preferentialBool = true
+        }
+        else if (this.calculateAge(newValue) >= 60)
+        {
+          this.inputTicket.preferential = 1;
+          this.preferentialBool = true
+        }
       } else {
-        this.inputTicket.preferential = false;
+        this.inputTicket.preferential = 0;
+          this.preferentialBool = false
       }
     },
   },
@@ -232,7 +253,7 @@ export default defineComponent({
       this.inputTicket.name = "";
       this.inputTicket.docNumber.masked = "";
       this.inputTicket.type = "";
-      this.inputTicket.preferential = false;
+      this.inputTicket.preferential = 0;
 
       this.ticketGlobalData.nextToQueue += 1;
       const updateResponse = await updateGlobalTicketData({
