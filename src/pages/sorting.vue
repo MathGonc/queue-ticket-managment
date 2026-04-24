@@ -166,25 +166,12 @@ export default defineComponent({
     {
       if (newValue)
       {
-        this.inputTicket.preferential = 1;
+        this.updatePreferentialAge()
       }
     },
     assistedAge(newValue) {
       if (newValue) {
-
-        if (this.calculateAge(newValue) >= 80)
-        {
-          this.inputTicket.preferential = 2;
-          this.preferentialBool = true
-        }
-        else if (this.calculateAge(newValue) >= 60)
-        {
-          this.inputTicket.preferential = 1;
-          this.preferentialBool = true
-        }
-      } else {
-        this.inputTicket.preferential = 0;
-          this.preferentialBool = false
+        this.updatePreferentialAge()
       }
     },
   },
@@ -202,6 +189,26 @@ export default defineComponent({
     });
   },
   methods: {
+    updatePreferentialAge() {
+      if (this.calculateAge(this.assistedAge) >= 80)
+      {
+        this.inputTicket.preferential = 2;
+        this.preferentialBool = true
+      }
+      else if (this.calculateAge(this.assistedAge) >= 60)
+      {
+        this.inputTicket.preferential = 1;
+        this.preferentialBool = true
+      }
+      else if (this.preferentialBool == true)
+      {
+        this.inputTicket.preferential = 1;
+      }
+      else if (this.preferentialBool == false)
+      {
+        this.inputTicket.preferential = 0;
+      }
+    },
     calculateAge,
     // formatValue(value) {
     //   return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
