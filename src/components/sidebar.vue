@@ -92,7 +92,7 @@
                               <span class="badge rounded">P</span>
                             </span>
 
-                            <span style="padding-left: 5px" v-if="this.calculateAge(ticket.ticketList.assistedAge) >= 80">
+                            <span style="padding-left: 5px" v-if="this.calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2">
                               <span class="AgeBadge badge rounded">80+</span>
                             </span>
 

@@ -166,7 +166,7 @@ export default defineComponent({
     {
       if (newValue)
       {
-        this.inputTicket.preferential = +newValue;
+        this.inputTicket.preferential = 1;
       }
     },
     assistedAge(newValue) {
