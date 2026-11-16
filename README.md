@@ -7,54 +7,40 @@ Sistema de gerenciamento de filas e senhas para atendimento, com painel monitor 
 | Camada | Tecnologia |
 |--------|-----------|
 | Frontend | Vue 3.5 + Vite 6, Pinia, Vue Router, Socket.io Client |
-| Backend | Express 4.21, Mongoose 8, Socket.io 4.8 |
+| Backend | Node.js 22, Express 4, Mongoose 8, Socket.io 4 |
 | Banco de dados | MongoDB 7 |
-| Infraestrutura | Docker, Nginx |
-| Segurança | JWT, bcrypt, CORS, Rate Limiting |
+| Segurança | JWT por cargo, bcrypt, rate limit no login |
 
-## Quick Start
+## Como subir
+
+Ver **[infra/README.md](infra/README.md)**:
+
+- **[Standalone](infra/standalone/README.md)**: Windows sem Docker, cada processo numa janela (`setup.cmd` e depois `start-all.cmd`).
+- **[Docker](infra/docker/README.md)**: `docker compose up -d --build` em `infra/docker`.
 
 ### Desenvolvimento
 
 ```bash
-# Backend
-cd backend
-npm install
-npm run dev
-
-# Frontend (outro terminal)
-cd frontend
-npm install
-npm run dev
+cd backend  && npm install && npm run dev    # API em :3030 (copie backend/.env.example para .env)
+cd frontend && npm install && npm run dev    # http://localhost:8080
 ```
 
-O frontend estará em `http://localhost:8080` e o backend em `http://localhost:3030`.
-
-### Produção (Docker)
-
-```bash
-docker compose up --build
-```
-
-Os serviços sobem na ordem: MongoDB → Backend → Frontend (porta 80).
+Testes e lint do frontend: `npm test` e `npm run lint` (em `frontend/`).
 
 ## Estrutura do Projeto
 
 ```
-├── frontend/          # Vue 3.5 + Vite 6 (SPA)
-├── backend/           # Express + Socket.io (API REST + WebSocket)
-├── legacy/            # Cópia do código pré-migração (referência)
-├── docs/              # Documentação do projeto
-├── docker-compose.yml
-├── Dockerfile.frontend
-└── Dockerfile.backend
+├── frontend/   # Vue 3.5 + Vite 6 (SPA)
+├── backend/    # Express + Socket.io (API REST + WebSocket)
+├── infra/      # standalone (Windows) e docker
+└── docs/       # Documentação técnica e log da migração
 ```
 
 ## Documentação
 
-- [**migration-instructions.md**](./docs/migration-instructions.md) — Como usar o projeto: pré-requisitos, setup, variáveis de ambiente, rollback
-- [**migration-log-changes.md**](./docs/migration-log-changes.md) — Log de mudanças: dependências, bugs corrigidos, breaking changes
-- [**documentation.md**](./docs/documentation.md) — Documentação técnica: arquitetura, endpoints da API, estrutura de pastas
+- [docs/documentation.md](docs/documentation.md): arquitetura, cargos, endpoints e permissões
+- [docs/migration-log-changes.md](docs/migration-log-changes.md): migração Vue CLI → Vite e a revisão pós-migração (seção 9)
+- [docs/new-features.md](docs/new-features.md): testes, lint, health check, paginação, validação, logs
 
 ## Páginas do Sistema
 

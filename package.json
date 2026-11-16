@@ -4,10 +4,14 @@
   "private": true,
   "description": "Queue Ticket Management - Workspace root",
   "scripts": {
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && npm run build",
-    "start": "cd backend && npm start"
+    "setup:standalone": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/standalone/setup.ps1",
+    "start:standalone": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/standalone/start-all.ps1",
+    "status:standalone": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/standalone/status.ps1",
+    "docker:up": "docker compose -f infra/docker/docker-compose.yml up -d --build",
+    "docker:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "test": "npm --prefix frontend test",
+    "lint": "npm --prefix frontend run lint"
   }
 }

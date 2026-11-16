@@ -1,0 +1,4 @@
+# Scripts do Windows sempre com CRLF, independente do core.autocrlf de quem clonar
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf

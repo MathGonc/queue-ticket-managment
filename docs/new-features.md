@@ -330,18 +330,7 @@ O campo `mongodb` usa `mongoose.connection.readyState`:
 
 ### Uso com Docker
 
-No `docker-compose.yml`:
-
-```yaml
-services:
-  backend:
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3030/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-```
+O `infra/docker/Dockerfile.backend` define um `HEALTHCHECK` que chama `/health` com o próprio Node (a imagem não tem `curl`). No modo standalone, `infra/standalone/status.cmd` usa o mesmo endpoint.
 
 ### Uso com Monitoramento
 
@@ -448,31 +437,24 @@ Authorization: Bearer <token-atual>
 **Resposta:**
 ```json
 {
-  "token": "novo-token-jwt"
+  "token": "novo-token-jwt",
+  "user": { "_id": "...", "username": "...", "login": "...", "role": 3 }
 }
 ```
 
 O endpoint:
 - Valida o token atual (via `authMiddleware`)
-- Emite um novo token com expiração renovada
+- Recarrega o usuário do banco (401 se foi excluído)
+- Emite um novo token com expiração renovada (sem o hash da senha)
 - Usa o mesmo `JWT_EXPIRES_IN` configurado (padrão: 72h)
 
-### Lógica de Auto-Refresh no Frontend
+### Renovação no Frontend
 
-O interceptor de resposta do Axios (`frontend/src/services/api.js`) implementa:
+> Revisado após a migração: o refresh-on-401 com fila de requisições foi removido. Ele não funcionava, porque `/auth/refresh` exige um token **válido** e um 401 significa justamente token expirado/inválido.
 
-1. **Detecção de 401:** Quando uma requisição retorna 401 e existe um token armazenado
-2. **Tentativa de refresh:** Faz uma requisição para `/auth/refresh` com o token atual
-3. **Retry da requisição original:** Se o refresh funcionar, re-executa a requisição que falhou
-4. **Queue de requisições:** Se múltiplas requisições falharem simultaneamente, todas aguardam o refresh e são re-executadas
-5. **Fallback:** Se o refresh também falhar, limpa o token e redireciona para login
-
-### Fluxo
-
-```
-Requisição → 401 → Refresh Token → Sucesso → Retry Requisição Original
-                                  → Falha → Limpa Token → Login
-```
+1. **Renovação preventiva:** o `App.vue` chama `refreshToken()` a cada 1 hora enquanto a aba estiver aberta. Monitor e guichês ficam logados indefinidamente, desde que a máquina não fique mais de 72h desligada.
+2. **Usuário atualizado:** o refresh recarrega o usuário do banco. Função alterada vale na hora; usuário excluído perde o acesso.
+3. **401 em qualquer chamada:** `services/api.js` encerra a sessão, mostra "Sessão expirada" e volta ao login.
 
 ### Função Manual
 

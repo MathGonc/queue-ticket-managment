@@ -482,3 +482,42 @@ As seguintes melhorias foram implementadas após a migração principal:
 | express-validator | ^7.2.1 | backend | Validação de input |
 | pino | ^9.6.0 | backend | Logging estruturado |
 | pino-pretty | ^13.0.0 | backend (dev) | Formatação de logs em dev |
+
+---
+
+## 9. Revisão pós-migração (branch `vue-migration`)
+
+A migração acima foi gerada por IA (Kiro) e revisada comparando com o código original (commit `a1f4cb6`). Os commits seguintes ao snapshot `4b0db4a` corrigem o que estava quebrado ou descrito de forma imprecisa neste documento.
+
+### 9.1 Regressões introduzidas pela migração (corrigidas)
+
+| Problema | Impacto | Correção |
+|----------|---------|----------|
+| maska 2 → 3 mudou a API: `v-maska="obj"` passou a ser lido como opções | **CPF salvo vazio em toda senha nova** (sem erro visível) | Dígitos extraídos do valor mascarado (`onlyDigits`) + teste |
+| Upsert do documento global removido do `db.js` | Banco novo não emitia senha (404/500) | `ensureGlobalConfig()` no startup |
+| `VITE_URL=http://localhost` gravado no build de produção | Outras máquinas chamavam o próprio localhost | URL do backend derivada do host do navegador |
+| `ALLOWED_ORIGINS=http://localhost:8080` | CORS bloqueava o frontend servido em outra porta/IP | Vazio = qualquer origem (auth é por header) |
+| Logger exigia `pino-pretty` (devDependency) fora de produção | Backend do Docker (`--omit=dev`) não subia | Usa pino-pretty só se instalado; `NODE_ENV=production` na imagem |
+| `showTicketNumber` com default `true` | Painel voltaria a mostrar o número | Default `false` (comportamento de produção) |
+| Logo do PDF fixa no caminho do build do Vue CLI | Logo quebrada no relatório | Asset importado pelo Vite |
+| Guard de rotas reescrito | Perdeu `SYSTEM_AUTH=0`, validação no servidor e toasts | Comportamento original restaurado |
+| Validação nova no backend sem mensagem no frontend | Qualquer erro aparecia como "Este usuário já existe" | Mensagens em português exibidas |
+| Busca do histórico por regex crua | Não achava pelo número; caracteres especiais davam 500 | Busca por número, regex escapada, ordenação validada |
+
+### 9.2 Itens marcados como feitos que não estavam
+
+- **"Middleware de autenticação em todas as rotas protegidas" (7.4):** só `/api/users` exigia login. Fila, histórico, reset de senhas, configurações e `/register` estavam abertos para qualquer pessoa na rede. Agora todas as rotas exigem login e o cargo adequado (ver `docs/documentation.md`). O primeiro admin é criado por `npm run create-admin`.
+- **"Refresh token com auto-refresh no 401" (8.6):** não funcionava (refresh exige token válido). Substituído por renovação preventiva a cada 1h.
+- **"Socket autenticado":** o token era capturado na criação do socket; depois de relogar, os sinais podiam ser descartados em silêncio. O token agora é lido a cada handshake.
+- **Segurança do token:** o JWT e a resposta do login carregavam o hash da senha. Removido.
+
+### 9.3 Pendência original resolvida
+
+- **"Às vezes ao dar F5 não aparecem opções que dependem de cargo":** o cargo era lido uma vez no `mounted` da sidebar, antes da verificação do token terminar. Agora é `computed` do store, e o guard carrega os dados do usuário antes de abrir a tela.
+
+### 9.4 Limpeza
+
+- Removidos: composables não usados, pasta `legacy/` (o original está no git: `git show a1f4cb6:<arquivo>`), teste duplicado, `nginx.conf` com 160 linhas de proxy nunca usado.
+- ESLint voltou ao perfil do projeto original (`vue3-essential`): de 375 avisos de formatação para 0.
+- `.env` fora do git; modelos em `*.env.example`.
+- Infra reorganizada em `infra/standalone` (Windows sem Docker) e `infra/docker`.

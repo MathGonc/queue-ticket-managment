@@ -1,0 +1,13 @@
+# Build context = raiz do repo. Sem isto, o node_modules do Windows seria
+# copiado por cima do instalado no container (ex.: bcrypt compilado para
+# Windows quebra o backend no Linux) e os .env locais iriam para a imagem.
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.kiro
+docs
+infra/standalone
+**/*.psd

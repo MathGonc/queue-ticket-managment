@@ -2,86 +2,90 @@
 
 ## Visão Geral
 
-Sistema de gerenciamento de filas e senhas para a Defensoria Pública. Permite emitir senhas (normais, preferenciais e super-preferenciais), chamar senhas para atendimento em guichês, exibir um painel/monitor público em tempo real via WebSocket e consultar histórico de atendimentos.
+Sistema de gerenciamento de filas e senhas para a Defensoria Pública. Permite emitir senhas (normais, preferenciais e super-preferenciais), chamar senhas para atendimento em guichês, exibir um painel/monitor em tempo real via WebSocket e consultar o histórico de atendimentos.
 
 ## Arquitetura
 
 | Camada | Tecnologia |
 |--------|-----------|
 | Frontend | Vue 3.5 + Vite 6, Vue Router 4, Pinia, Socket.io-client |
-| Backend | Node.js, Express 4, Socket.io 4, JWT, bcrypt |
+| Backend | Node.js 22, Express 4, Socket.io 4, JWT, bcrypt |
 | Banco de Dados | MongoDB 7 (Mongoose 8) |
-| Deploy | Docker Compose (3 containers: frontend, backend, mongodb) |
+| Deploy | Standalone no Windows (principal) ou Docker Compose — ver [infra/](../infra/README.md) |
 
-Comunicação em tempo real (chamada de senhas, atualização do monitor) é feita via Socket.io. A API REST cuida de CRUD de senhas, usuários e configurações globais.
+O navegador fala com o backend em `<mesmo host>:3030` (REST + Socket.io). Chamadas de senha e atualizações do monitor são propagadas via Socket.io.
 
 ## Como Rodar
 
-### Desenvolvimento
+Ver [infra/README.md](../infra/README.md). Resumo para desenvolvimento:
 
 ```bash
-# Backend
-cd backend
-npm install
-npm run dev          # nodemon na porta 3030
-
-# Frontend
-cd frontend
-npm install
-npm run dev          # Vite dev server (porta 5173)
+cd backend  && npm install && npm run dev   # API em :3030 (precisa de backend/.env)
+cd frontend && npm install && npm run dev   # Vite em :8080
 ```
 
-Requisitos: Node.js 18+, MongoDB rodando localmente ou via Docker.
+## Cargos
 
-### Produção (Docker)
+| Valor | Cargo | Acesso nas telas |
+|-------|-------|------------------|
+| 1 | Monitor | Início, painel |
+| 2 | Atendente | + triagem, atendimento, histórico |
+| 3 | Administrador | + configurações, usuários, excluir senha |
 
-```bash
-docker compose up -d --build
-```
-
-Sobe 3 serviços: `mongodb` (27017), `backend` (3030), `frontend` (80).
+O primeiro administrador de um banco novo é criado com `npm run create-admin` (no backend) ou `infra/standalone/create-admin.cmd`.
 
 ## Endpoints da API
 
+"Login" = header `Authorization: Bearer <token>`. O token vale 72h (`JWT_EXPIRES_IN`) e o frontend o renova a cada hora.
+
 ### Autenticação / Usuários (`userRoutes`)
 
-| Método | Rota | Descrição | Auth |
-|--------|------|-----------|------|
-| POST | `/register` | Criar usuário | Não |
-| POST | `/login` | Login (retorna JWT) | Não |
-| GET | `/auth/verify` | Verificar token JWT | Bearer |
-| GET | `/api/users` | Listar usuários | Role ≥ 3 |
-| PUT | `/api/users/:id` | Atualizar usuário | Role ≥ 3 |
-| DELETE | `/api/users/:id` | Excluir usuário | Role ≥ 3 |
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| POST | `/login` | Login (retorna token e usuário, sem senha) | Público (5 tentativas/min por IP) |
+| GET | `/auth/verify` | Valida o token e devolve o usuário atual do banco | Login |
+| POST | `/auth/refresh` | Novo token (recarrega o usuário do banco) | Login |
+| POST | `/register` | Criar usuário | Admin |
+| GET | `/api/users` | Listar usuários | Admin |
+| PUT | `/api/users/:id` | Atualizar usuário (senha opcional) | Admin |
+| DELETE | `/api/users/:id` | Excluir usuário (não exclui a si mesmo) | Admin |
 
 ### Senhas (`ticketRoutes`)
 
-| Método | Rota | Descrição | Auth |
-|--------|------|-----------|------|
-| GET | `/loadTicketsInQueue` | Senhas na fila (últimos 7 dias) | Não |
-| GET | `/loadTicket/:id` | Buscar senha por ID | Não |
-| POST | `/insertTicket` | Criar nova senha | Não |
-| PUT | `/updateTicketCalled/:id` | Atualizar senha (chamar/atender) | Não |
-| DELETE | `/deleteTicket/:id` | Excluir senha | Não |
-| GET | `/loadTicketHistory` | Histórico completo (limite 10k) | Não |
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/loadTicketsInQueue` | Senhas dos últimos 7 dias (fila + atendidas) | Login |
+| GET | `/loadTicket/:id` | Buscar senha por ID | Login |
+| PUT | `/updateTicketCalled/:id` | Marcar senha como chamada | Login |
+| POST | `/insertTicket` | Emitir senha (triagem) | Atendente |
+| GET | `/loadTicketHistory` | Histórico paginado (`page`, `limit`, `search`, `startDate`, `endDate`, `sortField`, `sortOrder`) | Atendente |
+| DELETE | `/deleteTicket/:id` | Excluir senha | Admin |
 
 ### Configurações Globais (`globalRoutes`)
 
-| Método | Rota | Descrição | Auth |
-|--------|------|-----------|------|
-| GET | `/getConfigsDB` | Obter configurações | Não |
-| POST | `/saveConfigsDB` | Salvar configurações | Não |
-| GET | `/getGlobalTicketData` | Dados globais de senha (contador) | Não |
-| PUT | `/updateGlobalTicketData` | Atualizar contador global | Não |
-| PUT | `/resetGlobalTicketData` | Resetar contadores | Não |
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/getConfigsDB` | Configurações do monitor | Público (lido pelo painel) |
+| GET | `/getGlobalTicketData` | Senha atual/anterior e próximo número | Público (lido pelo painel) |
+| PUT | `/updateGlobalTicketData` | Atualizar numeração/chamada | Login |
+| POST | `/saveConfigsDB` | Salvar configurações do monitor | Admin |
+| PUT | `/resetGlobalTicketData` | Zerar numeração | Admin |
+
+### Outros
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/health` | Status do backend e da conexão com o MongoDB |
 
 ### WebSocket (Socket.io)
 
-| Evento (emit) | Descrição | Auth |
+| Evento (cliente → servidor) | Descrição | Exige token no handshake |
 |----------------|-----------|------|
-| `signalUpdateValues` | Notifica atualização de valores | Sim |
-| `signalUpdateMonitor` | Atualiza monitor com nome chamado | Sim |
-| `signalUpdateMonitorConfigs` | Atualiza configs do monitor | Sim |
+| `signalUpdateValues` | Listas/numeração mudaram | Sim |
+| `signalUpdateMonitor` | Nova chamada no painel | Sim |
+| `signalUpdateMonitorConfigs` | Configurações do monitor mudaram | Sim |
+
+O servidor retransmite como `receiveUpdateGlobal`, `receiveUpdateMonitor` e `receiveUpdateMonitorConfigs` para todos os clientes. Sinais de conexões sem token válido são ignorados.
 
 ## Estrutura de Pastas
 
@@ -89,27 +93,27 @@ Sobe 3 serviços: `mongodb` (27017), `backend` (3030), `frontend` (80).
 queue-ticket-managment/
 ├── backend/
 │   ├── server.js              # Entry point (Express + Socket.io)
+│   ├── scripts/create-admin.js
 │   └── src/
-│       ├── config/            # Conexão DB e variáveis de ambiente
-│       ├── middleware/        # auth.js (JWT), rateLimit.js
+│       ├── config/            # Variáveis de ambiente, conexão DB, logger
+│       ├── middleware/        # auth (JWT/cargos), rateLimit, validate
 │       ├── models/            # Mongoose schemas (ticket, user, global, history)
 │       └── routes/            # ticketRoutes, userRoutes, globalRoutes
 ├── frontend/
-│   ├── index.html             # SPA entry
-│   ├── vite.config.js         # Config Vite
+│   ├── index.html
+│   ├── vite.config.js
 │   └── src/
 │       ├── components/        # sidebar, topbar
-│       ├── composables/       # useTickets, useUsers, useGlobal
-│       ├── controllers/       # Lógica de negócio (ticket, user, global)
-│       ├── pages/             # Páginas (index, login, monitor, service, config, history, sorting)
-│       ├── router/            # Vue Router + guards
-│       ├── services/          # api.js (Axios instance)
+│       ├── controllers/       # Chamadas HTTP (ticket, user, global)
+│       ├── pages/             # index, login, monitor, service, config, history, sorting
+│       ├── router/            # Rotas + guard de navegação
+│       ├── services/api.js    # Axios (token + tratamento de 401)
 │       ├── stores/            # Pinia (auth)
-│       ├── utils/             # Helpers
-│       ├── socket.js          # Socket.io client
-│       └── main.js            # Bootstrap Vue app
-├── docker-compose.yml         # Orquestração dos 3 containers
-├── Dockerfile.backend
-├── Dockerfile.frontend
-└── documentation.md           # Este arquivo
+│       ├── utils/             # Funções puras + callTicket.js
+│       ├── socket.js          # Socket.io (público para escutar, autenticado para emitir)
+│       └── main.js
+├── infra/
+│   ├── standalone/            # Scripts para Windows sem Docker
+│   └── docker/                # Compose + Dockerfiles + nginx
+└── docs/
 ```
