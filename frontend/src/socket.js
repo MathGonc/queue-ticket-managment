@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client'
+import { useToast } from 'vue-toastification'
 import config from '@/config.js'
 import { useAuth } from '@/stores/auth.js'
 
@@ -42,10 +43,7 @@ export function setAppReady() {
 }
 
 function showToast(type, message) {
-  if (!appReady) return
-  import('vue-toastification')
-    .then(({ useToast }) => useToast()[type](message))
-    .catch(() => {})
+  if (appReady) useToast()[type](message)
 }
 
 publicSocket.on('disconnect', () => {

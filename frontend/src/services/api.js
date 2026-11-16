@@ -1,81 +1,46 @@
 import axios from 'axios'
 import { useAuth } from '@/stores/auth'
+import { useToast } from 'vue-toastification'
 import config from '@/config.js'
+
+// O router e injetado por router/index.js (importar aqui criaria um ciclo:
+// router -> guards -> userController -> api -> router)
+let router = null
+export function bindRouter(instance) {
+  router = instance
+}
 
 const api = axios.create({
   baseURL: config.url_server,
   headers: { 'Content-Type': 'application/json' }
 })
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use((request) => {
   const auth = useAuth()
   if (auth.token) {
-    config.headers.Authorization = `Bearer ${auth.token}`
+    request.headers.Authorization = `Bearer ${auth.token}`
   }
-  return config
+  return request
 })
 
-// Track if a refresh is already in progress to avoid multiple simultaneous refreshes
-let isRefreshing = false
-let failedQueue = []
-
-function processQueue(error, token = null) {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error)
-    } else {
-      resolve(token)
-    }
-  })
-  failedQueue = []
-}
+// 401 com token = sessao expirada/invalida: encerra a sessao e volta ao login.
+// (Um refresh nessa hora nao adiantaria: /auth/refresh exige token valido.
+// A renovacao preventiva e feita a cada 1h pelo App.vue.)
+let redirecting = false
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config
     const auth = useAuth()
 
-    // If 401 and we have a token, try to refresh once before clearing
-    if (error.response?.status === 401 && auth.token && !originalRequest._retry) {
-      if (isRefreshing) {
-        // Queue this request until refresh completes
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject })
-        }).then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`
-          return api(originalRequest)
-        })
-      }
-
-      originalRequest._retry = true
-      isRefreshing = true
-
-      try {
-        const response = await axios.post(
-          `${config.url_server}/auth/refresh`,
-          {},
-          { headers: { Authorization: `Bearer ${auth.token}` } }
-        )
-
-        const newToken = response.data.token
-        auth.setToken(newToken)
-        processQueue(null, newToken)
-
-        originalRequest.headers.Authorization = `Bearer ${newToken}`
-        return api(originalRequest)
-      } catch (refreshError) {
-        processQueue(refreshError, null)
-        auth.clearToken()
-        return Promise.reject(refreshError)
-      } finally {
-        isRefreshing = false
-      }
-    }
-
-    // If 401 and no token, just clear
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && auth.token && !error.config?.skipAuthRedirect) {
       auth.clearToken()
+
+      if (!redirecting && router) {
+        redirecting = true
+        useToast().error('Sessão expirada. Faça login novamente.')
+        await router.push({ name: 'login' }).finally(() => { redirecting = false })
+      }
     }
 
     return Promise.reject(error)

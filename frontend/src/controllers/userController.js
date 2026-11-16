@@ -1,12 +1,16 @@
 import { api } from "@/services/api.js";
 import { useAuth } from "../stores/auth.js";
 
+// Valida o token no servidor e atualiza os dados do usuario no store.
+// Chamado pelo guard a cada navegacao protegida (corrige o F5 sem cargo).
 export async function checkToken() {
+  const auth = useAuth();
   try {
-    const response = await api.get(`/auth/verify`);
+    // skipAuthRedirect: quem trata o 401 aqui e o guard (evita toast duplo)
+    const response = await api.get(`/auth/verify`, { skipAuthRedirect: true });
+    if (response.data?.userData) auth.setUserData(response.data.userData);
     return response;
   } catch (error) {
-    const auth = useAuth();
     auth.clearToken();
     return error.response;
   }
@@ -51,15 +55,6 @@ export async function updateUser(id, userData) {
 export async function deleteUser(id) {
   try {
     const response = await api.delete(`/api/users/${id}`);
-    return response;
-  } catch (error) {
-    return error.response;
-  }
-}
-
-export async function updatePassword(id, newPassword) {
-  try {
-    const response = await api.put(`/api/users/${id}`, { password: newPassword });
     return response;
   } catch (error) {
     return error.response;

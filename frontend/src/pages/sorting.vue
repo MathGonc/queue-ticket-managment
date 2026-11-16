@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, watch, onMounted, onBeforeUnmount } from "vue";
 import { useToast } from "vue-toastification";
 import { publicSocket, createSocket } from "@/socket.js";
 import { insertTicket } from "@/controllers/ticketController.js";
@@ -252,9 +252,12 @@ onMounted(async () => {
   if (auth.token) {
     createSocket();
   }
-  publicSocket.on("receiveUpdateGlobal", () => {
-    handleGetGlobalTicketData();
-  });
+  publicSocket.on("receiveUpdateGlobal", handleGetGlobalTicketData);
+});
+
+// Sem isso, cada visita a triagem somava mais um listener
+onBeforeUnmount(() => {
+  publicSocket.off("receiveUpdateGlobal", handleGetGlobalTicketData);
 });
 </script>
 

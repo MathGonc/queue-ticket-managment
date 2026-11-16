@@ -270,15 +270,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useLocalStorage } from "@vueuse/core";
 import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
-import { checkToken } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
-import { callTicket, convertDate, calculateAge } from "@/utils/index.js";
+import { convertDate, calculateAge } from "@/utils/index.js";
+import { callTicket } from "@/utils/callTicket.js";
 import VueFeather from "vue-feather";
 import config from "@/config.js";
 
@@ -295,10 +295,8 @@ const auth = useAuth();
 const toast = useToast();
 
 // Reactive state
-const username = ref("");
 const showInterface = ref(true);
 const buttonDisabled = ref(false);
-const userRole = ref(0);
 const isTransitioningQueued = ref(false);
 const isTransitioningServiced = ref(false);
 const ticketsInQueue = ref(0);
@@ -313,6 +311,10 @@ const collapseMenu = useLocalStorage("collapseMenu", {
 });
 
 // Computed
+// Derivados do store (o guard carrega userData antes de abrir a tela), entao
+// reagem quando o cargo chega: corrige o F5 que escondia opcoes por cargo.
+const username = computed(() => auth.userData?.username || "");
+const userRole = computed(() => auth.userData?.role || 0);
 const userRoleToDeleteTickets = computed(() => config.userRoleToDeleteTickets);
 
 const filteredTickets = computed(() =>
@@ -400,7 +402,7 @@ async function handleDeleteTicket(ticketID) {
   setButtonDisabled();
 
   if (userRole.value < config.userRoleToDeleteTickets) {
-    return toast.success("Sem permissão");
+    return toast.error("Sem permissão");
   }
 
   try {
@@ -410,35 +412,23 @@ async function handleDeleteTicket(ticketID) {
       : toast.error("Ocorreu um erro");
 
     createSocket().emit("signalUpdateValues");
-  } catch (error) {
+  } catch {
     toast.error("Ocorreu um erro");
   }
 }
 
 // Lifecycle
-onMounted(async () => {
-  // CRITICAL: Check if token exists BEFORE calling checkToken to avoid server errors
-  if (auth.token) {
-    try {
-      const response = await checkToken();
-      if (response?.data?.userData) {
-        username.value = auth.userData.username;
-      }
-      // Create authenticated socket for emitting control events
-      createSocket();
-    } catch {
-      auth.clearToken();
-    }
-  }
+onMounted(() => {
+  // Token ja validado pelo guard; pre-conecta o socket de controle
+  if (auth.token) createSocket();
 
   handleLoadTicketsInQueue();
+  publicSocket.on("receiveUpdateGlobal", handleLoadTicketsInQueue);
+});
 
-  // Listen on publicSocket for updates (works for both auth and non-auth)
-  publicSocket.on("receiveUpdateGlobal", () => {
-    handleLoadTicketsInQueue();
-  });
-
-  userRole.value = auth.userData?.role || 0;
+// Sem isso, cada ida ao /monitor e volta somava mais um listener
+onBeforeUnmount(() => {
+  publicSocket.off("receiveUpdateGlobal", handleLoadTicketsInQueue);
 });
 
 // Watch route changes

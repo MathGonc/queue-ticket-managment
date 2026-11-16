@@ -78,12 +78,10 @@ import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 import { useLocalStorage } from "@vueuse/core";
 import { loadTicketsInQueue } from "../controllers/ticketController";
-import { callTicket } from "../utils";
-import { useAuth } from "@/stores/auth.js";
+import { callTicket } from "@/utils/callTicket.js";
 import topbar from "../components/topbar.vue";
 import config from "@/config.js";
 
-const auth = useAuth();
 const toast = useToast();
 
 const transitionFade = ref(false);

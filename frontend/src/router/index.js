@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { setupGuards } from "./guards";
+import { bindRouter } from "@/services/api.js";
 
 // Static imports (layout wrapper and first page users see)
 import sidebar from "@/components/sidebar.vue";
@@ -66,9 +67,15 @@ const router = createRouter({
         },
       ],
     },
+    // URL inexistente: volta ao inicio (antes ficava tela em branco)
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: { name: "index" },
+    },
   ],
 });
 
 setupGuards(router);
+bindRouter(router);
 
 export default router;

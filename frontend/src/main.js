@@ -4,7 +4,6 @@ import App from "./App.vue";
 import Toast from "vue-toastification";
 import router from "./router";
 import { useAuth } from "@/stores/auth.js";
-import { checkToken } from "./controllers/userController";
 import { vMaska } from "maska/vue";
 import { setAppReady } from "@/socket.js";
 
@@ -18,25 +17,16 @@ const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
-app.directive("maska", vMaska);
-app.use(router);
-app.use(Toast, toastOptions);
 
-// Guard: only verify token on startup if one exists in localStorage
+// Token salvo = sessao presumida. A validacao no servidor (e o carregamento
+// de userData/cargo) e feita pelo guard antes de abrir qualquer tela
+// protegida, entao precisa vir antes do app.use(router).
 const auth = useAuth();
-if (auth.token) {
-  (async () => {
-    try {
-      auth.setIsAuth(true);
-      const response = await checkToken();
-      if (response?.data?.userData) {
-        auth.setUserData(response.data.userData);
-      }
-    } catch (error) {
-      auth.clearToken();
-    }
-  })();
-}
+if (auth.token) auth.setIsAuth(true);
+
+app.directive("maska", vMaska);
+app.use(Toast, toastOptions);
+app.use(router);
 
 app.mount("#app");
 
