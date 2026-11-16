@@ -1,19 +1,34 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const { body, param } = require('express-validator')
 const { validate } = require('../middleware/validate')
 const User = require('../models/user')
 const { loginLimiter } = require('../middleware/rateLimit')
-const { authMiddleware, requireRole } = require('../middleware/auth')
+const { authMiddleware, requireRole, signToken, publicUser } = require('../middleware/auth')
 const logger = require('../config/logger')
 
-router.post('/register', [
-  body('username').notEmpty().trim().isLength({ max: 30 }).withMessage('Nome é obrigatório (máx. 30 caracteres)'),
-  body('login').notEmpty().trim().matches(/^[a-zA-Z0-9._-]+$/).withMessage('Login deve conter apenas letras, números, ponto, hífen ou sublinhado'),
-  body('password').isLength({ min: 4 }).withMessage('Senha deve ter pelo menos 4 caracteres'),
-  body('role').isInt({ min: 1, max: 3 }).withMessage('Selecione a função do usuário'),
+const ROLE_ADMIN = 3
+const LOGIN_PATTERN = /^[a-zA-Z0-9._-]+$/
+const MSG = {
+  username: 'Nome é obrigatório (máx. 30 caracteres)',
+  login: 'Login deve conter apenas letras, números, ponto, hífen ou sublinhado',
+  password: 'Senha deve ter pelo menos 4 caracteres',
+  role: 'Selecione a função do usuário',
+}
+
+// Mesmo formato do express-validator, para o frontend exibir a mensagem
+function badRequest(res, msg) {
+  return res.status(400).json({ error: msg, errors: [{ msg }] })
+}
+
+// Cadastro: somente administrador. O primeiro admin de um banco novo e
+// criado pelo script `npm run create-admin` (backend/scripts/create-admin.js).
+router.post('/register', authMiddleware, requireRole(ROLE_ADMIN), [
+  body('username').trim().notEmpty().withMessage(MSG.username).isLength({ max: 30 }).withMessage(MSG.username),
+  body('login').trim().notEmpty().withMessage(MSG.login).matches(LOGIN_PATTERN).withMessage(MSG.login),
+  body('password').isLength({ min: 4 }).withMessage(MSG.password),
+  body('role').isInt({ min: 1, max: 3 }).withMessage(MSG.role),
   validate
 ], async (req, res) => {
   try {
@@ -21,20 +36,13 @@ router.post('/register', [
 
     const existingUser = await User.findOne({ login })
     if (existingUser) {
-      return res.status(400).json({ error: 'Login already in use' })
+      return res.status(400).json({ error: 'Login já está em uso' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
+    await User.create({ username, login, password: hashedPassword, role })
 
-    const newUser = new User({
-      username,
-      login,
-      password: hashedPassword,
-      role,
-    })
-    await newUser.save()
-
-    res.status(201).json({ message: 'User created successfully' })
+    res.status(201).json({ message: 'Usuário criado com sucesso' })
   } catch (error) {
     logger.error(error)
     res.status(500).json({ error: 'Internal server error' })
@@ -42,7 +50,7 @@ router.post('/register', [
 })
 
 router.post('/login', loginLimiter, [
-  body('login').notEmpty().trim().withMessage('Informe o login'),
+  body('login').trim().notEmpty().withMessage('Informe o login'),
   body('password').notEmpty().withMessage('Informe a senha'),
   validate
 ], async (req, res) => {
@@ -59,51 +67,41 @@ router.post('/login', loginLimiter, [
       return res.status(401).json({ error: 'Invalid login or password' })
     }
 
-    const token = jwt.sign({ userData: user }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '72h',
-    })
-    return res.status(200).json({ token, user })
+    return res.status(200).json({ token: signToken(user), user: publicUser(user) })
   } catch (error) {
     logger.error(error)
     return res.status(500).json({ error: 'Internal server error' })
   }
 })
 
-router.get('/auth/verify', (req, res) => {
-  const authHeader = req.headers.authorization
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
-  const token = authHeader.split(' ')[1]
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
-
+// Valida o token E confere no banco: usuario excluido perde o acesso e
+// mudanca de funcao vale na proxima navegacao.
+router.get('/auth/verify', authMiddleware, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    return res.status(200).json({ userData: decoded.userData })
-  } catch (err) {
-    return res.status(401).json({ error: 'Token inválido' })
-  }
-})
-
-// POST /auth/refresh - Refresh token
-router.post('/auth/refresh', authMiddleware, (req, res) => {
-  try {
-    // Issue a new token with the same userData
-    const token = jwt.sign({ userData: req.user }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN || '72h',
-    })
-    return res.status(200).json({ token })
+    const user = await User.findById(req.user._id).select('-password')
+    if (!user) return res.status(401).json({ error: 'Usuário não existe mais' })
+    return res.status(200).json({ userData: publicUser(user) })
   } catch (error) {
     logger.error(error)
     return res.status(500).json({ error: 'Internal server error' })
   }
 })
 
-// GET /api/users - Listar todos (requer role >= 3)
-router.get('/api/users', authMiddleware, requireRole(3), async (req, res) => {
+// Renova o token (o frontend chama periodicamente). Recarrega o usuario do
+// banco para refletir funcao atualizada e barrar usuario excluido.
+router.post('/auth/refresh', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password')
+    if (!user) return res.status(401).json({ error: 'Usuário não existe mais' })
+    return res.status(200).json({ token: signToken(user), user: publicUser(user) })
+  } catch (error) {
+    logger.error(error)
+    return res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+// GET /api/users - Listar todos (requer admin)
+router.get('/api/users', authMiddleware, requireRole(ROLE_ADMIN), async (req, res) => {
   try {
     const users = await User.find({}).select('-password')
     res.json({ users })
@@ -113,19 +111,29 @@ router.get('/api/users', authMiddleware, requireRole(3), async (req, res) => {
   }
 })
 
-// PUT /api/users/:id - Atualizar usuário (requer role >= 3)
-router.put('/api/users/:id', authMiddleware, requireRole(3), [
+// PUT /api/users/:id - Atualizar usuário (requer admin)
+router.put('/api/users/:id', authMiddleware, requireRole(ROLE_ADMIN), [
   param('id').isMongoId().withMessage('ID de usuário inválido'),
-  body('username').optional().trim().notEmpty().isLength({ max: 30 }).withMessage('Nome é obrigatório (máx. 30 caracteres)'),
-  body('login').optional().trim().matches(/^[a-zA-Z0-9._-]+$/).withMessage('Login deve conter apenas letras, números, ponto, hífen ou sublinhado'),
-  body('role').optional().isInt({ min: 1, max: 3 }).withMessage('Selecione a função do usuário'),
-  body('password').optional().isLength({ min: 4 }).withMessage('Senha deve ter pelo menos 4 caracteres'),
+  body('username').optional().trim().notEmpty().withMessage(MSG.username).isLength({ max: 30 }).withMessage(MSG.username),
+  body('login').optional().trim().matches(LOGIN_PATTERN).withMessage(MSG.login),
+  body('role').optional().isInt({ min: 1, max: 3 }).withMessage(MSG.role),
+  body('password').optional().isLength({ min: 4 }).withMessage(MSG.password),
   validate
 ], async (req, res) => {
   try {
     const { username, login, role, password } = req.body
-    const updateData = { username, login, role }
+    const isSelf = req.params.id === String(req.user._id)
 
+    if (isSelf && role !== undefined && Number(role) < ROLE_ADMIN) {
+      return badRequest(res, 'Não é possível remover seu próprio acesso de administrador')
+    }
+
+    if (login) {
+      const loginOwner = await User.findOne({ login, _id: { $ne: req.params.id } })
+      if (loginOwner) return badRequest(res, 'Login já está em uso')
+    }
+
+    const updateData = { username, login, role }
     if (password) {
       updateData.password = await bcrypt.hash(password, 10)
     }
@@ -139,10 +147,13 @@ router.put('/api/users/:id', authMiddleware, requireRole(3), [
   }
 })
 
-// DELETE /api/users/:id - Excluir usuário (requer role >= 3)
-router.delete('/api/users/:id', authMiddleware, requireRole(3), async (req, res) => {
+// DELETE /api/users/:id - Excluir usuário (requer admin)
+router.delete('/api/users/:id', authMiddleware, requireRole(ROLE_ADMIN), [
+  param('id').isMongoId().withMessage('ID de usuário inválido'),
+  validate
+], async (req, res) => {
   try {
-    if (req.params.id === req.user._id.toString()) {
+    if (req.params.id === String(req.user._id)) {
       return res.status(400).json({ error: 'Não é possível excluir o próprio usuário' })
     }
     await User.findByIdAndDelete(req.params.id)

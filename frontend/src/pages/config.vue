@@ -261,7 +261,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
-import { publicSocket, createSocket } from "@/socket.js";
+import { createSocket } from "@/socket.js";
 import {
   loadMonitorConfigs,
   saveMonitorConfigs,
@@ -279,7 +279,6 @@ import topbar from "@/components/topbar.vue";
 
 const toast = useToast();
 const auth = useAuth();
-let authSocket = null;
 
 const transitionFade = ref(false);
 const buttonDisabled = ref(false);
@@ -424,7 +423,7 @@ async function handleResetGlobalTicketData() {
   if (response.status !== 200) {
     return toast.error("Erro ao resetar as senhas");
   }
-  if (authSocket) authSocket.emit("signalUpdateValues");
+  createSocket().emit("signalUpdateValues");
   toast.success("Senhas resetadas");
 }
 
@@ -432,7 +431,7 @@ function saveConfigs() {
   saveMonitorConfigs(monitorConfig.value)
     .then(() => {
       toast.success("Configurações salvas");
-      if (authSocket) authSocket.emit("signalUpdateMonitorConfigs");
+      createSocket().emit("signalUpdateMonitorConfigs");
       setButtonDisabled();
     })
     .catch(() => {
@@ -447,7 +446,7 @@ onMounted(async () => {
   await loadUsers();
   // Create authenticated socket for control events
   if (auth.token) {
-    authSocket = createSocket(auth.token);
+    createSocket();
   }
 });
 </script>

@@ -304,7 +304,6 @@ const isTransitioningServiced = ref(false);
 const ticketsInQueue = ref(0);
 const ticketData = ref([]);
 const lastCalledTicketId = ref(null);
-let authSocket = null;
 
 // Persistent state via useLocalStorage
 const collapseMenu = useLocalStorage("collapseMenu", {
@@ -410,9 +409,7 @@ async function handleDeleteTicket(ticketID) {
       ? toast.success("Ticket excluido")
       : toast.error("Ocorreu um erro");
 
-    if (authSocket) {
-      authSocket.emit("signalUpdateValues");
-    }
+    createSocket().emit("signalUpdateValues");
   } catch (error) {
     toast.error("Ocorreu um erro");
   }
@@ -428,7 +425,7 @@ onMounted(async () => {
         username.value = auth.userData.username;
       }
       // Create authenticated socket for emitting control events
-      authSocket = createSocket(auth.token);
+      createSocket();
     } catch {
       auth.clearToken();
     }

@@ -1,9 +1,17 @@
 const express = require('express')
 const router = express.Router()
-const { body, param } = require('express-validator')
+const { body } = require('express-validator')
 const { validate } = require('../middleware/validate')
 const TicketModel = require('../models/ticket')
 const logger = require('../config/logger')
+const { authMiddleware, requireRole } = require('../middleware/auth')
+
+// Cargos: 1 = Monitor, 2 = Atendente, 3 = Administrador
+const ROLE_ATTENDANT = 2
+const ROLE_ADMIN = 3
+
+// Toda rota de ticket expoe nome/CPF dos assistidos: exige login
+router.use(['/loadTicketsInQueue', '/loadTicket', '/insertTicket', '/updateTicketCalled', '/deleteTicket', '/loadTicketHistory'], authMiddleware)
 
 const HISTORY_SORT_FIELDS = [
   'number', 'name', 'docNumber', 'type', 'queuedBy', 'dateQueue', 'servicedBy', 'dateServiced',
@@ -60,10 +68,10 @@ router.get('/loadTicket/:id', async (req, res) => {
   }
 })
 
-router.post('/insertTicket', [
-  body('number').isInt().withMessage('Number must be an integer'),
-  body('status').isInt().withMessage('Status must be an integer'),
-  body('name').notEmpty().trim().withMessage('Name is required'),
+router.post('/insertTicket', requireRole(ROLE_ATTENDANT), [
+  body('number').isInt().withMessage('Número da senha inválido'),
+  body('status').isInt().withMessage('Status inválido'),
+  body('name').trim().notEmpty().withMessage('Digite um nome'),
   validate
 ], async (req, res) => {
   try {
@@ -80,7 +88,7 @@ router.put('/updateTicketCalled/:id', async (req, res) => {
   try {
     const _id = req.params.id,
       data = req.body
-    const response = await TicketModel.findByIdAndUpdate(_id, data)
+    await TicketModel.findByIdAndUpdate(_id, data)
 
     return res.status(200).json({})
   } catch (error) {
@@ -89,7 +97,7 @@ router.put('/updateTicketCalled/:id', async (req, res) => {
   }
 })
 
-router.delete('/deleteTicket/:id', async (req, res) => {
+router.delete('/deleteTicket/:id', requireRole(ROLE_ADMIN), async (req, res) => {
   try {
     const _id = req.params.id
     await TicketModel.findByIdAndDelete(_id)
@@ -101,7 +109,7 @@ router.delete('/deleteTicket/:id', async (req, res) => {
   }
 })
 
-router.get('/loadTicketHistory', async (req, res) => {
+router.get('/loadTicketHistory', requireRole(ROLE_ATTENDANT), async (req, res) => {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1)
     const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 10000)

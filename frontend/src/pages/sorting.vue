@@ -135,7 +135,6 @@ defineOptions({
 
 const auth = useAuth();
 const toast = useToast();
-let authSocket = null;
 
 // Reactive state
 const transitionFade = ref(false);
@@ -242,7 +241,7 @@ async function handleRegisterTicket() {
   });
   if (updateResponse.status != 200)
     return toast.error("Ocorreu um erro ao atualizar a lista");
-  if (authSocket) authSocket.emit("signalUpdateValues");
+  createSocket().emit("signalUpdateValues");
 }
 
 // Lifecycle
@@ -251,7 +250,7 @@ onMounted(async () => {
   await handleGetGlobalTicketData();
   // Create authenticated socket for control events
   if (auth.token) {
-    authSocket = createSocket(auth.token);
+    createSocket();
   }
   publicSocket.on("receiveUpdateGlobal", () => {
     handleGetGlobalTicketData();

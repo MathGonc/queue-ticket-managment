@@ -1,42 +1,39 @@
-import { reactive } from 'vue'
 import { io } from 'socket.io-client'
 import config from '@/config.js'
+import { useAuth } from '@/stores/auth.js'
 
 const URL = config.url_server
 
-export const state = reactive({ connected: false })
-
+// Socket autenticado: usado para EMITIR eventos de controle (o backend ignora
+// sinais de conexoes sem token valido). O token e lido a cada (re)conexao, e
+// se o token atual mudou desde o handshake (login apos expirar, refresh), a
+// conexao e refeita antes de emitir. Emits feitos durante a reconexao ficam
+// em buffer e sao enviados ao conectar.
 let authSocket = null
+let handshakeToken = null
 
-export function createSocket(token) {
-  // Reutiliza socket existente se já conectado com o mesmo token
-  if (authSocket && authSocket.connected) {
-    return authSocket
+export function createSocket() {
+  const token = useAuth().token
+
+  if (!authSocket) {
+    handshakeToken = token
+    authSocket = io(URL, {
+      auth: (cb) => {
+        handshakeToken = useAuth().token
+        cb({ token: handshakeToken })
+      },
+    })
+  } else if (token !== handshakeToken) {
+    authSocket.disconnect().connect()
   }
-
-  // Desconecta socket anterior se existir
-  if (authSocket) {
-    authSocket.disconnect()
-  }
-
-  authSocket = io(URL, {
-    auth: { token }
-  })
-
-  authSocket.on('connect', () => { state.connected = true })
-  authSocket.on('disconnect', () => { state.connected = false })
 
   return authSocket
 }
 
-export function getAuthSocket() {
-  return authSocket
-}
-
-// Socket público para o monitor (sem auth)
+// Socket publico: apenas ESCUTA as atualizacoes (monitor, listas, triagem)
 export const publicSocket = io(URL)
 
-// Disconnect notification handling - deferred until app is ready
+// Aviso de conexao perdida/restabelecida (so depois que o app montou)
 let disconnectToastShown = false
 let appReady = false
 
@@ -46,28 +43,19 @@ export function setAppReady() {
 
 function showToast(type, message) {
   if (!appReady) return
-  try {
-    import('vue-toastification').then(({ useToast }) => {
-      const toast = useToast()
-      toast[type](message)
-    }).catch(() => {
-      // Toast not available yet, ignore
-    })
-  } catch {
-    // Ignore errors if toast is not ready
-  }
+  import('vue-toastification')
+    .then(({ useToast }) => useToast()[type](message))
+    .catch(() => {})
 }
 
-publicSocket.on('disconnect', () => { 
-  state.connected = false
+publicSocket.on('disconnect', () => {
   if (!disconnectToastShown) {
     disconnectToastShown = true
     showToast('warning', 'Conexão com o servidor perdida. Reconectando...')
   }
 })
 
-publicSocket.on('connect', () => { 
-  state.connected = true
+publicSocket.on('connect', () => {
   if (disconnectToastShown) {
     disconnectToastShown = false
     showToast('success', 'Conexão restabelecida!')

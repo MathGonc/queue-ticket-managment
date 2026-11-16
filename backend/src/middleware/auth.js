@@ -1,4 +1,18 @@
 const jwt = require('jsonwebtoken')
+const config = require('../config/index.js')
+
+// Dados do usuario que vao no token e nas respostas. Nunca inclui o hash da senha.
+function publicUser(user) {
+  const data = typeof user.toObject === 'function' ? user.toObject() : { ...user }
+  delete data.password
+  return data
+}
+
+function signToken(user) {
+  return jwt.sign({ userData: publicUser(user) }, config.jwtSecret, {
+    expiresIn: config.jwtExpiresIn,
+  })
+}
 
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization
@@ -12,7 +26,7 @@ function authMiddleware(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, config.jwtSecret)
     req.user = decoded.userData
     next()
   } catch (err) {
@@ -29,4 +43,4 @@ function requireRole(minRole) {
   }
 }
 
-module.exports = { authMiddleware, requireRole }
+module.exports = { authMiddleware, requireRole, signToken, publicUser }

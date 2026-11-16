@@ -58,7 +58,7 @@ export async function callTicket(_id) {
   if (!userTable) return toast.error("Selecione seu guichê");
 
   // Use authenticated socket for control events
-  const socket = createSocket(auth.token);
+  const socket = createSocket();
 
   const responseLoadTicket = await loadTicket(_id);
   const ticketData = responseLoadTicket.data.ticket[0];

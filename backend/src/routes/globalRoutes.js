@@ -2,8 +2,14 @@ const express = require('express')
 const router = express.Router()
 const GlobalModel = require('../models/global')
 const logger = require('../config/logger')
+const { authMiddleware, requireRole } = require('../middleware/auth')
 
-router.post('/saveConfigsDB', async (req, res) => {
+const ROLE_ADMIN = 3
+
+// getConfigsDB e getGlobalTicketData sao publicos: e o que o painel (TV)
+// exibe, e o monitor nao pode parar de atualizar se o token expirar.
+
+router.post('/saveConfigsDB', authMiddleware, requireRole(ROLE_ADMIN), async (req, res) => {
   try {
     const updatedData = req.body
 
@@ -50,7 +56,7 @@ router.get('/getGlobalTicketData', async (req, res) => {
   }
 })
 
-router.put('/updateGlobalTicketData', async (req, res) => {
+router.put('/updateGlobalTicketData', authMiddleware, async (req, res) => {
   try {
     const data = req.body
     const config = await GlobalModel.findOneAndUpdate({}, { $set: data }, { new: true })
@@ -62,7 +68,7 @@ router.put('/updateGlobalTicketData', async (req, res) => {
   }
 })
 
-router.put('/resetGlobalTicketData', async (req, res) => {
+router.put('/resetGlobalTicketData', authMiddleware, requireRole(ROLE_ADMIN), async (req, res) => {
   try {
     const ticketResetData = {
       nextToQueue: 1,

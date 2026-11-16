@@ -20,17 +20,18 @@ import { refreshToken } from '@/controllers/userController.js'
 const auth = useAuth()
 let refreshInterval = null
 
-onMounted(() => {
-  if (auth.token) {
-    createSocket(auth.token)
+// Renova o token a cada hora enquanto a aba estiver aberta (o token vale 72h).
+// Mantem o monitor e os guiches logados indefinidamente, desde que a maquina
+// nao fique mais de 72h desligada. O intervalo roda sempre: se o login
+// acontecer depois de abrir a pagina, a renovacao tambem passa a valer.
+const REFRESH_INTERVAL_MS = 60 * 60 * 1000
 
-    // Refresh token every 24 hours
-    refreshInterval = setInterval(() => {
-      if (auth.token) {
-        refreshToken()
-      }
-    }, 24 * 60 * 60 * 1000)
-  }
+onMounted(() => {
+  if (auth.token) createSocket()
+
+  refreshInterval = setInterval(() => {
+    if (auth.token) refreshToken()
+  }, REFRESH_INTERVAL_MS)
 })
 
 onUnmounted(() => {

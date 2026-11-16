@@ -73,6 +73,10 @@ export async function refreshToken() {
     if (response.data.token) {
       auth.setToken(response.data.token);
     }
+    // O backend devolve o usuario atualizado (funcao pode ter mudado)
+    if (response.data.user) {
+      auth.setUserData(response.data.user);
+    }
     return response;
   } catch (error) {
     return error.response;
