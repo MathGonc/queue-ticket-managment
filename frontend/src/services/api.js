@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { useAuth } from '@/stores/auth'
+import config from '@/config.js'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_URL + ':' + import.meta.env.VITE_PORT_SERVER,
+  baseURL: config.url_server,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -52,7 +53,7 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_URL}:${import.meta.env.VITE_PORT_SERVER}/auth/refresh`,
+          `${config.url_server}/auth/refresh`,
           {},
           { headers: { Authorization: `Bearer ${auth.token}` } }
         )

@@ -81,6 +81,7 @@ import { loadTicketsInQueue } from "../controllers/ticketController";
 import { callTicket } from "../utils";
 import { useAuth } from "@/stores/auth.js";
 import topbar from "../components/topbar.vue";
+import config from "@/config.js";
 
 const auth = useAuth();
 const toast = useToast();
@@ -93,7 +94,7 @@ const userCalledTicket = useLocalStorage("userCalledTicket", null);
 const buttonDisabled = ref(false);
 
 function setButtonDisabled() {
-  if (import.meta.env.VITE_DEV == 1) return 0;
+  if (config.dev == 1) return 0;
   buttonDisabled.value = true;
   setTimeout(() => {
     buttonDisabled.value = false;

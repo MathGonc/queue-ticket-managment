@@ -9,6 +9,11 @@ export function convertDate(date) {
   return formatedDate;
 }
 
+// Remove tudo que nao for digito (ex.: CPF "123.456.789-01" -> "12345678901")
+export function onlyDigits(value) {
+  return String(value ?? "").replace(/\D/g, "");
+}
+
 export function convertHours(ms) {
   const hours = Math.floor(ms / 1000 / 60 / 60);
   const minutes = Math.floor((ms / 1000 / 60) % 60);

@@ -16,7 +16,8 @@ const globalSchema = new mongoose.Schema(
       lastServicedBy: { type: String, default: "" },
     },
     monitorMode: { type: Number, default: 0 },
-    showTicketNumber: { type: Boolean, default: true },
+    // false = comportamento que ja estava em producao (numero oculto no painel)
+    showTicketNumber: { type: Boolean, default: false },
     soundNotification: { type: Boolean, default: false },
     soundCallTicket: { type: Boolean, default: false },
     soundCallTicketVoice: { type: Number, default: 0 },

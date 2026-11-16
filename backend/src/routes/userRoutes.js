@@ -10,10 +10,10 @@ const { authMiddleware, requireRole } = require('../middleware/auth')
 const logger = require('../config/logger')
 
 router.post('/register', [
-  body('username').notEmpty().trim().isLength({ max: 30 }).withMessage('Username is required (max 30 chars)'),
-  body('login').notEmpty().trim().matches(/^[a-zA-Z0-9._-]+$/).withMessage('Login must contain only letters, numbers, dots, hyphens or underscores'),
-  body('password').isLength({ min: 4 }).withMessage('Password must be at least 4 characters'),
-  body('role').isInt({ min: 1, max: 3 }).withMessage('Role must be between 1 and 3'),
+  body('username').notEmpty().trim().isLength({ max: 30 }).withMessage('Nome é obrigatório (máx. 30 caracteres)'),
+  body('login').notEmpty().trim().matches(/^[a-zA-Z0-9._-]+$/).withMessage('Login deve conter apenas letras, números, ponto, hífen ou sublinhado'),
+  body('password').isLength({ min: 4 }).withMessage('Senha deve ter pelo menos 4 caracteres'),
+  body('role').isInt({ min: 1, max: 3 }).withMessage('Selecione a função do usuário'),
   validate
 ], async (req, res) => {
   try {
@@ -42,8 +42,8 @@ router.post('/register', [
 })
 
 router.post('/login', loginLimiter, [
-  body('login').notEmpty().trim().withMessage('Login is required'),
-  body('password').notEmpty().withMessage('Password is required'),
+  body('login').notEmpty().trim().withMessage('Informe o login'),
+  body('password').notEmpty().withMessage('Informe a senha'),
   validate
 ], async (req, res) => {
   try {
@@ -115,11 +115,11 @@ router.get('/api/users', authMiddleware, requireRole(3), async (req, res) => {
 
 // PUT /api/users/:id - Atualizar usuário (requer role >= 3)
 router.put('/api/users/:id', authMiddleware, requireRole(3), [
-  param('id').isMongoId().withMessage('Invalid user ID'),
-  body('username').optional().trim().isLength({ max: 30 }),
-  body('login').optional().trim().matches(/^[a-zA-Z0-9._-]+$/),
-  body('role').optional().isInt({ min: 1, max: 3 }),
-  body('password').optional().isLength({ min: 4 }),
+  param('id').isMongoId().withMessage('ID de usuário inválido'),
+  body('username').optional().trim().notEmpty().isLength({ max: 30 }).withMessage('Nome é obrigatório (máx. 30 caracteres)'),
+  body('login').optional().trim().matches(/^[a-zA-Z0-9._-]+$/).withMessage('Login deve conter apenas letras, números, ponto, hífen ou sublinhado'),
+  body('role').optional().isInt({ min: 1, max: 3 }).withMessage('Selecione a função do usuário'),
+  body('password').optional().isLength({ min: 4 }).withMessage('Senha deve ter pelo menos 4 caracteres'),
   validate
 ], async (req, res) => {
   try {

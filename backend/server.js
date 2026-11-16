@@ -13,14 +13,14 @@ const server = http.createServer(app)
 
 const io = socketIO(server, {
   cors: {
-    origin: config.allowedOrigins,
+    origin: config.corsOrigin,
     methods: ['GET', 'POST'],
     credentials: true
   }
 })
 
 // Middleware
-app.use(cors({ origin: config.allowedOrigins, credentials: true }))
+app.use(cors({ origin: config.corsOrigin, credentials: true }))
 app.use(express.json())
 
 // Request logging middleware

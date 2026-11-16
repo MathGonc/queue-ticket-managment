@@ -301,6 +301,11 @@ function setButtonDisabled() {
   }, 10000);
 }
 
+// Primeira mensagem de validacao devolvida pelo backend (express-validator)
+function validationMessage(response) {
+  return response?.data?.errors?.[0]?.msg || null;
+}
+
 function getRoleName(role) {
   switch (Number(role)) {
     case 1:
@@ -350,7 +355,7 @@ async function handleUpdateUser() {
     editingUser.value = null;
     await loadUsers();
   } else {
-    toast.error("Erro ao atualizar usuário");
+    toast.error(validationMessage(response) || "Erro ao atualizar usuário");
   }
 }
 
@@ -395,7 +400,11 @@ function handleRegister() {
 
       switch (response.status) {
         case 400:
-          return toast.error("Este usuario já existe");
+          // 400 = login repetido OU erro de validacao (ex.: funcao nao selecionada)
+          return toast.error(validationMessage(response) || "Este usuario já existe");
+        case 401:
+        case 403:
+          return toast.error("Sem permissão");
         case 500:
           return toast.error("Ocorreu um erro interno no servidor.");
         default:

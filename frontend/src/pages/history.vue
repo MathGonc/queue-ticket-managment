@@ -145,6 +145,7 @@ import { convertDate, convertHours } from "@/utils/index.js";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import VueFeather from "vue-feather";
+import logoUrl from "@/assets/logo.png";
 
 const auth = useAuth();
 
@@ -292,8 +293,9 @@ function createPDF() {
 
   win.document.write("<html><head>");
   win.document.write("<div align='center'>");
+  // URL absoluta do asset gerado pelo Vite (a janela do PDF nao tem base propria)
   win.document.write(
-    '<img src="http://172.30.24.32:8080/img/logo.c8355536.png">'
+    `<img src="${new URL(logoUrl, window.location.href).href}">`
   );
   win.document.write(
     "<p style='margin:0;font-family:times new roman,times,serif;font-size:10pt;' > NÚCLEO REGIONAL DA DEFENSORIA PÚBLICA DA UNIÃO NO ESTADO DE MATO GROSSO DO SUL </p> <br> "

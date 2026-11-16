@@ -1,7 +1,8 @@
 import { reactive } from 'vue'
 import { io } from 'socket.io-client'
+import config from '@/config.js'
 
-const URL = import.meta.env.VITE_URL + ':' + import.meta.env.VITE_PORT_SERVER
+const URL = config.url_server
 
 export const state = reactive({ connected: false })
 

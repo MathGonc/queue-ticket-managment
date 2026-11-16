@@ -7,14 +7,20 @@ if (!process.env.JWT_SECRET) {
   process.exit(1)
 }
 
+// ALLOWED_ORIGINS vazio ou "*" = aceita qualquer origem. A autenticacao e por
+// header Authorization (sem cookies), entao liberar a origem nao abre CSRF.
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
 module.exports = {
   port: process.env.PORT || 3030,
-  dbIp: process.env.DB_IP,
-  dbName: process.env.DB_NAME,
+  dbIp: process.env.DB_IP || '127.0.0.1:27017',
+  dbName: process.env.DB_NAME || 'gonc-queue-manager',
   dbUser: process.env.DB_USER,
   dbPass: process.env.DB_PASS,
-  clientUrl: process.env.CLIENT_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '72h',
-  allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []
+  corsOrigin: allowedOrigins.length && !allowedOrigins.includes('*') ? allowedOrigins : true
 }

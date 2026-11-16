@@ -64,6 +64,8 @@ async function handleLogin() {
   const response = await loginUser({ login: login.value, password: password.value });
   if (!response) return toast.error("Erro de conexão com o servidor");
   if (response.status === 401) return toast.error("Conta não encontrada");
+  if (response.status === 429) return toast.error(response.data?.error || "Muitas tentativas. Aguarde 1 minuto.");
+  if (response.status === 400) return toast.error(response.data?.errors?.[0]?.msg || "Preencha login e senha");
   if (response.status !== 200) return toast.error("Ocorreu um erro interno");
   auth.setToken(response.data.token);
   auth.setUserData(response.data.user);

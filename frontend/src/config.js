@@ -1,10 +1,13 @@
+// Endereco do backend. Com VITE_URL vazio, usa o mesmo host pelo qual o
+// navegador abriu o frontend: o mesmo build funciona em qualquer IP/maquina
+// sem precisar recompilar (ex.: http://172.30.24.32:8080 -> backend em :3030).
+const serverHost =
+  import.meta.env.VITE_URL || `${window.location.protocol}//${window.location.hostname}`;
+const portServer = import.meta.env.VITE_PORT_SERVER || "3030";
+
 const config = {
-  port_server: import.meta.env.VITE_PORT_SERVER,
-  port_client: import.meta.env.VITE_PORT_CLIENT,
-  url: import.meta.env.VITE_URL,
-  url_server: import.meta.env.VITE_URL + ":" + import.meta.env.VITE_PORT_SERVER,
-  url_server_api: import.meta.env.VITE_URL + ":" + import.meta.env.VITE_PORT_SERVER + "/api",
-  url_client: import.meta.env.VITE_URL + ":" + import.meta.env.VITE_PORT_CLIENT,
+  port_server: portServer,
+  url_server: `${serverHost}:${portServer}`,
   dev: import.meta.env.VITE_DEV,
   systemAuth: import.meta.env.VITE_SYSTEM_AUTH,
   userRoleToDeleteTickets: 3,

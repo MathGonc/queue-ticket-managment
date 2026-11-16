@@ -5,6 +5,10 @@ const { validate } = require('../middleware/validate')
 const TicketModel = require('../models/ticket')
 const logger = require('../config/logger')
 
+const HISTORY_SORT_FIELDS = [
+  'number', 'name', 'docNumber', 'type', 'queuedBy', 'dateQueue', 'servicedBy', 'dateServiced',
+]
+
 router.get('/loadTicketsInQueue', async (req, res) => {
   try {
     const limitDate = new Date()
@@ -99,24 +103,30 @@ router.delete('/deleteTicket/:id', async (req, res) => {
 
 router.get('/loadTicketHistory', async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 50
-    const search = req.query.search || ''
+    const page = Math.max(parseInt(req.query.page) || 1, 1)
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 50, 1), 10000)
+    const search = String(req.query.search || '').trim()
     const startDate = req.query.startDate
     const endDate = req.query.endDate
-    const sortField = req.query.sortField || 'dateQueue'
+    const sortField = HISTORY_SORT_FIELDS.includes(req.query.sortField) ? req.query.sortField : 'dateQueue'
     const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1
 
     const query = {}
-    
+
     if (search) {
+      // Escapa caracteres especiais: a busca e por texto, nao por regex
+      const pattern = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' }
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { docNumber: { $regex: search, $options: 'i' } },
-        { type: { $regex: search, $options: 'i' } },
-        { queuedBy: { $regex: search, $options: 'i' } },
-        { servicedBy: { $regex: search, $options: 'i' } },
+        { name: pattern },
+        { docNumber: pattern },
+        { type: pattern },
+        { queuedBy: pattern },
+        { servicedBy: pattern },
       ]
+      // A busca do historico original tambem encontrava pelo numero da senha
+      if (/^\d+$/.test(search)) {
+        query.$or.push({ number: Number(search) })
+      }
     }
 
     if (startDate && endDate) {

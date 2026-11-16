@@ -32,7 +32,7 @@
                     maxlength="18"
                     aria-label="Small"
                     aria-describedby="inputGroup-sizing-sm"
-                    v-maska="inputTicket.docNumber"
+                    v-maska
                     v-model="inputTicket.docNumber.masked"
                     data-maska="###.###.###-##"
                   />
@@ -122,7 +122,7 @@ import {
 } from "@/controllers/globalController.js";
 import { vMaska } from "maska/vue";
 import { useAuth } from "@/stores/auth.js";
-import { calculateAge } from "@/utils/index.js";
+import { calculateAge, onlyDigits } from "@/utils/index.js";
 import topbar from "@/components/topbar.vue";
 import config from "@/config.js";
 
@@ -146,9 +146,10 @@ const ticketGlobalData = ref({});
 
 const inputTicket = reactive({
   name: "",
+  // maska 3 nao preenche mais um objeto { masked, unmasked } via v-maska="obj";
+  // o valor mascarado vem do v-model e os digitos sao extraidos no envio.
   docNumber: {
     masked: "",
-    unmasked: "",
   },
   type: "",
   preferential: 0,
@@ -219,7 +220,7 @@ async function handleRegisterTicket() {
     queuedBy: auth.userData.username,
     preferential: inputTicket.preferential,
     name: inputTicket.name,
-    docNumber: inputTicket.docNumber.unmasked,
+    docNumber: onlyDigits(inputTicket.docNumber.masked),
     dateQueue: Date.now(),
     assistedAge: assistedAge.value,
   });
