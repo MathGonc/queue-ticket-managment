@@ -1,5 +1,13 @@
-# Sobe o MongoDB nesta janela. Se ja houver um MongoDB na porta (ex.: o
-# servico do Windows), nao faz nada.
+# Sobe o MongoDB nesta janela. Regras de seguranca:
+#  - se ja houver um MongoDB na porta, nao faz nada;
+#  - se o MongoDB da maquina for um servico do Windows, so tenta iniciar o
+#    servico (nunca sobe outro mongod, que poderia abrir um banco vazio);
+#  - nunca cria a pasta de dados sozinho: banco novo so com -NovoBanco.
+#
+#   start-mongo.cmd              uso normal
+#   start-mongo.cmd -NovoBanco   primeira instalacao: cria MONGO_DBPATH vazio
+
+param([switch]$NovoBanco)
 
 . (Join-Path $PSScriptRoot '_common.ps1')
 Set-Title 'QTM - MongoDB'
@@ -17,6 +25,13 @@ if (Test-Port '127.0.0.1' $DbPort) {
   return
 }
 
+$service = Start-MongoServiceIfPresent
+if ($service -eq $true) {
+  if (Wait-Port '127.0.0.1' $DbPort 60 'MongoDB (servico)') { Write-Ok 'MongoDB no ar pelo servico do Windows.'; return }
+  exit 1
+}
+if ($service -eq $false) { exit 1 }
+
 $mongod = Find-Mongod
 if (-not $mongod) {
   Write-Fail 'mongod.exe nao encontrado.'
@@ -27,8 +42,15 @@ if (-not $mongod) {
 }
 
 if (-not (Test-Path -LiteralPath $MongoDbPath)) {
+  if (-not $NovoBanco) {
+    Write-Fail "A pasta de dados nao existe: $MongoDbPath"
+    Write-Info 'Subir assim abriria um banco VAZIO (sem usuarios nem senhas).'
+    Write-Info 'Se o banco atual esta em outra pasta, corrija MONGO_DBPATH em infra\standalone\.env.'
+    Write-Info 'Se e mesmo a primeira instalacao: start-mongo.cmd -NovoBanco'
+    exit 1
+  }
   New-Item -ItemType Directory -Force -Path $MongoDbPath | Out-Null
-  Write-Warn "Pasta de dados nao existia e foi criada (banco VAZIO): $MongoDbPath"
+  Write-Warn "Banco NOVO criado em: $MongoDbPath"
 }
 
 Write-Info "mongod : $mongod"

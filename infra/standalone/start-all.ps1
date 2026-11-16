@@ -18,6 +18,11 @@ if (-not $DbIsLocal) {
   Write-Info "Banco remoto ($DbIp), nada a subir aqui."
 } elseif (Test-Port '127.0.0.1' $DbPort) {
   Write-Ok 'Ja estava rodando'
+} elseif (Get-MongoService) {
+  # MongoDB da maquina e servico do Windows: so ele pode ser usado
+  if (-not (Start-MongoServiceIfPresent)) { exit 1 }
+  if (-not (Wait-Port '127.0.0.1' $DbPort 60 'MongoDB (servico)')) { exit 1 }
+  Write-Ok 'MongoDB no ar (servico do Windows)'
 } else {
   Start-Window 'start-mongo.ps1'
   if (-not (Wait-Port '127.0.0.1' $DbPort 60 'MongoDB')) { Write-Info 'Veja a janela "QTM - MongoDB".'; exit 1 }

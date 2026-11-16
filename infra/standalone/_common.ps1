@@ -172,6 +172,31 @@ function Find-Mongod {
   return $null
 }
 
+# Servico do Windows do MongoDB (instalacao padrao cria "MongoDB").
+function Get-MongoService {
+  return @(Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'MongoDB*' }) | Select-Object -First 1
+}
+
+# Se o MongoDB desta maquina e um servico do Windows, ele e a UNICA fonte do
+# banco: nunca subimos outro mongod (poderia abrir um banco vazio).
+# Retorna $null se nao ha servico; $true se o servico esta (ou ficou) rodando;
+# $false se existe mas nao foi possivel iniciar (precisa de administrador).
+function Start-MongoServiceIfPresent {
+  $service = Get-MongoService
+  if (-not $service) { return $null }
+  if ($service.Status -eq 'Running') { return $true }
+  Write-Warn "Servico '$($service.Name)' do MongoDB esta parado. Tentando iniciar..."
+  try {
+    Start-Service -Name $service.Name -ErrorAction Stop
+    Write-Ok "Servico '$($service.Name)' iniciado"
+    return $true
+  } catch {
+    Write-Fail "Nao foi possivel iniciar o servico '$($service.Name)': $($_.Exception.Message)"
+    Write-Info "Inicie como administrador: services.msc, ou em um terminal de administrador: net start $($service.Name)"
+    return $false
+  }
+}
+
 # VITE_URL apontando para localhost faz OUTRAS maquinas chamarem o proprio
 # localhost e nao acharem o backend.
 function Test-FrontendEnv {
