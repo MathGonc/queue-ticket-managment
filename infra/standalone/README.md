@@ -80,7 +80,15 @@ Se você esquecer o passo 3, o `start-frontend` percebe que o código mudou e re
 
 `backend\.env` (modelo: `backend\.env.example`): `DB_IP`, `DB_NAME`, `DB_USER`, `DB_PASS`, `PORT`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `ALLOWED_ORIGINS`.
 
-O frontend não precisa de `.env`. Se existir `frontend\.env` ou `frontend\.env.production` com `VITE_URL=http://localhost`, **apague o arquivo ou deixe `VITE_URL` vazio**: com localhost, as outras máquinas não acham o backend. O `setup` avisa quando detecta isso.
+O frontend não precisa de `.env`. Para personalizar uma máquina, crie `frontend\.env.local` só com o que muda (modelo: `frontend\.env.example`). Exemplo, para ocultar o logo do topo das telas:
+
+```env
+VITE_SHOW_LOGO=false
+```
+
+Depois de alterar, feche a janela do frontend e rode `start-all.cmd`: o build é refeito sozinho.
+
+Se existir `frontend\.env` ou `frontend\.env.production` com `VITE_URL=http://localhost`, **apague o arquivo ou deixe `VITE_URL` vazio**: com localhost, as outras máquinas não acham o backend. O `setup` avisa quando detecta isso.
 
 ## Problemas comuns
 

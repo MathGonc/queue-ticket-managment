@@ -9,6 +9,16 @@ export function convertDate(date) {
   return formatedDate;
 }
 
+// Le uma flag de ambiente ("true"/"false", "1"/"0", "sim"/"nao").
+// Vazia ou ausente = valor padrao.
+export function envFlag(value, defaultValue = true) {
+  const text = String(value ?? "").trim().toLowerCase();
+  if (text === "") return defaultValue;
+  if (["false", "0", "no", "nao", "não", "off"].includes(text)) return false;
+  if (["true", "1", "yes", "sim", "on"].includes(text)) return true;
+  return defaultValue;
+}
+
 // Remove tudo que nao for digito (ex.: CPF "123.456.789-01" -> "12345678901")
 export function onlyDigits(value) {
   return String(value ?? "").replace(/\D/g, "");
