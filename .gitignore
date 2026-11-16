@@ -15,6 +15,10 @@ frontend/dist/
 infra/standalone/mongodb/
 infra/standalone/data/
 infra/standalone/logs/
+infra/standalone/backups/
+
+# Logs do backend (um arquivo por dia)
+backend/logs/
 
 # Log files
 npm-debug.log*

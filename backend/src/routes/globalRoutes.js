@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 const GlobalModel = require('../models/global')
 const logger = require('../config/logger')
+const { logActivity } = require('../activity')
+
+const MONITOR_FIELDS = ['monitorMode', 'showTicketNumber', 'soundNotification', 'soundCallTicket', 'soundCallTicketVoice']
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
 const ROLE_ADMIN = 3
@@ -14,8 +17,16 @@ router.post('/saveConfigsDB', authMiddleware, requireRole(ROLE_ADMIN), async (re
     const updatedData = req.body
 
     const config = await GlobalModel.findOne()
+    const before = config ? config.toObject() : {}
 
     config ? (config.set(updatedData), await config.save()) : await GlobalModel.create(updatedData)
+
+    const after = (await GlobalModel.findOne().lean()) || {}
+    const changes = {}
+    for (const field of MONITOR_FIELDS) {
+      if (String(before[field]) !== String(after[field])) changes[field] = { de: before[field] ?? null, para: after[field] ?? null }
+    }
+    if (Object.keys(changes).length) logActivity(req, 'config_monitor_alterada', { alteracoes: changes })
 
     res.sendStatus(200)
   } catch (error) {
@@ -79,11 +90,13 @@ router.put('/resetGlobalTicketData', authMiddleware, requireRole(ROLE_ADMIN), as
       lastTable: 0,
       lastUser: '',
     }
+    const previous = await GlobalModel.findOne().select('ticket.nextToQueue').lean()
     const config = await GlobalModel.findOneAndUpdate(
       {},
       { ticket: ticketResetData },
       { new: true }
     )
+    if (config) logActivity(req, 'numeracao_resetada', { proximaSenhaAntes: previous?.ticket?.nextToQueue ?? null })
     config ? res.status(200).json({}) : res.status(500).json({ error: 'Internal server error' })
   } catch (error) {
     logger.error(error)

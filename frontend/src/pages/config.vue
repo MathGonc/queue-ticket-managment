@@ -241,6 +241,59 @@
           <br />
           <div class="row justify-content-md-center">
             <div class="col-md-auto menu-default">
+              <h5>Registro de atividades</h5>
+              <form class="activity-filters" @submit.prevent="loadActivity(1)">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Atividade</span>
+                  <select v-model="activityFilter.type" class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    <option v-for="(label, key) in ACTIVITY_LABELS" :key="key" :value="key">{{ label }}</option>
+                  </select>
+                </div>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Usuário</span>
+                  <input v-model="activityFilter.user" type="text" class="form-control" placeholder="nome ou login" />
+                </div>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">De</span>
+                  <input v-model="activityFilter.from" type="date" class="form-control" />
+                  <span class="input-group-text">até</span>
+                  <input v-model="activityFilter.to" type="date" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-sm">Filtrar</button>
+              </form>
+
+              <table class="table table-sm activity-table">
+                <thead>
+                  <tr>
+                    <th>Data/hora</th>
+                    <th>Atividade</th>
+                    <th>Usuário</th>
+                    <th>Detalhes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in activity.items" :key="item._id">
+                    <td class="text-nowrap">{{ convertDate(item.date) }}</td>
+                    <td class="text-nowrap">{{ activityLabel(item.type) }}</td>
+                    <td>{{ item.user || item.login }}</td>
+                    <td>{{ describeActivity(item) }}</td>
+                  </tr>
+                  <tr v-if="!activity.items.length">
+                    <td colspan="4">Nenhuma atividade encontrada</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="activity-pages">
+                <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="activity.pagination.page <= 1" @click="loadActivity(activity.pagination.page - 1)">Anterior</button>
+                <span class="small">Página {{ activity.pagination.page }} de {{ activity.pagination.pages }} ({{ activity.pagination.total }} registros)</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm" :disabled="activity.pagination.page >= activity.pagination.pages" @click="loadActivity(activity.pagination.page + 1)">Próxima</button>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="row justify-content-md-center">
+            <div class="col-md-auto menu-default">
               <button
                 type="button"
                 class="btn btn-outline-danger"
@@ -272,8 +325,11 @@ import {
   getUsers,
   updateUser,
   deleteUser,
+  getActivity,
 } from "@/controllers/userController.js";
 import { useAuth } from "@/stores/auth.js";
+import { convertDate } from "@/utils/index.js";
+import { ACTIVITY_LABELS, activityLabel, describeActivity } from "@/utils/activity.js";
 
 import topbar from "@/components/topbar.vue";
 
@@ -292,6 +348,26 @@ const register = ref({
 });
 const users = ref([]);
 const editingUser = ref(null);
+
+// Registro de atividades
+const activityFilter = ref({ type: "", user: "", from: "", to: "" });
+const activity = ref({ items: [], pagination: { page: 1, pages: 1, total: 0 } });
+
+async function loadActivity(page = 1) {
+  const f = activityFilter.value;
+  const params = { page, limit: 50 };
+  if (f.type) params.type = f.type;
+  if (f.user) params.user = f.user;
+  // Datas do filtro no fuso local: "de" no inicio do dia, "ate" no fim
+  if (f.from) params.from = new Date(`${f.from}T00:00:00`).toISOString();
+  if (f.to) params.to = new Date(`${f.to}T23:59:59.999`).toISOString();
+  const response = await getActivity(params);
+  if (response?.status === 200) {
+    activity.value = response.data;
+  } else {
+    toast.error("Erro ao carregar o registro de atividades");
+  }
+}
 
 function setButtonDisabled() {
   buttonDisabled.value = true;
@@ -444,6 +520,7 @@ onMounted(async () => {
   const configResponse = await loadMonitorConfigs();
   monitorConfig.value = configResponse;
   await loadUsers();
+  await loadActivity(1);
   // Create authenticated socket for control events
   if (auth.token) {
     createSocket();
@@ -451,4 +528,27 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.activity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.activity-filters .input-group {
+  width: auto;
+}
+
+.activity-table td,
+.activity-table th {
+  font-size: 0.85em;
+  text-align: left;
+}
+
+.activity-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>

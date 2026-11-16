@@ -7,6 +7,8 @@ const mongoose = require('mongoose')
 const config = require('./src/config/index.js')
 const { connect } = require('./src/config/db.js')
 const logger = require('./src/config/logger.js')
+const { logActivity } = require('./src/activity.js')
+const { version } = require('./package.json')
 
 const app = express()
 const server = http.createServer(app)
@@ -28,7 +30,9 @@ app.use((req, res, next) => {
   const start = Date.now()
   res.on('finish', () => {
     const duration = Date.now() - start
-    logger.info({
+    // /health e consultado o tempo todo pelo status/healthcheck: so em debug
+    const log = req.originalUrl === '/health' ? logger.debug.bind(logger) : logger.info.bind(logger)
+    log({
       method: req.method,
       url: req.originalUrl,
       status: res.statusCode,
@@ -54,7 +58,8 @@ app.get('/health', (req, res) => {
 const userRoutes = require('./src/routes/userRoutes.js')
 const ticketRoutes = require('./src/routes/ticketRoutes.js')
 const globalRoutes = require('./src/routes/globalRoutes.js')
-app.use('/', userRoutes, globalRoutes, ticketRoutes)
+const activityRoutes = require('./src/routes/activityRoutes.js')
+app.use('/', userRoutes, globalRoutes, ticketRoutes, activityRoutes)
 
 // Database
 connect()
@@ -106,4 +111,6 @@ io.on('connection', (socket) => {
 
 server.listen(config.port, () => {
   logger.info(`Servidor Express rodando na porta ${config.port}`)
+  if (logger.logDir) logger.info(`Logs em arquivo: ${logger.logDir}`)
+  logActivity(null, 'servidor_iniciado', { versao: version, node: process.version }, { username: 'sistema' })
 })

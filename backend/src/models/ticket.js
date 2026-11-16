@@ -12,6 +12,7 @@ const TicketSchema = new mongoose.Schema(
     dateQueue: { type: Date, required: true },
     servicedBy: { type: String },
     dateServiced: { type: Date },
+    servicedTable: { type: Number }, // guiche que chamou
     assistedAge: { type: Date },
   },
   { versionKey: false }

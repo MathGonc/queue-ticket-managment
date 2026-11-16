@@ -61,6 +61,23 @@ export async function deleteUser(id) {
   }
 }
 
+export async function logoutUser() {
+  try {
+    await api.post(`/auth/logout`, {}, { skipAuthRedirect: true, timeout: 3000 });
+  } catch {
+    // sessao ja expirada ou servidor fora: o logout local segue normalmente
+  }
+}
+
+export async function getActivity(params = {}) {
+  try {
+    const response = await api.get(`/api/activity`, { params });
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+}
+
 export async function refreshToken() {
   const auth = useAuth();
   try {

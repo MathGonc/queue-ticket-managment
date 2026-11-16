@@ -4,6 +4,7 @@ const { body } = require('express-validator')
 const { validate } = require('../middleware/validate')
 const TicketModel = require('../models/ticket')
 const logger = require('../config/logger')
+const { logActivity } = require('../activity')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
 // Cargos: 1 = Monitor, 2 = Atendente, 3 = Administrador
@@ -76,7 +77,10 @@ router.post('/insertTicket', requireRole(ROLE_ATTENDANT), [
 ], async (req, res) => {
   try {
     const updatedData = req.body
-    await TicketModel.create(updatedData)
+    const ticket = await TicketModel.create(updatedData)
+    logActivity(req, 'senha_emitida', {
+      numero: ticket.number, preferencial: ticket.preferential, tipo: ticket.type || '', ticketId: String(ticket._id),
+    })
     return res.status(200).json({})
   } catch (error) {
     logger.error(error)
@@ -88,7 +92,16 @@ router.put('/updateTicketCalled/:id', async (req, res) => {
   try {
     const _id = req.params.id,
       data = req.body
+    const before = await TicketModel.findById(_id).select('status number dateQueue preferential').lean()
     await TicketModel.findByIdAndUpdate(_id, data)
+
+    // Chamada pelo guiche (status 2). Se ja estava atendida, e uma rechamada.
+    if (before && Number(data.status) === 2) {
+      const recall = before.status === 2
+      const details = { numero: before.number, preferencial: before.preferential, guiche: data.servicedTable ?? null, ticketId: String(_id) }
+      if (!recall && data.dateServiced) details.esperaMs = new Date(data.dateServiced) - new Date(before.dateQueue)
+      logActivity(req, recall ? 'senha_rechamada' : 'senha_chamada', details)
+    }
 
     return res.status(200).json({})
   } catch (error) {
@@ -100,7 +113,8 @@ router.put('/updateTicketCalled/:id', async (req, res) => {
 router.delete('/deleteTicket/:id', requireRole(ROLE_ADMIN), async (req, res) => {
   try {
     const _id = req.params.id
-    await TicketModel.findByIdAndDelete(_id)
+    const removed = await TicketModel.findByIdAndDelete(_id)
+    if (removed) logActivity(req, 'senha_excluida', { numero: removed.number, status: removed.status, ticketId: String(_id) })
 
     return res.status(200).json({})
   } catch (error) {

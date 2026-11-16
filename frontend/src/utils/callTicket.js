@@ -52,6 +52,7 @@ export async function callTicket(_id) {
 
   ticketData.status = 2;
   ticketData.dateServiced = new Date();
+  ticketData.servicedTable = Number(userTable); // guiche que chamou (registro de atividades)
   const updateTicketResponse = await updateTicketCalled(ticketData._id, {
     ...ticketData,
   });

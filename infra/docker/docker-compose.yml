@@ -36,6 +36,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET em infra/docker/.env}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-72h}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      # Log so no stdout (docker compose logs); sem arquivo dentro do container
+      LOG_DIR: ''
     ports:
       - "${BACKEND_PORT:-3030}:3030"
     depends_on:

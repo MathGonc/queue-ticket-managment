@@ -7,6 +7,7 @@ const User = require('../models/user')
 const { loginLimiter } = require('../middleware/rateLimit')
 const { authMiddleware, requireRole, signToken, publicUser } = require('../middleware/auth')
 const logger = require('../config/logger')
+const { logActivity } = require('../activity')
 
 const ROLE_ADMIN = 3
 const LOGIN_PATTERN = /^[a-zA-Z0-9._-]+$/
@@ -41,6 +42,7 @@ router.post('/register', authMiddleware, requireRole(ROLE_ADMIN), [
 
     const hashedPassword = await bcrypt.hash(password, 10)
     await User.create({ username, login, password: hashedPassword, role })
+    logActivity(req, 'usuario_criado', { alvo: login, nome: username, funcao: Number(role) })
 
     res.status(201).json({ message: 'Usuário criado com sucesso' })
   } catch (error) {
@@ -59,14 +61,17 @@ router.post('/login', loginLimiter, [
 
     const user = await User.findOne({ login })
     if (!user) {
+      logActivity(req, 'login_falhou', { login, motivo: 'login inexistente' }, { login })
       return res.status(401).json({ error: 'Invalid login or password' })
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
+      logActivity(req, 'login_falhou', { login, motivo: 'senha incorreta' }, user)
       return res.status(401).json({ error: 'Invalid login or password' })
     }
 
+    logActivity(req, 'login', {}, user)
     return res.status(200).json({ token: signToken(user), user: publicUser(user) })
   } catch (error) {
     logger.error(error)
@@ -85,6 +90,12 @@ router.get('/auth/verify', authMiddleware, async (req, res) => {
     logger.error(error)
     return res.status(500).json({ error: 'Internal server error' })
   }
+})
+
+// Saida do sistema (o frontend chama antes de apagar o token)
+router.post('/auth/logout', authMiddleware, (req, res) => {
+  logActivity(req, 'logout')
+  return res.status(200).json({})
 })
 
 // Renova o token (o frontend chama periodicamente). Recarrega o usuario do
@@ -138,8 +149,11 @@ router.put('/api/users/:id', authMiddleware, requireRole(ROLE_ADMIN), [
       updateData.password = await bcrypt.hash(password, 10)
     }
 
+    const before = await User.findById(req.params.id).select('-password').lean()
     const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password')
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' })
+    const changed = ['username', 'login', 'role'].filter((k) => updateData[k] !== undefined && String(before?.[k]) !== String(updateData[k]))
+    logActivity(req, 'usuario_alterado', { alvo: user.login, campos: changed, senhaAlterada: Boolean(password) })
     res.json({ user })
   } catch (error) {
     logger.error(error)
@@ -156,7 +170,8 @@ router.delete('/api/users/:id', authMiddleware, requireRole(ROLE_ADMIN), [
     if (req.params.id === String(req.user._id)) {
       return res.status(400).json({ error: 'Não é possível excluir o próprio usuário' })
     }
-    await User.findByIdAndDelete(req.params.id)
+    const removed = await User.findByIdAndDelete(req.params.id)
+    if (removed) logActivity(req, 'usuario_excluido', { alvo: removed.login, nome: removed.username })
     res.json({ message: 'Usuário removido' })
   } catch (error) {
     logger.error(error)

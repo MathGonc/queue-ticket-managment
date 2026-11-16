@@ -276,6 +276,7 @@ import { useToast } from "vue-toastification";
 import { useLocalStorage } from "@vueuse/core";
 import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
+import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
 import { convertDate, calculateAge } from "@/utils/index.js";
 import { callTicket } from "@/utils/callTicket.js";
@@ -329,6 +330,8 @@ function convertDateFn(date) {
 }
 
 async function logout() {
+  // Registra a saida (sem travar o logout se o servidor nao responder)
+  await logoutUser();
   auth.clearToken();
   auth.setIsAuth(false);
   router.push({ name: "login" });

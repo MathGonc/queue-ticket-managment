@@ -45,6 +45,7 @@ O primeiro administrador de um banco novo é criado com `npm run create-admin` (
 | POST | `/login` | Login (retorna token e usuário, sem senha) | Público (5 tentativas/min por IP) |
 | GET | `/auth/verify` | Valida o token e devolve o usuário atual do banco | Login |
 | POST | `/auth/refresh` | Novo token (recarrega o usuário do banco) | Login |
+| POST | `/auth/logout` | Registra a saída no registro de atividades | Login |
 | POST | `/register` | Criar usuário | Admin |
 | GET | `/api/users` | Listar usuários | Admin |
 | PUT | `/api/users/:id` | Atualizar usuário (senha opcional) | Admin |
@@ -70,6 +71,18 @@ O primeiro administrador de um banco novo é criado com `npm run create-admin` (
 | PUT | `/updateGlobalTicketData` | Atualizar numeração/chamada | Login |
 | POST | `/saveConfigsDB` | Salvar configurações do monitor | Admin |
 | PUT | `/resetGlobalTicketData` | Zerar numeração | Admin |
+
+### Registro de atividades (`activityRoutes`)
+
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/api/activity` | Atividades com filtros `type` (lista separada por vírgula), `user`, `from`, `to`, `page`, `limit` | Admin |
+
+Tipos registrados: login, login falhou, login bloqueado, logout, senha emitida, senha chamada (com guichê e espera), senha chamada novamente, senha excluída, numeração zerada, configuração do monitor, usuário criado/alterado/excluído, servidor iniciado. O registro identifica a senha pelo número: **não guarda nome nem CPF do assistido**. Fica na tela de Configurações (admin).
+
+### Logs técnicos
+
+Além da janela, o backend grava em `backend/logs/backend.AAAA-MM-DD.N.log` (JSON, um arquivo por dia, últimos `LOG_RETENTION_DAYS` = 30). `LOG_DIR` muda a pasta; vazio desliga (é o padrão no Docker).
 
 ### Outros
 
