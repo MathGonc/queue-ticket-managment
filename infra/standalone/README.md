@@ -49,9 +49,25 @@ New-NetFirewallRule -DisplayName "Sistema de Senhas" -Direction Inbound -Protoco
 | Subir tudo | `start-all.cmd` (o que já estiver rodando é mantido) |
 | Ver se está tudo no ar | `status.cmd` |
 | Parar | `stop-all.cmd` (fecha backend e frontend; o banco continua) |
+| Backup agora | `backup.cmd` |
 | Subir só uma parte | `start-mongo.cmd`, `start-backend.cmd`, `start-frontend.cmd` |
 
 Se o backend ou o frontend caírem, a própria janela reinicia o processo em 5 segundos.
+
+## Backup do banco
+
+`install-backup.cmd` cria a tarefa "QTM - Backup do banco". Todo dia às `BACKUP_TIME` (20:00) ela exporta o banco para `BACKUP_DIR` (padrão `infra\standalone\backups`, fora do git) e mantém os últimos `BACKUP_KEEP` (30). Se o PC estiver desligado no horário, roda assim que ligar. Rode como administrador para funcionar mesmo sem ninguém logado. O histórico de execuções fica em `infra\standalone\logs\backup.log`.
+
+Cada backup é uma pasta `backup-qtm-AAAAMMDD-HHMMSS` com um `.json` por coleção e um `manifest.json`. Para **restaurar** (substitui o banco pelo backup):
+
+```bat
+stop-all.cmd
+cd backend
+npm run restore-db -- --from ..\infra\standalone\backups\backup-qtm-AAAAMMDD-HHMMSS
+npm run restore-db -- --from ..\infra\standalone\backups\backup-qtm-AAAAMMDD-HHMMSS --confirm
+```
+
+O primeiro comando só mostra o que seria feito. Antes de restaurar, o estado atual é salvo em `backups\antes-de-restaurar`. Para só conferir um backup sem mexer no banco real, use `--db outro-nome`.
 
 ## Atualizar o código
 

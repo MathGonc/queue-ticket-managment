@@ -5,13 +5,13 @@ const GlobalModel = require('../models/global')
 
 // Usuario/senha sao opcionais: um mongod local sem --auth (modo standalone)
 // recusa credenciais de um usuario que nao existe.
-function buildMongoUri() {
+function buildMongoUri(dbName = config.dbName) {
   if (config.dbUser && config.dbPass) {
     const user = encodeURIComponent(config.dbUser)
     const pass = encodeURIComponent(config.dbPass)
-    return `mongodb://${user}:${pass}@${config.dbIp}/${config.dbName}?authSource=admin`
+    return `mongodb://${user}:${pass}@${config.dbIp}/${dbName}?authSource=admin`
   }
-  return `mongodb://${config.dbIp}/${config.dbName}`
+  return `mongodb://${config.dbIp}/${dbName}`
 }
 
 // Garante que exista o documento unico de configuracao global (numeracao das
@@ -36,4 +36,4 @@ async function connect() {
   }
 }
 
-module.exports = { connect }
+module.exports = { connect, buildMongoUri }

@@ -150,6 +150,9 @@ $MongodPathSetting = Get-Setting $StandaloneEnv 'MONGOD_PATH' ''
 $MongoDbPath = Get-Setting $StandaloneEnv 'MONGO_DBPATH' 'C:\data\db'
 $MongoBindIp = Get-Setting $StandaloneEnv 'MONGO_BIND_IP' '127.0.0.1'
 $FrontendPort = [int](Get-Setting $StandaloneEnv 'FRONTEND_PORT' '8080')
+$BackupDir = Get-Setting $StandaloneEnv 'BACKUP_DIR' (Join-Path $StandaloneDir 'backups')
+$BackupKeep = [int](Get-Setting $StandaloneEnv 'BACKUP_KEEP' '30')
+$BackupTime = Get-Setting $StandaloneEnv 'BACKUP_TIME' '20:00'
 
 # Procura o mongod.exe: MONGOD_PATH > portatil em infra\standalone\mongodb >
 # PATH > instalacao padrao (versao mais nova)
