@@ -7,7 +7,6 @@
 **/.env.*
 !**/.env.example
 .git
-.kiro
 docs
 infra/standalone
 **/*.psd

@@ -12,9 +12,25 @@
 
 ### To do: (DPU)
 
-- [ ] As vezes ao dar F5 não aparece algumas opções que dependem de cargo (provavelmente é algo ao carregar os dados)
-- [ ] Criar uma pagina de erro
-- [ ] Colocar em modo de produção para ficar mais otimizado
+- [ ] Mover os backups do banco para fora da pasta do projeto (hoje em `infra\standalone\backups`): definir `BACKUP_DIR` em `infra\standalone\.env`
+
+### Pendências técnicas (futuro)
+
+- [ ] Testar o modo Docker com containers de verdade (`infra/docker`); hoje só a configuração foi validada
+- [ ] Atualizar versões principais (têm mudanças incompatíveis, testar antes): express 5, mongoose 9, vite 8 (+ @vitejs/plugin-vue 6), vue-router 5, pinia 4, @vuepic/vue-datepicker 14, @vueuse/core 15, eslint 10 / eslint-plugin-vue 10, pino 10, express-rate-limit 8, dotenv
+- [ ] Avisos moderados de segurança restantes só em dependências de desenvolvimento (nodemon, @vue/test-utils)
+- [ ] Branch `main`: decidir se volta a ser a versão de portfólio (hoje é cópia da `DPU`; o padrão no GitHub é a `DPU`)
+
+### Registro de atividades: sugestões ainda não feitas
+
+- [ ] Painel (TV) conectou/desconectou: saber se a TV ficou fora do ar
+- [ ] Sinais de tempo real recusados (tentativa sem login)
+- [ ] Erros do servidor (500) no registro
+- [ ] Resultado do backup diário no registro (hoje só em `infra\standalone\logs\backup.log`)
+- [ ] Geração do PDF do histórico (quem gerou e o período)
+- [ ] Atendente trocou de guichê
+- [ ] Exportar o registro (CSV) e indicadores (tempo médio de espera por dia)
+- [ ] Mover o registro de atividades da página de Configurações para uma página própria
 
 ### To do: (Portfolio)
 
@@ -23,13 +39,21 @@
 ### Maybe:
 
 - [ ] Fix: barra de rolagem continua após ocultar as duas abas da sidebar (remover o elemento ao terminar a animação)
-- [ ] Passar arquivos que estão em 'Option API' para 'Composition API' (Mais otimizado para o Vue 3)
-- [ ] "Histórico de ações de usuarios(entrou, saiu, excluiu)"
 - [ ] Adaptação do HTML para o celular
 - [ ] Monitor: modo Vertical
 - [ ] Seleção de idioma: _Português_ e _Inglês_
 
 ## **Done:**
+
+- [x] Backup automático diário do banco, com restauração (`infra\standalone\install-backup.cmd`)
+- [x] Logs do backend em arquivo (`backend\logs`, um por dia, 30 dias)
+- [x] Registro de atividades (entrou, saiu, emitiu, chamou, rechamou, excluiu, configs, usuários) em Configurações
+- [x] Página de erro (endereço inexistente)
+- [x] F5 não mostrava opções que dependem de cargo
+- [x] Modo de produção otimizado: build do Vite + scripts standalone (`infra\standalone`) e início automático no logon
+- [x] Componentes em Composition API (`<script setup>`)
+- [x] Migração Vue CLI → Vue 3.5 + Vite 6, com login obrigatório nas rotas da API
+- [x] Opção de mostrar/ocultar o logo (`VITE_SHOW_LOGO`)
 
 - [x] Fila de espera e atendimento com prioridades diferentes
 

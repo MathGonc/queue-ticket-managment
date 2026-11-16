@@ -487,7 +487,7 @@ As seguintes melhorias foram implementadas após a migração principal:
 
 ## 9. Revisão pós-migração (branch `vue-migration`)
 
-A migração acima foi gerada por IA (Kiro) e revisada comparando com o código original (commit `a1f4cb6`). Os commits seguintes ao snapshot `4b0db4a` corrigem o que estava quebrado ou descrito de forma imprecisa neste documento.
+A migração acima foi gerada por IA e revisada comparando com o código original (commit `a1f4cb6`). Os commits seguintes ao snapshot `4b0db4a` corrigem o que estava quebrado ou descrito de forma imprecisa neste documento.
 
 ### 9.1 Regressões introduzidas pela migração (corrigidas)
 
