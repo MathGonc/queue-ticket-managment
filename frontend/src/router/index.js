@@ -13,6 +13,7 @@ const index = () => import("@/pages/index.vue");
 const monitor = () => import("@/pages/monitor.vue");
 const service = () => import("@/pages/service.vue");
 const sorting = () => import("@/pages/sorting.vue");
+const notFound = () => import("@/pages/notFound.vue");
 
 const router = createRouter({
   history: createWebHistory(),
@@ -67,10 +68,12 @@ const router = createRouter({
         },
       ],
     },
-    // URL inexistente: volta ao inicio (antes ficava tela em branco)
+    // URL inexistente: pagina de erro (publica; "Voltar ao inicio" passa
+    // pelo guard normalmente)
     {
       path: "/:pathMatch(.*)*",
-      redirect: { name: "index" },
+      name: "notFound",
+      component: notFound,
     },
   ],
 });
