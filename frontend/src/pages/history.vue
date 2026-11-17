@@ -9,15 +9,12 @@
             <span class="text-sm-start"><b>Data de atendimento:</b></span>
             <VueDatePicker
               v-model="dateServiced"
-              text-input
+              :text-input="{ format: DATE_FORMAT }"
               range
               multi-calendars
-              locale="br"
-              select-text="Selecionar"
-              cancel-text="Cancelar"
-              show-now-button
-              now-button-label="Hoje"
-              format="dd/MM/yyyy"
+              :locale="ptBR"
+              :formats="{ input: DATE_FORMAT }"
+              :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar', showNow: true, nowBtnLabel: 'Hoje' }"
             />
             <div id="tab-summary">
               <div v-if="dateServiced" format="dd/MM/yyyy">
@@ -139,8 +136,12 @@ import { useAuth } from "@/stores/auth.js";
 import topbar from "@/components/topbar.vue";
 import { loadTicketHistory } from "@/controllers/ticketController.js";
 import { convertDate, convertHours } from "@/utils/index.js";
-import VueDatePicker from "@vuepic/vue-datepicker";
+import { VueDatePicker } from "@vuepic/vue-datepicker";
+import { ptBR } from "date-fns/locale";
 import "@vuepic/vue-datepicker/dist/main.css";
+
+// Formato das datas no seletor (exibicao e digitacao)
+const DATE_FORMAT = "dd/MM/yyyy";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, FileDown } from "lucide-vue-next";
 import logoUrl from "@/assets/logo.png";
 import config from "@/config.js";

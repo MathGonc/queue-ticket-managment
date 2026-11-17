@@ -40,11 +40,10 @@
                   <div class="col-auto DatePicker">
                     <VueDatePicker
                       v-model="assistedAge"
-                      text-input
-                      locale="br"
-                      select-text="Selecionar"
-                      cancel-text="Cancelar"
-                      format="dd/MM/yyyy"
+                      :text-input="{ format: DATE_FORMAT }"
+                      :locale="ptBR"
+                      :formats="{ input: DATE_FORMAT }"
+                      :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar' }"
                     />
                   </div>
                 </div>
@@ -122,8 +121,12 @@ import { calculateAge, onlyDigits } from "@/utils/index.js";
 import topbar from "@/components/topbar.vue";
 import config from "@/config.js";
 
-import VueDatePicker from "@vuepic/vue-datepicker";
+import { VueDatePicker } from "@vuepic/vue-datepicker";
+import { ptBR } from "date-fns/locale";
 import "@vuepic/vue-datepicker/dist/main.css";
+
+// Formato das datas no seletor (exibicao e digitacao)
+const DATE_FORMAT = "dd/MM/yyyy";
 
 defineOptions({
   name: "page_sorting",
