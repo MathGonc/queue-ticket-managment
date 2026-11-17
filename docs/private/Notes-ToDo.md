@@ -21,16 +21,9 @@
 - [ ] Avisos moderados de segurança restantes só em dependências de desenvolvimento (nodemon, @vue/test-utils)
 - [ ] Branch `main`: decidir se volta a ser a versão de portfólio (hoje é cópia da `DPU`; o padrão no GitHub é a `DPU`)
 
-### Registro de atividades: sugestões ainda não feitas
+### Visual (decidir depois)
 
-- [ ] Painel (TV) conectou/desconectou: saber se a TV ficou fora do ar
-- [ ] Sinais de tempo real recusados (tentativa sem login)
-- [ ] Erros do servidor (500) no registro
-- [ ] Resultado do backup diário no registro (hoje só em `infra\standalone\logs\backup.log`)
-- [ ] Geração do PDF do histórico (quem gerou e o período)
-- [ ] Atendente trocou de guichê
-- [ ] Exportar o registro (CSV) e indicadores (tempo médio de espera por dia)
-- [ ] Mover o registro de atividades da página de Configurações para uma página própria
+- [ ] Biblioteca de componentes para tabelas mais ricas (PrimeVue) ou redesenho (shadcn-vue / Nuxt UI + Tailwind); hoje: Bootstrap 5 limpo
 
 ### To do: (Portfolio)
 
@@ -45,6 +38,12 @@
 
 ## **Done:**
 
+- [x] Configurações em abas (Monitor, Registro, Usuários, Logs) com segmented control; aba fica no endereço (`?aba=`)
+- [x] Registro: painel (TV) conectou/desconectou, sinais recusados, erros 500, resultado do backup, PDF do histórico, troca de guichê
+- [x] Indicadores por dia (espera média/máxima) e exportação do registro em CSV
+- [x] Aba Logs: último backup e visualizador dos logs técnicos
+- [x] Limpeza do Bootstrap 5: Lucide no lugar do vue-feather, vue-sonner no lugar do vue-toastification, classes do Bootstrap 4, ids duplicados, estilos inline, CSS morto
+- [x] Sidebars recolhem nas telas largas (Histórico, Configurações) também ao abrir pelo endereço/F5, e voltam ao sair
 - [x] Backup automático diário do banco, com restauração (`infra\standalone\install-backup.cmd`)
 - [x] Logs do backend em arquivo (`backend\logs`, um por dia, 30 dias)
 - [x] Registro de atividades (entrou, saiu, emitiu, chamou, rechamou, excluiu, configs, usuários) em Configurações

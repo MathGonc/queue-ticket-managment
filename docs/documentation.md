@@ -77,8 +77,19 @@ O primeiro administrador de um banco novo é criado com `npm run create-admin` (
 | Método | Rota | Descrição | Acesso |
 |--------|------|-----------|--------|
 | GET | `/api/activity` | Atividades com filtros `type` (lista separada por vírgula), `user`, `from`, `to`, `page`, `limit` | Admin |
+| POST | `/api/activity/client` | Eventos que só o navegador conhece: `pdf_historico` (Atendente) e `guiche_alterado` (Login); detalhes validados | Login |
+| GET | `/api/stats/daily` | Indicadores por dia (`from`, `to`; padrão 30 dias): emitidas, preferenciais, atendidas, espera média e máxima | Admin |
+| GET | `/api/logs/files` | Arquivos de log técnico disponíveis | Admin |
+| GET | `/api/logs` | Linhas de um arquivo de log (`file`, `level`, `search`, `limit`), mais recentes primeiro | Admin |
 
-Tipos registrados: login, login falhou, login bloqueado, logout, senha emitida, senha chamada (com guichê e espera), senha chamada novamente, senha excluída, numeração zerada, configuração do monitor, usuário criado/alterado/excluído, servidor iniciado. O registro identifica a senha pelo número: **não guarda nome nem CPF do assistido**. Fica na tela de Configurações (admin).
+Tipos registrados:
+
+- **Acesso:** login, login falhou (motivo), login bloqueado, logout, sinal de tempo real recusado (sem login; no máximo 1 por IP e evento a cada 10 min).
+- **Senhas:** emitida, chamada (guichê e espera), chamada novamente, excluída, numeração zerada; guichê alterado pelo atendente; PDF do histórico (quem gerou e filtros).
+- **Painel (TV):** conectado e desconectado. Quedas de até 60 s (`PANEL_GRACE_MS`) não são registradas.
+- **Sistema:** configuração do monitor (de → para), usuário criado/alterado/excluído, servidor iniciado, erro do servidor (respostas 500), backup concluído ou falhou.
+
+O registro identifica a senha pelo número: **não guarda nome nem CPF do assistido**. Fica na tela de Configurações, aba Registro (admin), com indicadores e exportação em CSV; a aba Logs mostra o último backup e os logs técnicos.
 
 ### Logs técnicos
 
