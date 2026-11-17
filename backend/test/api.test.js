@@ -101,6 +101,13 @@ before(async () => {
     await sleep(300)
   }
 
+  // Trava: o servidor tem que estar no banco TEMPORARIO (criou o documento
+  // global la). Se nao estiver, aborta antes de gravar qualquer coisa.
+  const check = await mongoose.createConnection(require('../src/config/db.js').buildMongoUri(DB_NAME)).asPromise()
+  const globals = await check.db.collection('globals').countDocuments()
+  await check.close()
+  if (globals !== 1) throw new Error(`O backend de teste nao esta usando o banco ${DB_NAME}; abortando para nao tocar no banco real`)
+
   execFileSync(process.execPath, ['scripts/create-admin.js', '--login', 'admin.teste', '--name', 'Admin Teste', '--password', 'teste123'],
     { cwd: ROOT, env: testEnv(), stdio: 'ignore' })
 })
@@ -144,6 +151,13 @@ describe('rotas protegidas sem login', () => {
       assert.equal((await req(method, url, { body: {} })).status, 401)
     })
   }
+})
+
+describe('requisicoes sem corpo (Express 5)', () => {
+  test('rotas que leem o corpo respondem sem erro 500', async () => {
+    const r = await fetch(`${BASE}/login`, { method: 'POST' })
+    assert.equal(r.status, 400)
+  })
 })
 
 describe('login e cadastro', () => {
@@ -421,6 +435,11 @@ describe('sessao e usuarios', () => {
     assert.equal((await req('PUT', `/api/users/${monitorId}`, { token: admin, body: { login: 'admin.teste' } })).status, 400)
     assert.equal((await req('PUT', `/api/users/${adminId}`, { token: admin, body: { role: 2 } })).status, 400)
     assert.equal((await req('DELETE', `/api/users/${adminId}`, { token: admin })).status, 400)
+  })
+
+  test('edicao sem corpo nao quebra (Express 5)', async () => {
+    const r = await fetch(`${BASE}/api/users/${monitorId}`, { method: 'PUT', headers: { Authorization: `Bearer ${admin}` } })
+    assert.equal(r.status, 200)
   })
 
   test('usuario excluido perde o acesso e nao renova o token', async () => {

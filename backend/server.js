@@ -25,6 +25,12 @@ const io = socketIO(server, {
 // Middleware
 app.use(cors({ origin: config.corsOrigin, credentials: true }))
 app.use(express.json())
+// Express 5 deixa req.body undefined quando a requisicao vem sem corpo;
+// as rotas esperam um objeto (comportamento do Express 4)
+app.use((req, res, next) => {
+  if (req.body === undefined) req.body = {}
+  next()
+})
 
 // Request logging middleware
 app.use((req, res, next) => {

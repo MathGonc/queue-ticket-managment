@@ -3,7 +3,7 @@ const { logActivity } = require('../activity')
 
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
-  max: 5,
+  limit: 5,
   // Conta so as tentativas erradas: varios logins certos no mesmo PC (troca
   // de turno na triagem) nao bloqueiam ninguem
   skipSuccessfulRequests: true,

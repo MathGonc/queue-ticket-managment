@@ -1,5 +1,6 @@
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
+// quiet: o dotenv 17+ imprime uma mensagem a cada carga
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env'), quiet: true })
 
 if (!process.env.JWT_SECRET) {
   // Logger not yet available at this point, use stderr directly

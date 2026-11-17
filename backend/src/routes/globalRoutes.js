@@ -70,7 +70,7 @@ router.get('/getGlobalTicketData', async (req, res) => {
 router.put('/updateGlobalTicketData', authMiddleware, async (req, res) => {
   try {
     const data = req.body
-    const config = await GlobalModel.findOneAndUpdate({}, { $set: data }, { new: true })
+    const config = await GlobalModel.findOneAndUpdate({}, { $set: data }, { returnDocument: 'after' })
 
     config ? res.status(200).json({}) : res.status(500).json({ error: 'Internal server error' })
   } catch (error) {
@@ -94,7 +94,7 @@ router.put('/resetGlobalTicketData', authMiddleware, requireRole(ROLE_ADMIN), as
     const config = await GlobalModel.findOneAndUpdate(
       {},
       { ticket: ticketResetData },
-      { new: true }
+      { returnDocument: 'after' }
     )
     if (config) logActivity(req, 'numeracao_resetada', { proximaSenhaAntes: previous?.ticket?.nextToQueue ?? null })
     config ? res.status(200).json({}) : res.status(500).json({ error: 'Internal server error' })

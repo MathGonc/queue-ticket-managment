@@ -150,7 +150,7 @@ router.put('/api/users/:id', authMiddleware, requireRole(ROLE_ADMIN), [
     }
 
     const before = await User.findById(req.params.id).select('-password').lean()
-    const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true }).select('-password')
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' }).select('-password')
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' })
     const changed = ['username', 'login', 'role'].filter((k) => updateData[k] !== undefined && String(before?.[k]) !== String(updateData[k]))
     logActivity(req, 'usuario_alterado', { alvo: user.login, campos: changed, senhaAlterada: Boolean(password) })
