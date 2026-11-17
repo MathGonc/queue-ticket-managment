@@ -477,6 +477,10 @@ watch(
   min-height: 100vh !important;
   max-height: 100%;
   position: fixed;
+  /* Presa ao topo da janela. Sem "top", a barra fixa fica onde estaria no
+     fluxo e desce junto com a margem do titulo da pagina (.title_page), que
+     vaza para fora dos blocos pais (margin collapse). */
+  top: 0;
   padding: 5px;
   border-top-right-radius: 3px;
   overflow-x: hidden;
