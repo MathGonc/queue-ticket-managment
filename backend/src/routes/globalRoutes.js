@@ -14,7 +14,13 @@ const ROLE_ADMIN = 3
 
 router.post('/saveConfigsDB', authMiddleware, requireRole(ROLE_ADMIN), async (req, res) => {
   try {
-    const updatedData = req.body
+    // So os campos do monitor. A tela manda o documento global inteiro, que
+    // pode estar desatualizado (numeracao, nome da empresa): grava-lo de volta
+    // fazia a numeracao voltar e repetir senhas.
+    const updatedData = {}
+    for (const field of MONITOR_FIELDS) {
+      if (req.body[field] !== undefined) updatedData[field] = req.body[field]
+    }
 
     const config = await GlobalModel.findOne()
     const before = config ? config.toObject() : {}

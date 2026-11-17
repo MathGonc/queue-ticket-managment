@@ -71,7 +71,10 @@ const userRoutes = require('./src/routes/userRoutes.js')
 const ticketRoutes = require('./src/routes/ticketRoutes.js')
 const globalRoutes = require('./src/routes/globalRoutes.js')
 const activityRoutes = require('./src/routes/activityRoutes.js')
-app.use('/', userRoutes, globalRoutes, ticketRoutes, activityRoutes)
+const brandingRoutes = require('./src/routes/brandingRoutes.js')
+app.use('/', userRoutes, globalRoutes, ticketRoutes, activityRoutes, brandingRoutes)
+// As rotas avisam as telas abertas (ex.: logo trocado) por aqui
+app.set('io', io)
 
 // Database
 connect()

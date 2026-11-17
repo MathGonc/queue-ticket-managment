@@ -11,6 +11,7 @@ const TYPES = [
   'painel_conectado', 'painel_desconectado', 'sinal_recusado',
   'backup_concluido', 'backup_falhou',
   'pdf_historico', 'guiche_alterado',
+  'logo_alterado', 'logo_removido', 'empresa_alterada',
 ]
 
 function clientIp(req) {

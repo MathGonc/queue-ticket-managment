@@ -21,6 +21,7 @@ const ROOT = path.resolve(__dirname, '..')
 const DB_NAME = `qtm_test_${process.pid}`
 const LOG_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'qtm-test-logs-'))
 const BACKUP_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'qtm-test-backup-'))
+const DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'qtm-test-data-'))
 const GRACE_MS = 1500
 
 let port, BASE, server, serverOutput = ''
@@ -34,6 +35,7 @@ function testEnv() {
     DB_NAME,
     JWT_SECRET: 'segredo-de-teste',
     LOG_DIR,
+    DATA_DIR,
     PANEL_GRACE_MS: String(GRACE_MS),
     NODE_ENV: 'production',
   }
@@ -57,6 +59,16 @@ async function req(method, url, { token, body } = {}) {
   let data = null
   try { data = await res.json() } catch { /* sem corpo */ }
   return { status: res.status, data }
+}
+
+// Roda um script do backend; se falhar, mostra a saida dele no erro
+function runScript(args, env = testEnv()) {
+  try {
+    return execFileSync(process.execPath, args, { cwd: ROOT, env, stdio: 'pipe' }).toString()
+  } catch (err) {
+    throw new Error(`${args[0]} falhou:
+${err.stdout || ''}${err.stderr || ''}`)
+  }
 }
 
 const login = (user, password) => req('POST', '/login', { body: { login: user, password } })
@@ -123,6 +135,7 @@ after(async () => {
   }
   fs.rmSync(LOG_DIR, { recursive: true, force: true })
   fs.rmSync(BACKUP_DIR, { recursive: true, force: true })
+  fs.rmSync(DATA_DIR, { recursive: true, force: true })
 })
 
 describe('banco novo', () => {
@@ -305,6 +318,68 @@ describe('tempo real e chamada', () => {
   })
 })
 
+describe('empresa e logo', () => {
+  // PNG valido de 1x1 pixel
+  const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64')
+  const upload = (token, body, type = 'image/png') => fetch(`${BASE}/api/branding/logo`, {
+    method: 'PUT', headers: { 'Content-Type': type, ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body,
+  })
+
+  test('sem logo e sem nome no comeco (rota publica)', async () => {
+    const r = await req('GET', '/api/branding')
+    assert.equal(r.status, 200)
+    assert.deepEqual(r.data, { companyName: '', logo: null })
+    assert.equal((await fetch(`${BASE}/api/branding/logo`)).status, 404)
+  })
+
+  test('so admin importa; arquivo que nao e imagem e recusado', async () => {
+    assert.equal((await upload(null, PNG)).status, 401)
+    assert.equal((await upload(attendant, PNG)).status, 403)
+    assert.equal((await upload(admin, Buffer.from('<svg onload=alert(1)>'), 'image/svg+xml')).status, 400)
+    assert.equal((await upload(admin, Buffer.alloc(3 * 1024 * 1024, 1))).status, 413)
+  })
+
+  test('importa PNG, avisa as telas abertas e serve a imagem', async () => {
+    const tela = await connect()
+    let avisada = false
+    tela.on('receiveUpdateBranding', () => { avisada = true })
+    const r = await upload(admin, PNG)
+    assert.equal(r.status, 200)
+    await sleep(300)
+    assert.ok(avisada)
+    const branding = (await req('GET', '/api/branding')).data
+    assert.ok(branding.logo.version > 0)
+    const img = await fetch(`${BASE}/api/branding/logo`)
+    assert.equal(img.headers.get('content-type'), 'image/png')
+    assert.deepEqual(Buffer.from(await img.arrayBuffer()), PNG)
+    assert.ok(fs.existsSync(path.join(DATA_DIR, 'logo.png')))
+    assert.equal((await activities(admin, 'logo_alterado'))[0].details.formato, 'png')
+  })
+
+  test('nome da empresa: so admin, ate 120 caracteres, entra no registro', async () => {
+    assert.equal((await req('PUT', '/api/branding/company', { token: attendant, body: { companyName: 'X' } })).status, 403)
+    assert.equal((await req('PUT', '/api/branding/company', { token: admin, body: { companyName: 'x'.repeat(121) } })).status, 400)
+    assert.equal((await req('PUT', '/api/branding/company', { token: admin, body: { companyName: '  Defensoria Teste  ' } })).status, 200)
+    assert.equal((await req('GET', '/api/branding')).data.companyName, 'Defensoria Teste')
+    assert.deepEqual((await activities(admin, 'empresa_alterada'))[0].details, { de: '', para: 'Defensoria Teste' })
+  })
+
+  test('salvar o monitor nao sobrescreve numeracao nem nome da empresa', async () => {
+    const before = (await req('GET', '/getGlobalTicketData')).data.ticket.nextToQueue
+    const stale = { ...(await req('GET', '/getConfigsDB')).data.config, companyName: 'Velho', ticket: { nextToQueue: 999 } }
+    assert.equal((await req('POST', '/saveConfigsDB', { token: admin, body: stale })).status, 200)
+    assert.equal((await req('GET', '/getGlobalTicketData')).data.ticket.nextToQueue, before)
+    assert.equal((await req('GET', '/api/branding')).data.companyName, 'Defensoria Teste')
+  })
+
+  test('remove o logo', async () => {
+    assert.equal((await req('DELETE', '/api/branding/logo', { token: admin })).status, 200)
+    assert.equal((await fetch(`${BASE}/api/branding/logo`)).status, 404)
+    assert.equal((await req('GET', '/api/branding')).data.logo, null)
+    assert.equal((await activities(admin, 'logo_removido')).length, 1)
+  })
+})
+
 describe('historico', () => {
   test('busca pelo numero da senha', async () => {
     const r = await req('GET', `/loadTicketHistory?search=${tickets['Super Um'].number}`, { token: attendant })
@@ -392,13 +467,13 @@ describe('erros, indicadores e logs', () => {
 describe('backup', () => {
   test('backup registra a atividade e a restauracao reproduz os dados', async () => {
     const env = testEnv()
-    execFileSync(process.execPath, ['scripts/backup-db.js', '--dir', BACKUP_DIR, '--keep', '2'], { cwd: ROOT, env, stdio: 'ignore' })
+    runScript(['scripts/backup-db.js', '--dir', BACKUP_DIR, '--keep', '2'], env)
     const done = (await activities(admin, 'backup_concluido'))[0]
     assert.equal(done.user, 'sistema')
     assert.ok(done.details.colecoes.users >= 3)
 
     const folder = path.join(BACKUP_DIR, fs.readdirSync(BACKUP_DIR).find((n) => n.startsWith('backup-qtm-')))
-    execFileSync(process.execPath, ['scripts/restore-db.js', '--from', folder, '--db', `${DB_NAME}_restore`, '--confirm'], { cwd: ROOT, env, stdio: 'ignore' })
+    runScript(['scripts/restore-db.js', '--from', folder, '--db', `${DB_NAME}_restore`, '--confirm'], env)
     const conn = await mongoose.createConnection(require('../src/config/db.js').buildMongoUri(DB_NAME)).asPromise()
     const { EJSON } = mongoose.mongo.BSON
     for (const name of ['users', 'tickets', 'globals']) {

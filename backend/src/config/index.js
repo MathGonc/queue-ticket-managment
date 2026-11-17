@@ -23,5 +23,7 @@ module.exports = {
   dbPass: process.env.DB_PASS,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '72h',
+  // Arquivos enviados pelo sistema (ex.: logo). Fora do git; no Docker, volume.
+  dataDir: process.env.DATA_DIR || path.resolve(__dirname, '../../../data'),
   corsOrigin: allowedOrigins.length && !allowedOrigins.includes('*') ? allowedOrigins : true
 }
