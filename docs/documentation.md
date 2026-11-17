@@ -8,9 +8,9 @@ Sistema de gerenciamento de filas e senhas para a Defensoria Pública. Permite e
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | Vue 3.5 + Vite 6, Vue Router 4, Pinia, Socket.io-client |
-| Backend | Node.js 22, Express 4, Socket.io 4, JWT, bcrypt |
-| Banco de Dados | MongoDB 7 (Mongoose 8) |
+| Frontend | Vue 3.5 + Vite 8, Vue Router 5, Pinia 4, Socket.io-client, Bootstrap 5 |
+| Backend | Node.js 22+, Express 5, Socket.io 4, JWT, bcrypt |
+| Banco de Dados | MongoDB 6/7 (Mongoose 9) |
 | Deploy | Standalone no Windows (principal) ou Docker Compose — ver [infra/](../infra/README.md) |
 
 O navegador fala com o backend em `<mesmo host>:3030` (REST + Socket.io). Chamadas de senha e atualizações do monitor são propagadas via Socket.io.

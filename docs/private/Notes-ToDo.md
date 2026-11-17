@@ -17,7 +17,6 @@
 ### Pendências técnicas (futuro)
 
 - [ ] Testar o modo Docker com containers de verdade (`infra/docker`); hoje só a configuração foi validada
-- [ ] Atualizar versões principais (têm mudanças incompatíveis, testar antes): express 5, mongoose 9, vite 8 (+ @vitejs/plugin-vue 6), vue-router 5, pinia 4, @vuepic/vue-datepicker 14, @vueuse/core 15, eslint 10 / eslint-plugin-vue 10, pino 10, express-rate-limit 8, dotenv
 - [ ] Avisos moderados de segurança restantes só em dependências de desenvolvimento (nodemon, @vue/test-utils)
 - [ ] Branch `main`: decidir se volta a ser a versão de portfólio (hoje é cópia da `DPU`; o padrão no GitHub é a `DPU`)
 
@@ -38,6 +37,8 @@
 
 ## **Done:**
 
+- [x] Versões principais atualizadas: Express 5, Mongoose 9, pino 10, express-rate-limit 8, dotenv 18, Vite 8, Vue Router 5, Pinia 4, VueUse 15, datepicker 14, ESLint 10
+- [x] Testes de ponta a ponta do backend (`npm test` em `backend/`)
 - [x] Configurações em abas (Monitor, Registro, Usuários, Logs) com segmented control; aba fica no endereço (`?aba=`)
 - [x] Registro: painel (TV) conectou/desconectou, sinais recusados, erros 500, resultado do backup, PDF do histórico, troca de guichê
 - [x] Indicadores por dia (espera média/máxima) e exportação do registro em CSV

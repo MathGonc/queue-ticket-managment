@@ -6,8 +6,8 @@ Sistema de gerenciamento de filas e senhas para atendimento, com painel monitor 
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | Vue 3.5 + Vite 6, Pinia, Vue Router, Socket.io Client |
-| Backend | Node.js 22, Express 4, Mongoose 8, Socket.io 4 |
+| Frontend | Vue 3.5 + Vite 8, Pinia 4, Vue Router 5, Socket.io Client, Bootstrap 5 |
+| Backend | Node.js 22+, Express 5, Mongoose 9, Socket.io 4 |
 | Banco de dados | MongoDB 7 |
 | Segurança | JWT por cargo, bcrypt, rate limit no login |
 
@@ -25,12 +25,15 @@ cd backend  && npm install && npm run dev    # API em :3030 (copie backend/.env.
 cd frontend && npm install && npm run dev    # http://localhost:8080
 ```
 
-Testes e lint do frontend: `npm test` e `npm run lint` (em `frontend/`).
+Testes:
+
+- Frontend: `npm test` e `npm run lint` (em `frontend/`).
+- Backend: `npm test` (em `backend/`): testes de ponta a ponta da API e do tempo real. Sobe o backend num banco temporário, apagado no fim; precisa de um MongoDB local (`infra\standalone\start-mongo.cmd`).
 
 ## Estrutura do Projeto
 
 ```
-├── frontend/   # Vue 3.5 + Vite 6 (SPA)
+├── frontend/   # Vue 3.5 + Vite 8 (SPA)
 ├── backend/    # Express + Socket.io (API REST + WebSocket)
 ├── infra/      # standalone (Windows) e docker
 └── docs/       # Documentação técnica e log da migração
