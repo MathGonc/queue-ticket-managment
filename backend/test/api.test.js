@@ -239,8 +239,8 @@ describe('triagem e fila', () => {
   }
 
   test('emite senhas normal, preferencial, 80+ e normal', async () => {
-    await issue('Normal Um', 0, '11122233344')
-    await issue('Pref Um', 1, '22233344455')
+    await issue('Normal Um', 0, '11122233396')
+    await issue('Pref Um', 1, '22233344405')
     await issue('Super Um', 2, '')
     await issue('Normal Dois', 0, '')
   })
@@ -251,11 +251,19 @@ describe('triagem e fila', () => {
     assert.equal(r.data.errors[0].msg, 'Digite um nome')
   })
 
+  test('CPF com digito verificador errado, incompleto ou repetido -> 400', async () => {
+    for (const docNumber of ['11122233344', '1112223339', '11111111111']) {
+      const r = await req('POST', '/insertTicket', { token: attendant, body: { number: 99, status: 1, name: 'X', preferential: 0, docNumber, dateQueue: Date.now() } })
+      assert.equal(r.status, 400, docNumber)
+      assert.equal(r.data.errors[0].msg, 'CPF inválido: confira os números')
+    }
+  })
+
   test('fila na ordem 2 > 1 > 0 e por chegada, numeracao sequencial, CPF gravado', async () => {
     const queue = (await req('GET', '/loadTicketsInQueue', { token: attendant })).data.ticket.filter((t) => t.status === 1)
     assert.deepEqual(queue.map((t) => t.name), ['Super Um', 'Pref Um', 'Normal Um', 'Normal Dois'])
     assert.deepEqual(queue.map((t) => t.number).sort(), [1, 2, 3, 4])
-    assert.equal(queue.find((t) => t.name === 'Normal Um').docNumber, '11122233344')
+    assert.equal(queue.find((t) => t.name === 'Normal Um').docNumber, '11122233396')
     queue.forEach((t) => { tickets[t.name] = t })
   })
 })
@@ -548,7 +556,7 @@ describe('administracao', () => {
 describe('registro de atividades', () => {
   test('nao guarda nome nem CPF do assistido', async () => {
     const all = JSON.stringify(await activities(admin))
-    for (const secret of ['Super Um', 'Pref Um', 'Normal Um', '11122233344', '22233344455']) {
+    for (const secret of ['Super Um', 'Pref Um', 'Normal Um', '11122233396', '22233344405']) {
       assert.ok(!all.includes(secret), secret)
     }
   })

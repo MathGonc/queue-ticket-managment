@@ -5,6 +5,7 @@ const { validate } = require('../middleware/validate')
 const TicketModel = require('../models/ticket')
 const logger = require('../config/logger')
 const { logActivity } = require('../activity')
+const { onlyDigits, isValidCpf } = require('../cpf')
 const { authMiddleware, requireRole } = require('../middleware/auth')
 
 // Cargos: 1 = Monitor, 2 = Atendente, 3 = Administrador
@@ -73,6 +74,9 @@ router.post('/insertTicket', requireRole(ROLE_ATTENDANT), [
   body('number').isInt().withMessage('Número da senha inválido'),
   body('status').isInt().withMessage('Status inválido'),
   body('name').trim().notEmpty().withMessage('Digite um nome'),
+  // CPF e opcional; se vier, grava so os digitos e precisa ser valido
+  body('docNumber').optional({ values: 'falsy' }).customSanitizer(onlyDigits)
+    .custom(isValidCpf).withMessage('CPF inválido: confira os números'),
   validate
 ], async (req, res) => {
   try {

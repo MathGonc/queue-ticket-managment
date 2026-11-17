@@ -19,16 +19,36 @@
                 />
 
                 <label class="form-label" for="sort-cpf">CPF</label>
-                <input
-                  id="sort-cpf"
-                  v-model="inputTicket.docNumber.masked"
-                  v-maska
-                  type="text"
-                  class="form-control mb-3"
-                  maxlength="18"
-                  inputmode="numeric"
-                  data-maska="###.###.###-##"
-                />
+                <!-- "Sem CPF": escolha explicita no lugar do 000.000.000-00 -->
+                <div class="input-group has-validation mb-3">
+                  <input
+                    id="sort-cpf"
+                    ref="cpfInput"
+                    v-model="inputTicket.docNumber.masked"
+                    v-maska
+                    type="text"
+                    class="form-control"
+                    :class="{ 'is-invalid': cpfError }"
+                    maxlength="18"
+                    inputmode="numeric"
+                    data-maska="###.###.###-##"
+                    :disabled="noCpf"
+                    :placeholder="noCpf ? 'Sem CPF' : ''"
+                    :aria-invalid="!!cpfError"
+                    aria-describedby="sort-cpf-error"
+                    @blur="cpfBlurred = true"
+                  />
+                  <button
+                    type="button"
+                    class="btn"
+                    :class="noCpf ? 'btn-secondary' : 'btn-outline-secondary'"
+                    :aria-pressed="noCpf"
+                    @click="toggleNoCpf()"
+                  >
+                    Sem CPF
+                  </button>
+                  <div id="sort-cpf-error" class="invalid-feedback">{{ cpfError }}</div>
+                </div>
 
                 <label class="form-label" for="sort-birth">Data de nascimento</label>
                 <div class="DatePicker mb-3">
@@ -101,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import { toast } from "@/services/notify.js";
 import { publicSocket, createSocket } from "@/socket.js";
 import { insertTicket } from "@/controllers/ticketController.js";
@@ -111,7 +131,7 @@ import {
 } from "@/controllers/globalController.js";
 import { vMaska } from "maska/vue";
 import { useAuth } from "@/stores/auth.js";
-import { calculateAge, onlyDigits } from "@/utils/index.js";
+import { calculateAge, onlyDigits, isValidCpf } from "@/utils/index.js";
 import topbar from "@/components/topbar.vue";
 import config from "@/config.js";
 
@@ -152,6 +172,20 @@ const inputTicket = reactive({
   preferential: 0,
 });
 
+// CPF e opcional, mas se for digitado precisa ser valido. Com os 11 digitos
+// o aviso aparece na hora; incompleto, so depois de sair do campo.
+const cpfInput = ref(null);
+const cpfBlurred = ref(false);
+// Assistido sem CPF: campo bloqueado e a senha vale so pelo nome
+const noCpf = ref(false);
+const cpfError = computed(() => {
+  if (noCpf.value) return "";
+  const digits = onlyDigits(inputTicket.docNumber.masked);
+  if (!digits) return "";
+  if (digits.length < 11) return cpfBlurred.value ? "CPF incompleto" : "";
+  return isValidCpf(digits) ? "" : "CPF inválido: confira os números";
+});
+
 const dropdownTicketTypes = [
   { name: "INICIAL" },
   { name: "AGENDAMENTO" },
@@ -188,6 +222,14 @@ function updatePreferentialAge() {
   }
 }
 
+function toggleNoCpf() {
+  noCpf.value = !noCpf.value;
+  inputTicket.docNumber.masked = "";
+  cpfBlurred.value = false;
+  // Voltando a ter CPF, o cursor ja vai para o campo
+  if (!noCpf.value) nextTick(() => cpfInput.value?.focus());
+}
+
 function setButtonDisabled() {
   if (config.dev == 1) return 0;
   buttonDisabled.value = true;
@@ -205,22 +247,35 @@ async function handleGetGlobalTicketData() {
 async function handleRegisterTicket() {
   if (inputTicket.name.length < 1) return toast.error("Digite um nome");
 
+  const cpf = noCpf.value ? "" : onlyDigits(inputTicket.docNumber.masked);
+  if (cpf && !isValidCpf(cpf)) {
+    cpfBlurred.value = true;
+    cpfInput.value?.focus();
+    return toast.error(cpfError.value);
+  }
+
   if (buttonDisabled.value) return;
   setButtonDisabled();
 
   await handleGetGlobalTicketData();
 
-  const insertResponse = await insertTicket({
-    number: ticketGlobalData.value.nextToQueue,
-    status: 1,
-    type: inputTicket.type,
-    queuedBy: auth.userData.username,
-    preferential: inputTicket.preferential,
-    name: inputTicket.name,
-    docNumber: onlyDigits(inputTicket.docNumber.masked),
-    dateQueue: Date.now(),
-    assistedAge: assistedAge.value,
-  });
+  let insertResponse;
+  try {
+    insertResponse = await insertTicket({
+      number: ticketGlobalData.value.nextToQueue,
+      status: 1,
+      type: inputTicket.type,
+      queuedBy: auth.userData.username,
+      preferential: inputTicket.preferential,
+      name: inputTicket.name,
+      docNumber: cpf,
+      dateQueue: Date.now(),
+      assistedAge: assistedAge.value,
+    });
+  } catch (error) {
+    // Recusa do servidor (ex.: CPF invalido) chega como excecao do axios
+    return toast.error(error.response?.data?.errors?.[0]?.msg || "Ocorreu um erro ao cadastrar a senha");
+  }
 
   if (insertResponse.status != 200)
     return toast.error("Ocorreu um erro ao cadastrar a senha");
@@ -229,6 +284,8 @@ async function handleRegisterTicket() {
   // Reset form
   inputTicket.name = "";
   inputTicket.docNumber.masked = "";
+  cpfBlurred.value = false;
+  noCpf.value = false;
   inputTicket.type = "";
   inputTicket.preferential = 0;
 
