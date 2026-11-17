@@ -13,6 +13,13 @@ const { EJSON } = mongoose.mongo.BSON
 const config = require('../src/config/index.js')
 const { buildMongoUri } = require('../src/config/db.js')
 const { version } = require('../package.json')
+const Activity = require('../src/models/activity')
+
+// Resultado do backup no registro de atividades (aba Logs/Registro)
+async function record(type, details) {
+  if (mongoose.connection.readyState !== 1) return
+  await Activity.create({ date: new Date(), type, user: 'sistema', details }).catch(() => {})
+}
 
 function arg(name, fallback) {
   const i = process.argv.indexOf(`--${name}`)
@@ -25,6 +32,7 @@ function stamp(date = new Date()) {
 }
 
 async function main() {
+  const startedAt = Date.now()
   const baseDir = path.resolve(arg('dir', path.resolve(__dirname, '../../infra/standalone/backups')))
   const keep = Math.max(parseInt(arg('keep', '30')) || 30, 1)
   const dest = path.join(baseDir, `backup-qtm-${stamp()}`)
@@ -43,7 +51,6 @@ async function main() {
     manifest.collections[name] = docs.length
   }
   fs.writeFileSync(path.join(dest, 'manifest.json'), JSON.stringify(manifest, null, 2))
-  await mongoose.disconnect()
 
   const summary = Object.entries(manifest.collections).map(([n, c]) => `${n}=${c}`).join(' ')
   console.log(`Backup OK: ${dest} (${summary})`)
@@ -52,14 +59,22 @@ async function main() {
   const all = fs.readdirSync(baseDir)
     .filter((n) => /^backup-qtm-\d{8}-\d{6}$/.test(n) && fs.existsSync(path.join(baseDir, n, 'manifest.json')))
     .sort()
-  for (const old of all.slice(0, Math.max(all.length - keep, 0))) {
+  const removed = all.slice(0, Math.max(all.length - keep, 0))
+  for (const old of removed) {
     fs.rmSync(path.join(baseDir, old), { recursive: true, force: true })
     console.log(`Backup antigo removido: ${old}`)
   }
+
+  await record('backup_concluido', {
+    pasta: path.basename(dest), local: baseDir, colecoes: manifest.collections,
+    duracaoMs: Date.now() - startedAt, mantidos: all.length - removed.length, removidos: removed.length,
+  })
+  await mongoose.disconnect()
 }
 
 main().catch(async (err) => {
   console.error(`ERRO no backup: ${err.message}`)
+  await record('backup_falhou', { erro: String(err.message).slice(0, 300) })
   await mongoose.disconnect().catch(() => {})
   process.exit(1)
 })

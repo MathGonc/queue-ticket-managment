@@ -7,7 +7,8 @@ const mongoose = require('mongoose')
 const config = require('./src/config/index.js')
 const { connect } = require('./src/config/db.js')
 const logger = require('./src/config/logger.js')
-const { logActivity } = require('./src/activity.js')
+const { logActivity, logActivityThrottled, clientIp } = require('./src/activity.js')
+const panelPresence = require('./src/panelPresence.js')
 const { version } = require('./package.json')
 
 const app = express()
@@ -38,6 +39,11 @@ app.use((req, res, next) => {
       status: res.statusCode,
       responseTime: `${duration}ms`
     }, `${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`)
+    // Erro do servidor tambem vai para o registro de atividades (sem a query,
+    // que pode ter texto de busca)
+    if (res.statusCode >= 500) {
+      logActivity(req, 'erro_servidor', { metodo: req.method, rota: req.originalUrl.split('?')[0], status: res.statusCode })
+    }
   })
   next()
 })
@@ -88,23 +94,34 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
   logger.info('Novo cliente conectado')
 
-  // Eventos de controle requerem autenticação
+  // Eventos de controle requerem autenticação. Tentativas sem token valido
+  // entram no registro (no maximo 1 por IP e evento a cada 10 min).
+  function refused(event) {
+    const ip = clientIp(socket)
+    logActivityThrottled(`${ip}|${event}`, 10 * 60 * 1000, socket, 'sinal_recusado', { evento: event, ip })
+  }
+
   socket.on('signalUpdateValues', () => {
-    if (!socket.authenticated) return
+    if (!socket.authenticated) return refused('signalUpdateValues')
     io.emit('receiveUpdateGlobal')
   })
 
   socket.on('signalUpdateMonitor', (callByName) => {
-    if (!socket.authenticated) return
+    if (!socket.authenticated) return refused('signalUpdateMonitor')
     io.emit('receiveUpdateMonitor', callByName)
   })
 
   socket.on('signalUpdateMonitorConfigs', () => {
-    if (!socket.authenticated) return
+    if (!socket.authenticated) return refused('signalUpdateMonitorConfigs')
     io.emit('receiveUpdateMonitorConfigs')
   })
 
+  // Presenca do painel (TV) para o registro de atividades
+  socket.on('painelOnline', (info) => panelPresence.online(socket, info))
+  socket.on('painelOffline', () => panelPresence.offline(socket))
+
   socket.on('disconnect', () => {
+    panelPresence.offline(socket)
     logger.info('Cliente desconectado')
   })
 })
