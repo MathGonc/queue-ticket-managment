@@ -38,6 +38,10 @@ services:
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       # Log so no stdout (docker compose logs); sem arquivo dentro do container
       LOG_DIR: ''
+      # Logo importado em Configuracoes > Empresa
+      DATA_DIR: /data
+    volumes:
+      - branding_data:/data
     ports:
       - "${BACKEND_PORT:-3030}:3030"
     depends_on:
@@ -51,7 +55,6 @@ services:
       args:
         # O navegador chama o backend em <mesmo host>:<BACKEND_PORT>
         VITE_PORT_SERVER: ${BACKEND_PORT:-3030}
-        VITE_SHOW_LOGO: ${SHOW_LOGO:-true}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-80}:80"
@@ -60,3 +63,4 @@ services:
 
 volumes:
   mongodb_data:
+  branding_data:

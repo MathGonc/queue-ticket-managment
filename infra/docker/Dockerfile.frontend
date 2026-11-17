@@ -7,9 +7,7 @@ COPY frontend/ .
 # VITE_URL vazio: o navegador usa o proprio host para achar o backend,
 # entao a imagem funciona em qualquer IP sem rebuild.
 ARG VITE_PORT_SERVER=3030
-ARG VITE_SHOW_LOGO=true
-ENV VITE_PORT_SERVER=${VITE_PORT_SERVER} \
-    VITE_SHOW_LOGO=${VITE_SHOW_LOGO}
+ENV VITE_PORT_SERVER=${VITE_PORT_SERVER}
 RUN npm run build
 
 FROM nginx:alpine

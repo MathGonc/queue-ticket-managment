@@ -16,6 +16,9 @@ export const ACTIVITY_LABELS = {
   usuario_excluido: "Usuário excluído",
   config_monitor_alterada: "Configuração do monitor",
   guiche_alterado: "Guichê alterado",
+  logo_alterado: "Logo importado",
+  logo_removido: "Logo removido",
+  empresa_alterada: "Nome da empresa",
   pdf_historico: "PDF do histórico",
   painel_conectado: "Painel conectado",
   painel_desconectado: "Painel desconectado",
@@ -110,6 +113,10 @@ export function describeActivity(activity) {
     }
     case "backup_falhou":
       return d.erro || "";
+    case "logo_alterado":
+      return `${String(d.formato || "").toUpperCase()}, ${d.kb} KB`;
+    case "empresa_alterada":
+      return `"${d.de || "(vazio)"}" → "${d.para || "(vazio)"}"`;
     case "erro_servidor":
       return `${d.metodo} ${d.rota} (${d.status})`;
     default:

@@ -98,13 +98,9 @@ Se você esquecer o passo 3, o `start-frontend` percebe que o código mudou e re
 
 `backend\.env` (modelo: `backend\.env.example`): `DB_IP`, `DB_NAME`, `DB_USER`, `DB_PASS`, `PORT`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `ALLOWED_ORIGINS`.
 
-O frontend não precisa de `.env`. Para personalizar uma máquina, crie `frontend\.env.local` só com o que muda (modelo: `frontend\.env.example`). Exemplo, para ocultar o logo do topo das telas:
+O frontend não precisa de `.env`. Para personalizar uma máquina, crie `frontend\.env.local` só com o que muda (modelo: `frontend\.env.example`). Depois de alterar, feche a janela do frontend e rode `start-all.cmd`: o build é refeito sozinho.
 
-```env
-VITE_SHOW_LOGO=false
-```
-
-Depois de alterar, feche a janela do frontend e rode `start-all.cmd`: o build é refeito sozinho.
+O logo e o nome da empresa são definidos na tela, em **Configurações > Empresa** (admin). O logo fica em `data\` na raiz do projeto, fora do git: copie essa pasta junto ao mudar de máquina. Sem logo importado, o topo das telas fica vazio.
 
 Se existir `frontend\.env` ou `frontend\.env.production` com `VITE_URL=http://localhost`, **apague o arquivo ou deixe `VITE_URL` vazio**: com localhost, as outras máquinas não acham o backend. O `setup` avisa quando detecta isso.
 

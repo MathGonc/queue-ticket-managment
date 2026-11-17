@@ -9,11 +9,12 @@
             <span class="text-sm-start"><b>Data de atendimento:</b></span>
             <VueDatePicker
               v-model="dateServiced"
+              :dark="isDark"
               :text-input="{ format: DATE_FORMAT }"
               range
               multi-calendars
               :locale="ptBR"
-              :formats="{ input: DATE_FORMAT }"
+              :formats="{ input: DATE_FORMAT, weekDay: WEEKDAY_FORMAT }"
               :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar', showNow: true, nowBtnLabel: 'Hoje' }"
             />
             <div id="tab-summary">
@@ -135,17 +136,21 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useAuth } from "@/stores/auth.js";
 import topbar from "@/components/topbar.vue";
 import { loadTicketHistory } from "@/controllers/ticketController.js";
-import { convertDate, convertHours } from "@/utils/index.js";
+import { convertDate, convertHours, escapeHtml } from "@/utils/index.js";
 import { VueDatePicker } from "@vuepic/vue-datepicker";
 import { ptBR } from "date-fns/locale";
+import { useTheme } from "@/composables/useTheme.js";
+import { useBranding } from "@/composables/useBranding.js";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, FileDown } from "lucide-vue-next";
+import { logClientEvent } from "@/controllers/activityController.js";
 
 // Formato das datas no seletor (exibicao e digitacao)
 const DATE_FORMAT = "dd/MM/yyyy";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, FileDown } from "lucide-vue-next";
-import logoUrl from "@/assets/logo.png";
-import config from "@/config.js";
-import { logClientEvent } from "@/controllers/activityController.js";
+// Dias da semana com 1 letra (D S T Q Q S S), como nos calendarios brasileiros
+const WEEKDAY_FORMAT = "EEEEE";
+const { isDark } = useTheme();
+const { companyName, logoUrl } = useBranding();
 
 const auth = useAuth();
 
@@ -301,16 +306,15 @@ function createPDF() {
 
   win.document.write("<html><head>");
   win.document.write("<div align='center'>");
-  // Mesma opcao do logo do topo (VITE_SHOW_LOGO). URL absoluta do asset
-  // gerado pelo Vite, porque a janela do PDF nao tem base propria.
-  if (config.showLogo) {
+  // Logo e nome da empresa definidos em Configuracoes > Empresa
+  if (logoUrl.value) {
+    win.document.write(`<img src="${logoUrl.value}" style="max-height:120px">`);
+  }
+  if (companyName.value) {
     win.document.write(
-      `<img src="${new URL(logoUrl, window.location.href).href}">`
+      `<p style='margin:0;font-family:times new roman,times,serif;font-size:10pt;'>${escapeHtml(companyName.value)}</p><br>`
     );
   }
-  win.document.write(
-    "<p style='margin:0;font-family:times new roman,times,serif;font-size:10pt;' > NÚCLEO REGIONAL DA DEFENSORIA PÚBLICA DA UNIÃO NO ESTADO DE MATO GROSSO DO SUL </p> <br> "
-  );
 
   win.document.write("<title>Relátorio de atendimento gerado por: ");
   win.document.write(auth.userData.username);

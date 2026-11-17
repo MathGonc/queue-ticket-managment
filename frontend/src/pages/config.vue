@@ -34,15 +34,17 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Monitor as MonitorIcon, ScrollText, Users, FileText } from "lucide-vue-next";
+import { Monitor as MonitorIcon, Building2, ScrollText, Users, FileText } from "lucide-vue-next";
 import topbar from "@/components/topbar.vue";
 import MonitorTab from "@/components/config/MonitorTab.vue";
+import CompanyTab from "@/components/config/CompanyTab.vue";
 import ActivityTab from "@/components/config/ActivityTab.vue";
 import UsersTab from "@/components/config/UsersTab.vue";
 import LogsTab from "@/components/config/LogsTab.vue";
 
 const TABS = [
   { key: "monitor", label: "Monitor", icon: MonitorIcon, component: MonitorTab },
+  { key: "empresa", label: "Empresa", icon: Building2, component: CompanyTab },
   { key: "registro", label: "Registro", icon: ScrollText, component: ActivityTab },
   { key: "usuarios", label: "Usuários", icon: Users, component: UsersTab },
   { key: "logs", label: "Logs", icon: FileText, component: LogsTab },

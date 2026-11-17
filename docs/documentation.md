@@ -72,6 +72,20 @@ O primeiro administrador de um banco novo é criado com `npm run create-admin` (
 | POST | `/saveConfigsDB` | Salvar configurações do monitor | Admin |
 | PUT | `/resetGlobalTicketData` | Zerar numeração | Admin |
 
+`saveConfigsDB` só grava os campos do monitor: numeração e nome da empresa não são sobrescritos por esta rota.
+
+### Empresa e logo (`brandingRoutes`)
+
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/api/branding` | Nome da empresa e versão do logo (`logo: null` se não houver) | Público |
+| GET | `/api/branding/logo` | Imagem do logo | Público |
+| PUT | `/api/branding/logo` | Importar logo: corpo = arquivo PNG, JPEG ou WebP (até 2 MB; SVG é recusado) | Admin |
+| DELETE | `/api/branding/logo` | Remover logo | Admin |
+| PUT | `/api/branding/company` | Nome da empresa (`companyName`, até 120 caracteres; usado no PDF do histórico) | Admin |
+
+O logo fica em `data/logo.<ext>` na raiz do projeto (`DATA_DIR` muda a pasta; no Docker é o volume `branding_data`). A pasta não vai para o git. O nome da empresa fica no banco, na configuração global.
+
 ### Registro de atividades (`activityRoutes`)
 
 | Método | Rota | Descrição | Acesso |
@@ -87,7 +101,7 @@ Tipos registrados:
 - **Acesso:** login, login falhou (motivo), login bloqueado, logout, sinal de tempo real recusado (sem login; no máximo 1 por IP e evento a cada 10 min).
 - **Senhas:** emitida, chamada (guichê e espera), chamada novamente, excluída, numeração zerada; guichê alterado pelo atendente; PDF do histórico (quem gerou e filtros).
 - **Painel (TV):** conectado e desconectado. Quedas de até 60 s (`PANEL_GRACE_MS`) não são registradas.
-- **Sistema:** configuração do monitor (de → para), usuário criado/alterado/excluído, servidor iniciado, erro do servidor (respostas 500), backup concluído ou falhou.
+- **Sistema:** configuração do monitor (de → para), logo importado ou removido, nome da empresa (de → para), usuário criado/alterado/excluído, servidor iniciado, erro do servidor (respostas 500), backup concluído ou falhou.
 
 O registro identifica a senha pelo número: **não guarda nome nem CPF do assistido**. Fica na tela de Configurações, aba Registro (admin), com indicadores e exportação em CSV; a aba Logs mostra o último backup e os logs técnicos.
 
@@ -111,6 +125,8 @@ Além da janela, o backend grava em `backend/logs/backend.AAAA-MM-DD.N.log` (JSO
 
 O servidor retransmite como `receiveUpdateGlobal`, `receiveUpdateMonitor` e `receiveUpdateMonitorConfigs` para todos os clientes. Sinais de conexões sem token válido são ignorados.
 
+O próprio servidor emite `receiveUpdateBranding` quando o logo ou o nome da empresa mudam: as telas abertas atualizam sem recarregar.
+
 ## Estrutura de Pastas
 
 ```
@@ -122,13 +138,14 @@ queue-ticket-managment/
 │       ├── config/            # Variáveis de ambiente, conexão DB, logger
 │       ├── middleware/        # auth (JWT/cargos), rateLimit, validate
 │       ├── models/            # Mongoose schemas (ticket, user, global, history)
-│       └── routes/            # ticketRoutes, userRoutes, globalRoutes
+│       └── routes/            # ticket, user, global, activity, branding
 ├── frontend/
 │   ├── index.html
 │   ├── vite.config.js
 │   └── src/
-│       ├── components/        # sidebar, topbar
-│       ├── controllers/       # Chamadas HTTP (ticket, user, global)
+│       ├── components/        # sidebar, topbar, config/ (abas de Configurações)
+│       ├── composables/       # useTheme (claro/escuro), useBranding (logo/empresa)
+│       ├── controllers/       # Chamadas HTTP (ticket, user, global, activity, branding)
 │       ├── pages/             # index, login, monitor, service, config, history, sorting
 │       ├── router/            # Rotas + guard de navegação
 │       ├── services/api.js    # Axios (token + tratamento de 401)
@@ -136,6 +153,7 @@ queue-ticket-managment/
 │       ├── utils/             # Funções puras + callTicket.js
 │       ├── socket.js          # Socket.io (público para escutar, autenticado para emitir)
 │       └── main.js
+├── data/                      # Logo importado (fora do git)
 ├── infra/
 │   ├── standalone/            # Scripts para Windows sem Docker
 │   └── docker/                # Compose + Dockerfiles + nginx

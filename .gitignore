@@ -17,6 +17,9 @@ infra/standalone/data/
 infra/standalone/logs/
 infra/standalone/backups/
 
+# Arquivos de cada instalacao (logo importado em Configuracoes > Empresa)
+/data/
+
 # Logs do backend (um arquivo por dia)
 backend/logs/
 
