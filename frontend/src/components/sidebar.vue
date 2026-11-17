@@ -367,6 +367,8 @@ function onTransitionEndServiced() {
 
 function toggleCollapseSidebar() {
   collapseMenu.value.all = !collapseMenu.value.all;
+  // Escolha manual: deixa de ser um recolhimento automatico
+  collapseMenu.value.autoCollapsed = false;
 }
 
 function toggleCollapseMenuQueued() {
@@ -430,20 +432,20 @@ onBeforeUnmount(() => {
 });
 
 // Telas largas recolhem as sidebars (que sao fixas e cobririam o conteudo)
-// e, ao sair delas, voltam como o usuario tinha deixado.
-// immediate: vale tambem ao abrir a tela direto pelo endereco ou com F5.
+// e, ao sair delas, voltam como o usuario tinha deixado. A marca
+// autoCollapsed fica salva junto (localStorage), entao vale tambem apos F5.
+// immediate: vale tambem ao abrir a tela direto pelo endereco.
 const WIDE_PAGES = ["history", "config"];
-let collapsedBeforeWide = null;
 watch(
   () => route.name,
   (newRouteName) => {
     const wide = WIDE_PAGES.includes(newRouteName);
-    if (wide && collapsedBeforeWide === null) {
-      collapsedBeforeWide = collapseMenu.value.all;
+    if (wide && !collapseMenu.value.all) {
       collapseMenu.value.all = true;
-    } else if (!wide && collapsedBeforeWide !== null) {
-      collapseMenu.value.all = collapsedBeforeWide;
-      collapsedBeforeWide = null;
+      collapseMenu.value.autoCollapsed = true;
+    } else if (!wide && collapseMenu.value.autoCollapsed) {
+      collapseMenu.value.all = false;
+      collapseMenu.value.autoCollapsed = false;
     }
     if (newRouteName === "monitor") {
       showInterface.value = false;
