@@ -35,7 +35,7 @@
                   <VueDatePicker
                     v-model="assistedAge"
                     :dark="isDark"
-                    :text-input="{ format: DATE_FORMAT }"
+                    :text-input="{ format: DATE_FORMAT, maskFormat: DATE_MASK }"
                     :locale="ptBR"
                     :formats="{ input: DATE_FORMAT, weekDay: WEEKDAY_FORMAT }"
                     :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar' }"
@@ -124,6 +124,8 @@ import "@vuepic/vue-datepicker/dist/main.css";
 const DATE_FORMAT = "dd/MM/yyyy";
 // Dias da semana com 1 letra (D S T Q Q S S), como nos calendarios brasileiros
 const WEEKDAY_FORMAT = "EEEEE";
+// Digitando so numeros ("03031950") as barras entram sozinhas: 03/03/1950
+const DATE_MASK = "DD/MM/YYYY";
 const { isDark } = useTheme();
 
 defineOptions({

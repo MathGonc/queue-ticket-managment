@@ -8,14 +8,35 @@
           <div class="row justify-content-md-center">
             <div class="col-md-auto menu-default service-card">
               <label class="form-label" for="counter">Guichê</label>
-              <input
-                id="counter"
-                v-model="userTable"
-                type="number"
-                class="form-control counter-input"
-                min="1"
-                max="99"
-              />
+              <!-- - e + ao lado do numero: troca de guiche sem digitar -->
+              <div class="input-group counter-group">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  aria-label="Guichê anterior"
+                  :disabled="Number(userTable) <= TABLE_MIN"
+                  @click="stepTable(-1)"
+                >
+                  <Minus :size="18" class="icon" />
+                </button>
+                <input
+                  id="counter"
+                  v-model="userTable"
+                  type="number"
+                  class="form-control counter-input"
+                  :min="TABLE_MIN"
+                  :max="TABLE_MAX"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  aria-label="Próximo guichê"
+                  :disabled="Number(userTable) >= TABLE_MAX"
+                  @click="stepTable(1)"
+                >
+                  <Plus :size="18" class="icon" />
+                </button>
+              </div>
 
               <div class="form-check form-switch mt-3">
                 <input id="svc-call-by-name" v-model="callByName" class="form-check-input" type="checkbox" />
@@ -61,7 +82,7 @@ import { callTicket } from "@/utils/callTicket.js";
 import topbar from "../components/topbar.vue";
 import config from "@/config.js";
 import { logClientEvent } from "@/controllers/activityController.js";
-import { Bell } from "lucide-vue-next";
+import { Bell, Minus, Plus } from "lucide-vue-next";
 
 const transitionFade = ref(false);
 const callByName = useLocalStorage("callByName", true);
@@ -69,6 +90,15 @@ const showAttendantName = useLocalStorage("showAttendantName", false);
 const userTable = useLocalStorage("userTable", 0);
 const userCalledTicket = useLocalStorage("userCalledTicket", null);
 const buttonDisabled = ref(false);
+
+const TABLE_MIN = 1;
+const TABLE_MAX = 99;
+// Soma/subtrai 1 sem sair de 1..99 (vazio ou 0 vira 1)
+function stepTable(delta) {
+  const current = Number(userTable.value) || 0;
+  const next = current < TABLE_MIN ? TABLE_MIN : current + delta;
+  userTable.value = Math.min(TABLE_MAX, Math.max(TABLE_MIN, next));
+}
 
 // Troca de guiche vai para o registro de atividades. Espera o atendente
 // terminar de digitar ("1" e depois "12") e so registra valores validos.
@@ -132,9 +162,22 @@ onMounted(() => {
   width: min(360px, 90vw);
 }
 
+.counter-group {
+  width: 180px;
+}
+
 .counter-input {
-  max-width: 120px;
+  text-align: center;
   font-size: var(--qtm-fs-heading);
   font-weight: 600;
+  /* sem as setinhas do navegador: os botoes - e + fazem esse papel */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.counter-input::-webkit-outer-spin-button,
+.counter-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>

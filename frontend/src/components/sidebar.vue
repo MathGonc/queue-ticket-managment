@@ -137,15 +137,20 @@
       <div class="container head-buttons">
         <div class="row justify-content-between">
           <div class="col-md-auto btn-sidebar">
+            <!-- Tema: sol e lua sempre visiveis; o marcador desliza ate o atual -->
             <button
-              class="btn btn-outline-light btn-sm"
+              class="theme-toggle"
+              :class="{ 'is-dark': isDark }"
               type="button"
-              :title="isDark ? 'Usar tema claro' : 'Usar tema escuro'"
-              :aria-label="isDark ? 'Usar tema claro' : 'Usar tema escuro'"
+              role="switch"
+              :aria-checked="isDark"
+              aria-label="Tema escuro"
+              :title="isDark ? 'Tema escuro (clique para o claro)' : 'Tema claro (clique para o escuro)'"
               @click="toggleTheme()"
             >
-              <Sun v-if="isDark" :size="16" class="icon" />
-              <Moon v-else :size="16" class="icon" />
+              <span class="theme-thumb" aria-hidden="true"></span>
+              <span class="theme-cell sun" aria-hidden="true"><Sun :size="14" /></span>
+              <span class="theme-cell moon" aria-hidden="true"><Moon :size="14" /></span>
             </button>
           </div>
           <div class="col-md-auto btn-sidebar">
@@ -153,7 +158,7 @@
               <template v-if="auth.isAuth">
                 <User :size="16" class="icon" />
                 <span v-if="collapseMenu.all == false" class="p-1"> {{ username }} </span>
-                <button class="btn btn-outline-light btn-sm" @click="logout()">
+                <button class="btn btn-outline-light btn-sm" type="button" title="Sair" aria-label="Sair" @click="logout()">
                   <LogOut :size="16" class="icon" />
                 </button>
               </template>
@@ -577,6 +582,91 @@ watch(
 
 .head-buttons .btn {
   margin-bottom: 5px;
+}
+
+/* Botoes de contorno nas barras: borda fina cinza e fixa, sem o branco forte */
+.sidebar .btn-outline-light {
+  --bs-btn-color: #c3cad2;
+  --bs-btn-border-color: #4a5563;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(255, 255, 255, 0.08);
+  --bs-btn-hover-border-color: #6b7685;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: rgba(255, 255, 255, 0.14);
+  --bs-btn-active-border-color: #6b7685;
+  --bs-btn-disabled-color: #c3cad2;
+  --bs-btn-disabled-border-color: #4a5563;
+}
+
+/* Seletor de tema: trilho com sol e lua, marcador claro que desliza */
+.theme-toggle {
+  --cell: 24px;
+  position: relative;
+  display: inline-flex;
+  margin-bottom: 5px;
+  padding: 2px;
+  border: 1px solid #4a5563;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: #6b7685;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #8ab4f8;
+  outline-offset: 2px;
+}
+
+.theme-cell {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cell);
+  height: var(--cell);
+  color: #8d97a3;
+  transition: color 0.25s ease;
+}
+
+.theme-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: 50%;
+  background: #e6ebf0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle.is-dark .theme-thumb {
+  transform: translateX(var(--cell));
+}
+
+/* Icone sobre o marcador fica escuro; o outro, apagado */
+.theme-toggle:not(.is-dark) .sun,
+.theme-toggle.is-dark .moon {
+  color: #1d2733;
+}
+
+/* Barra recolhida (45px): o seletor fica em pe */
+.sidebar-collapsed .theme-toggle {
+  flex-direction: column;
+}
+
+.sidebar-collapsed .theme-toggle.is-dark .theme-thumb {
+  transform: translateY(var(--cell));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-thumb,
+  .theme-cell {
+    transition: none;
+  }
 }
 
 .head-buttons {
