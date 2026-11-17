@@ -53,7 +53,10 @@
 - [x] Modo de produção otimizado: build do Vite + scripts standalone (`infra\standalone`) e início automático no logon
 - [x] Componentes em Composition API (`<script setup>`)
 - [x] Migração Vue CLI → Vue 3.5 + Vite 6, com login obrigatório nas rotas da API
-- [x] Opção de mostrar/ocultar o logo (`VITE_SHOW_LOGO`)
+- [x] Logo e nome da empresa importados em Configurações > Empresa (logo em `data/`, fora do git; substitui o `VITE_SHOW_LOGO`)
+- [x] Tema escuro (segue o Windows; botão sol/lua na barra direita; painel da TV sempre claro)
+- [x] Barra lateral desliza inteira ao recolher (texto não espreme)
+- [x] Editar usuário em janela (modal)
 
 - [x] Fila de espera e atendimento com prioridades diferentes
 
