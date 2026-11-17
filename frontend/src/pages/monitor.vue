@@ -10,11 +10,10 @@
                 v-if="ticketGlobalData.currentNumber"
                 class="current-ticket"
               >
-                <vue-feather
-                  type="user"
-                  size="100"
+                <User
+                  :size="100"
                   class="icon"
-                  stroke-width="1"
+                  :stroke-width="1"
                 />
                 <div class="row">
                   <span class="number">
@@ -50,7 +49,7 @@
           <div class="row justify-content-md-center">
             <div class="col-sm-auto menu-default">
               <span v-if="ticketGlobalData.lastNumber" class="last-ticket">
-                <vue-feather type="users" size="48" class="icon" />
+                <Users :size="48" class="icon" />
                 <div class="number">
                   Última Senha:
                   <span v-if="monitorConfig.showTicketNumber == true">
@@ -79,17 +78,17 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { publicSocket } from "@/socket.js";
+import { useAuth } from "@/stores/auth.js";
 import {
   loadMonitorConfigs,
   getGlobalTicketData,
 } from "../controllers/globalController.js";
-import VueFeather from "vue-feather";
+import { User, Users } from "lucide-vue-next";
 import topbar from "../components/topbar.vue";
 import soundFile from "@/assets/sound.wav";
 
-const toast = useToast();
 
 const transitionFade = ref(true);
 const transitionNewTicket = ref(false);
@@ -163,6 +162,12 @@ function handleReceiveUpdateMonitor(callByName) {
   });
 }
 
+const auth = useAuth();
+
+function announcePanel() {
+  publicSocket.emit("painelOnline", { usuario: auth.userData?.username || "" });
+}
+
 onMounted(async () => {
   transitionFade.value = true;
   transitionNewTicket.value = true;
@@ -174,11 +179,17 @@ onMounted(async () => {
 
   publicSocket.on("receiveUpdateMonitorConfigs", handleReceiveUpdateMonitorConfigs);
   publicSocket.on("receiveUpdateMonitor", handleReceiveUpdateMonitor);
+
+  // Presenca do painel no registro de atividades (avisa de novo ao reconectar)
+  announcePanel();
+  publicSocket.on("connect", announcePanel);
 });
 
 onBeforeUnmount(() => {
   publicSocket.off("receiveUpdateMonitorConfigs", handleReceiveUpdateMonitorConfigs);
   publicSocket.off("receiveUpdateMonitor", handleReceiveUpdateMonitor);
+  publicSocket.off("connect", announcePanel);
+  publicSocket.emit("painelOffline");
 });
 </script>
 

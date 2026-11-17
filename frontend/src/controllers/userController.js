@@ -69,15 +69,6 @@ export async function logoutUser() {
   }
 }
 
-export async function getActivity(params = {}) {
-  try {
-    const response = await api.get(`/api/activity`, { params });
-    return response;
-  } catch (error) {
-    return error.response;
-  }
-}
-
 export async function refreshToken() {
   const auth = useAuth();
   try {

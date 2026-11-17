@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useAuth } from '@/stores/auth'
-import { useToast } from 'vue-toastification'
+import { toast } from '@/services/notify.js'
 import config from '@/config.js'
 
 // O router e injetado por router/index.js (importar aqui criaria um ciclo:
@@ -38,7 +38,7 @@ api.interceptors.response.use(
 
       if (!redirecting && router) {
         redirecting = true
-        useToast().error('Sessão expirada. Faça login novamente.')
+        toast.error('Sessão expirada. Faça login novamente.')
         await router.push({ name: 'login' }).finally(() => { redirecting = false })
       }
     }

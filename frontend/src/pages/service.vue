@@ -14,7 +14,7 @@
               </h5>
               <br /> -->
               <div class="input-group mb-1 justify-content-center">
-                <span class="input-group-text" id="basic-addon1">Guichê:</span
+                <span class="input-group-text">Guichê:</span
                 ><input
                   type="number"
                   id="counter"
@@ -25,21 +25,21 @@
                 />
               </div>
               <div class="form-check form-switch py-2">
-                <label class="form-check-label" for="flexSwitchCheckDefault">
+                <label class="form-check-label" for="svc-call-by-name">
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    id="flexSwitchCheckDefault"
+                    id="svc-call-by-name"
                     v-model="callByName"
                   />Chamar pelo nome</label
                 >
               </div>
               <div class="form-check form-switch py-2">
-                <label class="form-check-label" for="flexSwitchCheckDefault">
+                <label class="form-check-label" for="svc-show-attendant">
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    id="flexSwitchCheckDefault"
+                    id="svc-show-attendant"
                     v-model="showAttendantName"
                   />Exibir nome do(a) atendente</label
                 >
@@ -74,15 +74,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useToast } from "vue-toastification";
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { toast } from "@/services/notify.js";
 import { useLocalStorage } from "@vueuse/core";
 import { loadTicketsInQueue } from "../controllers/ticketController";
 import { callTicket } from "@/utils/callTicket.js";
 import topbar from "../components/topbar.vue";
 import config from "@/config.js";
-
-const toast = useToast();
+import { logClientEvent } from "@/controllers/activityController.js";
 
 const transitionFade = ref(false);
 const callByName = useLocalStorage("callByName", true);
@@ -90,6 +89,27 @@ const showAttendantName = useLocalStorage("showAttendantName", false);
 const userTable = useLocalStorage("userTable", 0);
 const userCalledTicket = useLocalStorage("userCalledTicket", null);
 const buttonDisabled = ref(false);
+
+// Troca de guiche vai para o registro de atividades. Espera o atendente
+// terminar de digitar ("1" e depois "12") e so registra valores validos.
+let loggedTable = Number(userTable.value) || null;
+let tableTimer = null;
+function commitTable() {
+  clearTimeout(tableTimer);
+  tableTimer = null;
+  const table = Number(userTable.value);
+  if (!(table >= 1 && table <= 99) || table === loggedTable) return;
+  logClientEvent("guiche_alterado", { de: loggedTable, para: table });
+  loggedTable = table;
+}
+watch(userTable, () => {
+  clearTimeout(tableTimer);
+  tableTimer = setTimeout(commitTable, 2000);
+});
+// Saiu da tela antes dos 2 s: registra na hora
+onBeforeUnmount(() => {
+  if (tableTimer) commitTable();
+});
 
 function setButtonDisabled() {
   if (config.dev == 1) return 0;

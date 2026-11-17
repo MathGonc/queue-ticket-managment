@@ -17,4 +17,9 @@ defineOptions({
 const showLogo = config.showLogo;
 </script>
 
-<style></style>
+<style scoped>
+/* Antes vinha de uma regra global "nav { padding: 5px }" no App.vue */
+nav {
+  padding: 5px;
+}
+</style>

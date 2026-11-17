@@ -14,13 +14,13 @@
               type="button"
               @click="toggleCollapseSidebar()"
             >
-              <vue-feather type="menu" size="16" class="icon" stroke="white" />
+              <Menu :size="16" class="icon" color="white" />
             </button>
           </div>
           <div class="col-md-auto btn-back" v-if="$route.name != 'index'">
             <router-link :to="{ name: 'index' }">
               <button class="btn btn-primary btn-sm" type="button">
-                <vue-feather type="arrow-left" size="16" class="icon" />
+                <ArrowLeft :size="16" class="icon" />
               </button>
             </router-link>
           </div>
@@ -35,7 +35,7 @@
               <li class="list">
                 <div class="row justify-content-between title">
                   <div class="col-auto text-area">
-                    <vue-feather type="users" class="icon" />
+                    <Users class="icon" />
                     <span class="text"> Fila: </span>
                     <span class="badge rounded">{{ ticketsInQueue }} </span>
                   </div>
@@ -50,8 +50,7 @@
                       aria-controls="#collapseQueued"
                       :disabled="buttonDisabled"
                     >
-                      <vue-feather
-                        type="chevron-left"
+                      <ChevronLeft
                         :class="[
                           collapseMenu.queued
                             ? 'icon collapsed'
@@ -85,7 +84,7 @@
                               <span class="badge rounded">P</span>
                             </span>
 
-                            <span style="padding-left: 5px" v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2">
+                            <span class="ps-1" v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2">
                               <span class="AgeBadge badge rounded">80+</span>
                             </span>
 
@@ -112,7 +111,7 @@
                             class="btn btn-danger btn-sm"
                             :disabled="buttonDisabled"
                           >
-                            <vue-feather type="trash-2" size="16" class="icon" />
+                            <Trash2 :size="16" class="icon" />
                           </button>
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
@@ -120,7 +119,7 @@
                             class="btn btn-primary btn-sm"
                             :disabled="buttonDisabled"
                           >
-                            <vue-feather type="bell" size="16" class="icon" />
+                            <Bell :size="16" class="icon" />
                           </button>
                         </div>
                       </div>
@@ -137,18 +136,19 @@
   
   <!-- Sidebar Right -->
   <div class="sidebar">
-    <div style="right: 0"
+    <div
+      class="end-0"
       :class="[collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']"
     >
       <div class="container head-buttons">
-        <div class="row" style="justify-content: flex-end">
+        <div class="row justify-content-end">
           <div class="col-md-auto btn-sidebar">
-            <div v-if="showInterface" style="color: white; position: relative; right:0;">
+            <div v-if="showInterface" class="text-white">
               <template v-if="auth.isAuth">
-                <vue-feather type="user" size="16" class="icon" />
-                <span v-if="collapseMenu.all == false" style="padding: 5px"> {{ username }} </span>
+                <User :size="16" class="icon" />
+                <span v-if="collapseMenu.all == false" class="p-1"> {{ username }} </span>
                 <button class="btn btn-outline-light btn-sm" @click="logout()">
-                  <vue-feather type="log-out" size="16" class="icon" />
+                  <LogOut :size="16" class="icon" />
                 </button>
               </template>
             </div>
@@ -165,7 +165,7 @@
               <li class="list">
                 <div class="row justify-content-between title">
                   <div class="col-auto text-area">
-                    <vue-feather type="user-check" class="icon" />
+                    <UserCheck class="icon" />
                     <span class="text"> Atendidas: </span>
                   </div>
                   <div class="col-auto button-area">
@@ -179,8 +179,7 @@
                       aria-controls="#collapseServiced"
                       :disabled="buttonDisabled"
                     >
-                      <vue-feather
-                        type="chevron-left"
+                      <ChevronLeft
                         :class="[
                           collapseMenu.serviced
                             ? 'icon collapsed'
@@ -240,7 +239,7 @@
                             class="btn btn-danger btn-sm"
                             :disabled="buttonDisabled"
                           >
-                            <vue-feather type="trash-2" size="16" class="icon" />
+                            <Trash2 :size="16" class="icon" />
                           </button>
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
@@ -248,7 +247,7 @@
                             class="btn btn-primary btn-sm"
                             :disabled="buttonDisabled"
                           >
-                            <vue-feather type="bell" size="16" class="icon" />
+                            <Bell :size="16" class="icon" />
                           </button>
                         </div>
                       </div>
@@ -272,7 +271,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { useLocalStorage } from "@vueuse/core";
 import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
@@ -280,20 +279,16 @@ import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
 import { convertDate, calculateAge } from "@/utils/index.js";
 import { callTicket } from "@/utils/callTicket.js";
-import VueFeather from "vue-feather";
+import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Trash2, User, UserCheck, Users } from "lucide-vue-next";
 import config from "@/config.js";
 
 defineOptions({
   name: "page_sidebar",
-  components: {
-    "vue-feather": VueFeather,
-  },
 });
 
 const router = useRouter();
 const route = useRoute();
 const auth = useAuth();
-const toast = useToast();
 
 // Reactive state
 const showInterface = ref(true);
@@ -434,19 +429,29 @@ onBeforeUnmount(() => {
   publicSocket.off("receiveUpdateGlobal", handleLoadTicketsInQueue);
 });
 
-// Watch route changes
+// Telas largas recolhem as sidebars (que sao fixas e cobririam o conteudo)
+// e, ao sair delas, voltam como o usuario tinha deixado.
+// immediate: vale tambem ao abrir a tela direto pelo endereco ou com F5.
+const WIDE_PAGES = ["history", "config"];
+let collapsedBeforeWide = null;
 watch(
   () => route.name,
   (newRouteName) => {
-    if (newRouteName === "history") {
+    const wide = WIDE_PAGES.includes(newRouteName);
+    if (wide && collapsedBeforeWide === null) {
+      collapsedBeforeWide = collapseMenu.value.all;
       collapseMenu.value.all = true;
+    } else if (!wide && collapsedBeforeWide !== null) {
+      collapseMenu.value.all = collapsedBeforeWide;
+      collapsedBeforeWide = null;
     }
     if (newRouteName === "monitor") {
       showInterface.value = false;
     } else if (showInterface.value === false) {
       showInterface.value = true;
     }
-  }
+  },
+  { immediate: true }
 );
 </script>
 
@@ -633,13 +638,6 @@ watch(
   font-size: 12px;
   opacity: 0.7;
   margin-left: 2px;
-}
-
-hr.separator {
-  border-top: 1px solid rgb(226, 226, 226);
-  margin-top: 5px;
-  margin-bottom: 5px;
-  padding: 0px;
 }
 
 .sidebar ::-webkit-scrollbar {

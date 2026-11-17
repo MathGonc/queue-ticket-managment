@@ -9,23 +9,19 @@
             <div class="col-md-auto menu-default">
               <form @submit.prevent="handleLogin">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Login:</span>
+                  <span class="input-group-text">Login:</span>
                   <input
                     type="text"
                     class="form-control"
-                    aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm"
                     v-model="login"
                     required />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Senha:</span>
+                  <span class="input-group-text">Senha:</span>
                   <input
                     type="password"
                     class="form-control"
-                    aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm"
                     v-model="password"
                     required />
                 </div>
@@ -42,7 +38,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { useRouter } from "vue-router";
 import topbar from "@/components/topbar.vue";
 import { loginUser } from "@/controllers/userController.js";
@@ -60,7 +56,6 @@ const password = ref("");
 const transitionFade = ref(false);
 
 async function handleLogin() {
-  const toast = useToast();
   const response = await loginUser({ login: login.value, password: password.value });
   if (!response) return toast.error("Erro de conexão com o servidor");
   if (response.status === 401) return toast.error("Conta não encontrada");

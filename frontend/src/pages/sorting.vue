@@ -9,36 +9,32 @@
             <div class="col-md-auto menu-default">
               <form @submit.prevent="handleRegisterTicket()">
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                  <span class="input-group-text"
                     >*Nome:</span
                   >
                   <input
                     type="text"
                     class="form-control"
                     maxlength="50"
-                    aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm"
                     v-model="inputTicket.name"
                   />
                 </div>
 
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                  <span class="input-group-text"
                     >CPF:</span
                   >
                   <input
                     type="text"
                     class="form-control"
                     maxlength="18"
-                    aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm"
                     v-maska
                     v-model="inputTicket.docNumber.masked"
                     data-maska="###.###.###-##"
                   />
                 </div>
                 <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text" id="inputGroup-sizing-sm"
+                  <span class="input-group-text"
                     >Nasc.:</span
                   >
                   <div class="col-auto DatePicker">
@@ -82,11 +78,11 @@
                 </div>
 
                 <div class="form-check form-switch">
-                  <label class="form-check-label" for="flexSwitchCheckDefault">
+                  <label class="form-check-label" for="sort-preferential">
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      id="flexSwitchCheckDefault"
+                      id="sort-preferential"
                       v-model="preferentialBool"
                       :disabled="calculateAge(assistedAge) >= 60"
                     />
@@ -113,7 +109,7 @@
 
 <script setup>
 import { ref, reactive, watch, onMounted, onBeforeUnmount } from "vue";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { publicSocket, createSocket } from "@/socket.js";
 import { insertTicket } from "@/controllers/ticketController.js";
 import {
@@ -134,7 +130,6 @@ defineOptions({
 });
 
 const auth = useAuth();
-const toast = useToast();
 
 // Reactive state
 const transitionFade = ref(false);

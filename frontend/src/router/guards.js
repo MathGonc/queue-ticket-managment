@@ -1,5 +1,5 @@
 import { useAuth } from "@/stores/auth";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { checkToken } from "@/controllers/userController";
 import config from "@/config";
 
@@ -15,10 +15,13 @@ import config from "@/config";
  * @param {import('vue-router').Router} router
  */
 export function setupGuards(router) {
-  router.beforeEach(async (to) => {
+  router.beforeEach(async (to, from) => {
     const auth = useAuth();
 
     if (config.systemAuth == 0) return true;
+
+    // Mesma tela, so mudou a query (ex.: aba das configuracoes): ja validada
+    if (from.name && to.path === from.path) return true;
 
     if (to.name === "login") {
       return auth.isAuth ? { name: "index" } : true;
@@ -28,19 +31,19 @@ export function setupGuards(router) {
     if (!to.meta?.auth) return true;
 
     if (!auth.isAuth || !auth.token) {
-      useToast().error("Faça login primeiro");
+      toast.error("Faça login primeiro");
       return { name: "login" };
     }
 
     const response = await checkToken();
     if (response?.status !== 200) {
-      useToast().error("Faça login novamente");
+      toast.error("Faça login novamente");
       return { name: "login" };
     }
 
     const requiredRole = to.meta.role || 0;
     if (requiredRole > (auth.userData?.role || 0)) {
-      useToast().error("Sem permissão");
+      toast.error("Sem permissão");
       // Sem acesso nem ao inicio: encerra a sessao para nao entrar em loop
       if (to.name === "index") {
         auth.clearToken();

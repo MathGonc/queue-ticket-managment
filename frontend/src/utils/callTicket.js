@@ -1,7 +1,7 @@
 // Chamada de senha (guiche). Logica identica a do projeto original; fica
 // fora de utils/index.js para que aquele modulo tenha so funcoes puras.
 import { useLocalStorage } from "@vueuse/core";
-import { useToast } from "vue-toastification";
+import { toast } from "@/services/notify.js";
 import { useAuth } from "@/stores/auth.js";
 import { createSocket } from "@/socket.js";
 import { loadTicket, updateTicketCalled } from "@/controllers/ticketController.js";
@@ -12,7 +12,6 @@ import {
 
 export async function callTicket(_id) {
   const auth = useAuth();
-  const toast = useToast();
 
   const callByName = useLocalStorage("callByName", true).value;
   const showAttendantName = useLocalStorage("showAttendantName", true).value;

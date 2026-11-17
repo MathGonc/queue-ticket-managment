@@ -2,17 +2,16 @@
   <div id="app">
     <router-view></router-view>
   </div>
-  <div class="navbar">
-    <nav class="navbar small p-1 fixed-bottom">
-      <span class="col small pt-auto px-2"
-        >© 2025 - Matheus Gonçalves - Todos os direitos reservados.</span
-      >
-    </nav>
-  </div>
+  <!-- Avisos (toasts) de todo o sistema: services/notify.js -->
+  <Toaster rich-colors close-button position="top-right" />
+  <footer class="navbar small p-1 fixed-bottom">
+    <span class="col small px-2">© 2025 - Matheus Gonçalves - Todos os direitos reservados.</span>
+  </footer>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+import { Toaster } from 'vue-sonner'
 import { useAuth } from '@/stores/auth.js'
 import { createSocket } from './socket.js'
 import { refreshToken } from '@/controllers/userController.js'
@@ -62,26 +61,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  /* espaco para o rodape fixo nao cobrir o fim das paginas */
+  padding-bottom: 36px;
 }
 
 .navbar.fixed-bottom {
   background: #242424;
   color: #838383c7;
   text-align: right;
-}
-
-nav {
-  /*background-color: #f1f1f1;*/
-  padding: 5px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
 }
 
 .menu-default {
@@ -92,11 +79,6 @@ nav a.router-link-exact-active {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
-
-/*.col > *:not(:last-child) {
-    padding-right: 10px;
-    padding-block: 10px;
-}*/
 
 .title_page {
   text-align: center;
@@ -119,7 +101,4 @@ nav a.router-link-exact-active {
   vertical-align: sub;
 }
 
-.debug {
-  border: 1px solid rgba(247, 1, 1, 0.781);
-}
 </style>

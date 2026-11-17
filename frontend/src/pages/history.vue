@@ -36,16 +36,14 @@
           </div>
           <div class="col-auto">
             <div class="input-group">
-              <div class="input-group-prepend">
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="searchTerm"
-                  placeholder="Procurar"
-                />
-              </div>
-              <select class="custom-select" v-model="itemsPerPage">
-                <option v-for="option in itemsPerPageOptions" :key="option">
+              <input
+                type="text"
+                class="form-control"
+                v-model="searchTerm"
+                placeholder="Procurar"
+              />
+              <select class="form-select flex-grow-0 w-auto" v-model="itemsPerPage" title="Registros por página">
+                <option v-for="option in itemsPerPageOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
               </select>
@@ -53,11 +51,10 @@
           </div>
           <div class="col-auto">
             <button class="btn btn-primary" @click="createPDF()">
-              <vue-feather
-                type="airplay"
-                size="16"
+              <FileDown
+                :size="16"
                 class="icon"
-                stroke-width="3"
+                :stroke-width="3"
               /><b> Salvar como PDF</b>
             </button>
           </div>
@@ -74,12 +71,12 @@
                     :class="{ active: sortColumn == columns.field[index] }"
                   >
                     {{ column }}
-                    <vue-feather
+                    <component
                       v-if="sortColumn == columns.field[index]"
-                      :type="[ascending ? 'arrow-down' : 'arrow-up']"
-                      size="16"
+                      :is="ascending ? ArrowDown : ArrowUp"
+                      :size="16"
                       class="icon"
-                      stroke-width="3"
+                      :stroke-width="3"
                     />
                   </a>
                 </th>
@@ -113,7 +110,7 @@
         <ul class="pagination">
           <li>
             <button class="btn btn-primary btn-sm" @click="changePage('prev')">
-              <vue-feather type="arrow-left" size="16" class="icon" />
+              <ArrowLeft :size="16" class="icon" />
             </button>
           </li>
           <li
@@ -127,7 +124,7 @@
           </li>
           <li>
             <button class="btn btn-primary btn-sm" @click="changePage('next')">
-              <vue-feather type="arrow-right" size="16" class="icon" />
+              <ArrowRight :size="16" class="icon" />
             </button>
           </li>
         </ul>
@@ -144,9 +141,10 @@ import { loadTicketHistory } from "@/controllers/ticketController.js";
 import { convertDate, convertHours } from "@/utils/index.js";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import VueFeather from "vue-feather";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, FileDown } from "lucide-vue-next";
 import logoUrl from "@/assets/logo.png";
 import config from "@/config.js";
+import { logClientEvent } from "@/controllers/activityController.js";
 
 const auth = useAuth();
 
@@ -279,6 +277,14 @@ watch(currentPage, () => {
 });
 
 function createPDF() {
+  // Quem gerou e com quais filtros (registro de atividades)
+  logClientEvent("pdf_historico", {
+    busca: searchTerm.value,
+    de: dateServiced.value?.[0] || null,
+    ate: dateServiced.value?.[1] || null,
+    registros: ticketData.value.length,
+  });
+
   var sTable = document.getElementById("tab").innerHTML;
   var dTable = document.getElementById("tab-summary").innerHTML;
 
