@@ -6,97 +6,90 @@
       <div v-if="transitionFade">
         <div class="container">
           <div class="row justify-content-md-center">
-            <div class="col-md-auto menu-default">
+            <div class="col-md-auto menu-default sorting-card">
               <form @submit.prevent="handleRegisterTicket()">
-                <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text"
-                    >*Nome:</span
-                  >
+                <label class="form-label" for="sort-name">Nome <span class="text-muted-qtm" aria-hidden="true">*</span></label>
+                <input
+                  id="sort-name"
+                  v-model="inputTicket.name"
+                  type="text"
+                  class="form-control mb-3"
+                  maxlength="50"
+                  aria-required="true"
+                />
+
+                <label class="form-label" for="sort-cpf">CPF</label>
+                <input
+                  id="sort-cpf"
+                  v-model="inputTicket.docNumber.masked"
+                  v-maska
+                  type="text"
+                  class="form-control mb-3"
+                  maxlength="18"
+                  inputmode="numeric"
+                  data-maska="###.###.###-##"
+                />
+
+                <label class="form-label" for="sort-birth">Data de nascimento</label>
+                <div class="DatePicker mb-3">
+                  <VueDatePicker
+                    v-model="assistedAge"
+                    :dark="isDark"
+                    :text-input="{ format: DATE_FORMAT }"
+                    :locale="ptBR"
+                    :formats="{ input: DATE_FORMAT, weekDay: WEEKDAY_FORMAT }"
+                    :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar' }"
+                    :input-attrs="{ id: 'sort-birth' }"
+                  />
+                </div>
+
+                <label class="form-label" for="sort-type">Tipo de atendimento</label>
+                <div class="input-group mb-3">
                   <input
+                    id="sort-type"
+                    v-model="inputTicket.type"
                     type="text"
                     class="form-control"
                     maxlength="50"
-                    v-model="inputTicket.name"
                   />
-                </div>
-
-                <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text"
-                    >CPF:</span
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    maxlength="18"
-                    v-maska
-                    v-model="inputTicket.docNumber.masked"
-                    data-maska="###.###.###-##"
-                  />
-                </div>
-                <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text"
-                    >Nasc.:</span
-                  >
-                  <div class="col-auto DatePicker">
-                    <VueDatePicker
-                      v-model="assistedAge"
-                      :dark="isDark"
-                      :text-input="{ format: DATE_FORMAT }"
-                      :locale="ptBR"
-                      :formats="{ input: DATE_FORMAT, weekDay: WEEKDAY_FORMAT }"
-                      :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar' }"
-                    />
-                  </div>
-                </div>
-
-                <div class="input-group input-group-sm mb-3">
                   <button
-                    class="btn btn-secondary dropdown-toggle"
+                    class="btn btn-outline-secondary dropdown-toggle"
                     type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    Tipo:
+                    Lista
                   </button>
-                  <ul class="dropdown-menu">
+                  <ul class="dropdown-menu dropdown-menu-end">
                     <li v-for="item in dropdownTicketTypes" :key="item.name">
                       <a
                         class="dropdown-item"
                         href="#"
-                        @click="inputTicket.type = item.name"
+                        @click.prevent="inputTicket.type = item.name"
                         >{{ item.name }}</a
                       >
                     </li>
                   </ul>
-                  <input
-                    type="text"
-                    class="form-control"
-                    maxlength="50"
-                    aria-label="Text input with dropdown button"
-                    v-model="inputTicket.type"
-                  />
                 </div>
 
-                <div class="form-check form-switch">
-                  <label class="form-check-label" for="sort-preferential">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="sort-preferential"
-                      v-model="preferentialBool"
-                      :disabled="calculateAge(assistedAge) >= 60"
-                    />
-                    Preferencial</label
-                  >
+                <div class="form-check form-switch mb-3">
+                  <input
+                    id="sort-preferential"
+                    v-model="preferentialBool"
+                    class="form-check-input"
+                    type="checkbox"
+                    :disabled="calculateAge(assistedAge) >= 60"
+                  />
+                  <label class="form-check-label" for="sort-preferential">Preferencial</label>
                   <!-- Ordem de preferencia: 80+ >>> Preferencial (gravidas, 60+, crianças de colo, etc...) >>>> Sem preferencia -->
-                   <!-- Dentro desses 3, ordenar por ordem de chegada -->
+                  <!-- Dentro desses 3, ordenar por ordem de chegada -->
                 </div>
                 <button
                   type="submit"
-                  class="btn btn-outline-primary"
+                  class="btn btn-primary btn-lg w-100"
                   :disabled="buttonDisabled"
                 >
-                  Cadastrar Senha {{ ticketGlobalData.nextToQueue }}
+                  Cadastrar senha {{ ticketGlobalData.nextToQueue }}
                 </button>
               </form>
             </div>
@@ -264,4 +257,8 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.sorting-card {
+  width: min(400px, 90vw);
+}
+</style>

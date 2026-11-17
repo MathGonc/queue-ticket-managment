@@ -1,32 +1,33 @@
 <template>
-  <topbar></topbar>
+  <topbar large></topbar>
   <div class="login">
     <span class="title_page">Autenticação</span>
     <transition-group>
       <div v-if="transitionFade">
         <div class="container">
           <div class="row justify-content-md-center">
-            <div class="col-md-auto menu-default">
+            <div class="col-md-auto menu-default login-card">
               <form @submit.prevent="handleLogin">
-                <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text">Login:</span>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="login"
-                    required />
-                </div>
+                <label class="form-label" for="login-user">Login</label>
+                <input
+                  id="login-user"
+                  v-model="login"
+                  type="text"
+                  class="form-control mb-3"
+                  autocomplete="username"
+                  placeholder="nome.sobrenome"
+                  required />
 
-                <div class="input-group input-group-sm mb-3">
-                  <span class="input-group-text">Senha:</span>
-                  <input
-                    type="password"
-                    class="form-control"
-                    v-model="password"
-                    required />
-                </div>
+                <label class="form-label" for="login-pass">Senha</label>
+                <input
+                  id="login-pass"
+                  v-model="password"
+                  type="password"
+                  class="form-control mb-4"
+                  autocomplete="current-password"
+                  required />
 
-                <button type="submit" class="btn btn-outline-primary">Login</button>
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
               </form>
             </div>
           </div>
@@ -71,3 +72,9 @@ onMounted(() => {
   transitionFade.value = true;
 });
 </script>
+
+<style scoped>
+.login-card {
+  width: min(340px, 90vw);
+}
+</style>

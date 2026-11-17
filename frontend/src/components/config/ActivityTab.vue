@@ -14,7 +14,7 @@
           <button type="submit" class="btn btn-outline-primary btn-sm">Atualizar</button>
         </form>
 
-        <div class="d-flex flex-wrap justify-content-center gap-2 mb-2">
+        <div class="d-flex flex-wrap gap-2 mb-2">
           <span class="badge text-bg-primary">Emitidas: {{ stats.totals.emitidas }}</span>
           <span class="badge text-bg-success">Atendidas: {{ stats.totals.atendidas }}</span>
           <span class="badge text-bg-warning">Preferenciais: {{ stats.totals.preferenciais }}</span>
@@ -217,7 +217,7 @@ onMounted(() => {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
   margin-bottom: 10px;
 }

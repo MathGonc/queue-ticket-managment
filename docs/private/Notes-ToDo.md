@@ -57,6 +57,7 @@
 - [x] Tema escuro (segue o Windows; botão sol/lua na barra direita; painel da TV sempre claro)
 - [x] Barra lateral desliza inteira ao recolher (texto não espreme)
 - [x] Editar usuário em janela (modal)
+- [x] Revisão visual (14 itens): fonte Rawline (gov.br) local, escala 28/20/16/14, azul gov.br, cartões sólidos, formulários alinhados à esquerda, logo compacto nas telas de trabalho, painel da TV com nome e guichê em destaque e aviso antes da primeira chamada, cartões da fila com data curta e excluir com confirmação, contador de atendidas, rodapé com ano atual
 
 - [x] Fila de espera e atendimento com prioridades diferentes
 

@@ -40,8 +40,8 @@
                 <div class="row justify-content-between title">
                   <div class="col-auto text-area">
                     <Users class="icon" />
-                    <span class="text"> Fila: </span>
-                    <span class="badge rounded">{{ ticketsInQueue }} </span>
+                    <span class="text"> Fila </span>
+                    <span class="count-badge" :aria-label="`${ticketsInQueue} na fila`">{{ ticketsInQueue }}</span>
                   </div>
                   <div class="col-auto button-area">
                     <button
@@ -79,51 +79,41 @@
                       v-for="(ticket, index) in filteredTickets"
                       :key="index"
                     >
-                      <div class="ticket row" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 1">
-                        <div class="text-area col">
-                          <span class="name">
-                            {{ ticket.ticketList.number }} -
-                            {{ ticket.ticketList.name }}
-                            <span v-if="ticket.ticketList.preferential">
-                              <span class="badge rounded">P</span>
-                            </span>
-
-                            <span class="ps-1" v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2">
-                              <span class="AgeBadge badge rounded">80+</span>
-                            </span>
-
-                          </span>
+                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 1">
+                        <div class="ticket-main">
+                          <div class="ticket-head">
+                            <span class="ticket-number">{{ ticket.ticketList.number }}</span>
+                            <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
+                            <span v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2" class="tag tag-elderly" title="80 anos ou mais">80+</span>
+                            <span class="ticket-name">{{ ticket.ticketList.name }}</span>
+                          </div>
                           <div class="details">
-                            <div v-if="ticket.ticketList.type">
-                              ({{ ticket.ticketList.type }})
-                            </div>
-                            <div>
-                              <div v-if="ticket.ticketList.docNumber">CPF: {{ ticket.ticketList.docNumber }}</div>
-                              <div v-if="ticket.ticketList.assistedAge">Idade: {{ calculateAge(ticket.ticketList.assistedAge) }} anos </div>
-                            </div>
-                            <div>
-                              Cadastrada:
-                              {{ convertDateFn(ticket.ticketList.dateQueue) }}
-                            </div>
+                            <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
+                            <div v-if="ticket.ticketList.docNumber">CPF {{ ticket.ticketList.docNumber }}</div>
+                            <div v-if="ticket.ticketList.assistedAge">{{ calculateAge(ticket.ticketList.assistedAge) }} anos</div>
+                            <div>Cadastrada {{ shortDateTime(ticket.ticketList.dateQueue) }}</div>
                           </div>
                         </div>
-                        <div class="button-area col-sm-auto">
-                          <button
-                            v-if="userRole >= userRoleToDeleteTickets"
-                            @click="handleDeleteTicket(ticket.ticketList._id)"
-                            type="button"
-                            class="btn btn-danger btn-sm"
-                            :disabled="buttonDisabled"
-                          >
-                            <Trash2 :size="16" class="icon" />
-                          </button>
+                        <!-- Chamar em destaque; excluir pequeno, afastado e com confirmacao -->
+                        <div class="ticket-actions">
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
                             type="button"
                             class="btn btn-primary btn-sm"
                             :disabled="buttonDisabled"
                           >
-                            <Bell :size="16" class="icon" />
+                            <Bell :size="16" class="icon" /> Chamar
+                          </button>
+                          <button
+                            v-if="userRole >= userRoleToDeleteTickets"
+                            @click="handleDeleteTicket(ticket.ticketList)"
+                            type="button"
+                            class="btn btn-sm btn-delete"
+                            :disabled="buttonDisabled"
+                            :title="`Excluir a senha ${ticket.ticketList.number}`"
+                            :aria-label="`Excluir a senha ${ticket.ticketList.number}`"
+                          >
+                            <Trash2 :size="16" class="icon" />
                           </button>
                         </div>
                       </div>
@@ -182,7 +172,8 @@
                 <div class="row justify-content-between title">
                   <div class="col-auto text-area">
                     <UserCheck class="icon" />
-                    <span class="text"> Atendidas: </span>
+                    <span class="text"> Atendidas </span>
+                    <span class="count-badge" :aria-label="`${ticketsServiced} atendidas`">{{ ticketsServiced }}</span>
                   </div>
                   <div class="col-auto button-area">
                     <button
@@ -217,58 +208,45 @@
                       v-for="(ticket, index) in filteredTickets"
                       :key="index"
                     >
-                      <div class="ticket row" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 2">
-                        <div class="text-area col">
-                          <span class="name">
-                            {{ ticket.ticketList.number }} -
-                            {{ ticket.ticketList.name }}
-                            <span v-if="ticket.ticketList.preferential">
-                              <span class="badge rounded">P</span>
-                            </span>
-                          </span>
+                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 2">
+                        <div class="ticket-main">
+                          <div class="ticket-head">
+                            <span class="ticket-number">{{ ticket.ticketList.number }}</span>
+                            <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
+                            <span class="ticket-name">{{ ticket.ticketList.name }}</span>
+                          </div>
                           <div class="details">
-                            <div v-if="ticket.ticketList.type">
-                              ({{ ticket.ticketList.type }})
-                            </div>
-                            <div v-if="ticket.ticketList.docNumber">
-                              CPF: {{ ticket.ticketList.docNumber }}
-                            </div>
-                            <div>
-                              Cadastrada:
-                              {{ convertDateFn(ticket.ticketList.dateQueue) }}
-                            </div>
-                            <div>
-                              Atendida:
-                              {{ convertDateFn(ticket.ticketList.dateServiced) }}
-                            </div>
-                            <div>
-                              Atendida por:
-                              {{ ticket.ticketList.servicedBy }}
-                            </div>
+                            <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
+                            <div v-if="ticket.ticketList.docNumber">CPF {{ ticket.ticketList.docNumber }}</div>
+                            <div>Cadastrada {{ shortDateTime(ticket.ticketList.dateQueue) }}</div>
+                            <div>Atendida {{ shortDateTime(ticket.ticketList.dateServiced) }}<template v-if="ticket.ticketList.servicedBy"> por {{ ticket.ticketList.servicedBy }}</template></div>
                           </div>
                         </div>
-                        <div class="button-area col-sm-auto">
-                          <button
-                            v-if="userRole >= userRoleToDeleteTickets"
-                            @click="handleDeleteTicket(ticket.ticketList._id)"
-                            type="button"
-                            class="btn btn-danger btn-sm"
-                            :disabled="buttonDisabled"
-                          >
-                            <Trash2 :size="16" class="icon" />
-                          </button>
+                        <div class="ticket-actions">
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
                             type="button"
-                            class="btn btn-primary btn-sm"
+                            class="btn btn-outline-light btn-sm"
                             :disabled="buttonDisabled"
+                            :title="`Chamar a senha ${ticket.ticketList.number} de novo`"
                           >
-                            <Bell :size="16" class="icon" />
+                            <Bell :size="16" class="icon" /> Chamar
+                          </button>
+                          <button
+                            v-if="userRole >= userRoleToDeleteTickets"
+                            @click="handleDeleteTicket(ticket.ticketList)"
+                            type="button"
+                            class="btn btn-sm btn-delete"
+                            :disabled="buttonDisabled"
+                            :title="`Excluir a senha ${ticket.ticketList.number}`"
+                            :aria-label="`Excluir a senha ${ticket.ticketList.number}`"
+                          >
+                            <Trash2 :size="16" class="icon" />
                           </button>
                         </div>
                       </div>
                     </li>
-                    <div class="details">(Resultados dos últimos 7 dias)</div>
+                    <div class="details list-note">Últimos 7 dias</div>
                   </ul>
                 </div>
               </li>
@@ -293,7 +271,7 @@ import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
 import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
-import { convertDate, calculateAge } from "@/utils/index.js";
+import { calculateAge, shortDateTime } from "@/utils/index.js";
 import { callTicket } from "@/utils/callTicket.js";
 import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Moon, Sun, Trash2, User, UserCheck, Users } from "lucide-vue-next";
 import { useTheme } from "@/composables/useTheme.js";
@@ -337,10 +315,9 @@ const filteredTickets = computed(() =>
   }))
 );
 
+const ticketsServiced = computed(() => ticketData.value.filter((t) => t.status === 2).length);
+
 // Methods
-function convertDateFn(date) {
-  return convertDate(date);
-}
 
 async function logout() {
   // Registra a saida (sem travar o logout se o servidor nao responder)
@@ -415,9 +392,11 @@ async function handleLoadTicketsInQueue() {
   }
 }
 
-async function handleDeleteTicket(ticketID) {
+async function handleDeleteTicket(ticket) {
   if (buttonDisabled.value) return;
+  if (!confirm(`Excluir a senha ${ticket.number} (${ticket.name})?`)) return;
   setButtonDisabled();
+  const ticketID = ticket._id;
 
   if (userRole.value < config.userRoleToDeleteTickets) {
     return toast.error("Sem permissão");
@@ -612,19 +591,42 @@ watch(
 }
 
 .sidebar .list .nav {
-  padding-inline: 20px;
+  padding-inline: 12px;
   padding-bottom: 15%;
 }
 
-.badge {
-  background-color: rgba(255, 19, 19, 0.432);
-}
-.AgeBadge {
-  background-color: rgba(31, 255, 19, 0.43);
+/* Quantidade ao lado de "Fila" e "Atendidas": neutra (nao e alerta) */
+.sidebar .count-badge {
+  display: inline-block;
+  min-width: 1.7em;
+  margin-left: 4px;
+  padding: 0 0.45em;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: var(--qtm-fs-small);
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: center;
+  vertical-align: 2px;
 }
 
-.sidebar .list .icon {
-  filter: brightness(0) invert(1); /*white*/
+/* Prioridade do assistido, ao lado do numero */
+.sidebar .tag {
+  display: inline-block;
+  padding: 0 0.4em;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.sidebar .tag-pref {
+  background: var(--qtm-preferential);
+}
+
+.sidebar .tag-elderly {
+  background: var(--qtm-elderly);
 }
 
 .sidebar .title .text-area {
@@ -638,6 +640,8 @@ watch(
 
 .sidebar .list .title .btn {
   float: right;
+  /* seta de abrir/fechar a lista: clara sobre a moldura escura */
+  color: #fff;
 }
 
 .sidebar .list .title .button-area .icon.collapsed {
@@ -650,38 +654,88 @@ watch(
   transform: rotate(-90deg);
 }
 
+/* Cartao da senha: dados a esquerda, acoes numa coluna a direita */
 .sidebar .ticket {
+  display: flex;
+  gap: 12px;
   border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.082);
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin-bottom: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 12px;
+  margin-bottom: 8px;
   text-align: left;
 }
 
 .sidebar .ticket:hover {
-  transition: background 0.5s ease-out;
-  background: #64646441;
+  transition: background 0.3s ease-out;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.sidebar .ticket .text {
-  padding-inline-end: 50px;
+.sidebar .ticket-main {
+  flex: 1;
+  min-width: 0;
 }
 
-.sidebar .list .nav-item {
-  margin: 0 5px;
+/* Numero e etiquetas fixos a esquerda; o nome quebra so dentro do proprio
+   espaco (em telas de 1366px ele nao cai para baixo do numero) */
+.sidebar .ticket-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1.3;
 }
 
-.sidebar .list .nav-item .btn {
-  margin-top: 2px;
-  margin-right: 5px;
+.sidebar .ticket-number,
+.sidebar .tag {
+  flex-shrink: 0;
+}
+
+.sidebar .ticket-number {
+  font-weight: 700;
+}
+
+.sidebar .ticket-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .sidebar .list .details {
-  line-height: 1.2;
-  font-size: 12px;
-  opacity: 0.7;
-  margin-left: 2px;
+  margin-top: 4px;
+  color: #b6c0ca;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sidebar .list .list-note {
+  text-align: center;
+}
+
+/* Chamar em cima; excluir embaixo, so icone, longe do clique principal */
+.sidebar .ticket-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar .ticket-actions .btn {
+  white-space: nowrap;
+}
+
+.sidebar .btn-delete {
+  --bs-btn-color: #ff8a8a;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #ffb3b3;
+  --bs-btn-hover-bg: rgba(255, 138, 138, 0.12);
+  --bs-btn-hover-border-color: #ff8a8a;
+  --bs-btn-active-color: #ffb3b3;
+  --bs-btn-active-bg: rgba(255, 138, 138, 0.2);
+  --bs-btn-active-border-color: #ff8a8a;
+  --bs-btn-disabled-color: #ff8a8a;
+  --bs-btn-disabled-border-color: transparent;
+  padding: 2px 6px;
 }
 
 .sidebar ::-webkit-scrollbar {

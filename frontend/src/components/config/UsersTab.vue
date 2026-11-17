@@ -3,26 +3,22 @@
     <div class="col-12 col-lg-auto">
       <div class="menu-default config-card">
         <h5>Novo usuário</h5>
-        <form @submit.prevent="handleRegister()">
-          <div class="input-group input-group-sm mb-1">
-            <span class="input-group-text">Nome</span>
-            <input v-model="register.username" type="text" maxlength="30" class="form-control" required />
-          </div>
-          <div class="input-group input-group-sm mb-1">
-            <span class="input-group-text">Login</span>
-            <input v-model="register.login" type="text" maxlength="30" class="form-control" placeholder="nome.sobrenome" required />
-          </div>
-          <div class="input-group input-group-sm mb-1">
-            <span class="input-group-text">Senha</span>
-            <input v-model="register.pass" type="password" autocomplete="new-password" class="form-control" required />
-          </div>
-          <div class="input-group input-group-sm mb-2">
-            <span class="input-group-text">Função</span>
-            <select v-model="register.role" class="form-select" required>
-              <option v-for="(name, value) in ROLES" :key="value" :value="value">{{ name }}</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-outline-primary btn-sm">Cadastrar</button>
+        <form class="new-user-form" @submit.prevent="handleRegister()">
+          <label class="form-label" for="new-username">Nome</label>
+          <input id="new-username" v-model="register.username" type="text" maxlength="30" class="form-control mb-3" required />
+
+          <label class="form-label" for="new-login">Login</label>
+          <input id="new-login" v-model="register.login" type="text" maxlength="30" class="form-control mb-3" placeholder="nome.sobrenome" required />
+
+          <label class="form-label" for="new-password">Senha</label>
+          <input id="new-password" v-model="register.pass" type="password" autocomplete="new-password" class="form-control mb-3" required />
+
+          <label class="form-label" for="new-role">Função</label>
+          <select id="new-role" v-model="register.role" class="form-select mb-3" required>
+            <option value="" disabled>Escolha a função</option>
+            <option v-for="(name, value) in ROLES" :key="value" :value="value">{{ name }}</option>
+          </select>
+          <button type="submit" class="btn btn-primary w-100">Cadastrar usuário</button>
         </form>
       </div>
     </div>
@@ -263,6 +259,10 @@ onMounted(loadUsers);
 </script>
 
 <style scoped>
+.new-user-form {
+  width: min(280px, 80vw);
+}
+
 .users-table {
   max-height: 420px;
   overflow-y: auto;

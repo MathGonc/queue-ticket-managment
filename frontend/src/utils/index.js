@@ -9,6 +9,21 @@ export function convertDate(date) {
   return formatedDate;
 }
 
+// Data curta para os cartoes da fila: "hoje às 21:29", "ontem às 08:05"
+// ou "15/11 às 14:40". Cabe numa linha mesmo na barra lateral estreita.
+export function shortDateTime(date, now = new Date()) {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d)) return "";
+  const time = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const startOfDay = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+  if (days === 0) return `hoje às ${time}`;
+  if (days === 1) return `ontem às ${time}`;
+  const day = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  return `${day} às ${time}`;
+}
+
 // Texto seguro para escrever em HTML (ex.: janela do PDF)
 export function escapeHtml(text) {
   return String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c]);

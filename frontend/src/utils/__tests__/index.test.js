@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { convertDate, convertHours, isValidDate, calculateAge } from '@/utils/index.js'
+import { convertDate, convertHours, isValidDate, calculateAge, shortDateTime } from '@/utils/index.js'
 
 describe('Utils', () => {
   describe('convertDate', () => {
@@ -109,5 +109,18 @@ describe('Utils', () => {
       const age = calculateAge(birthDate.toISOString())
       expect(age).toBe(85)
     })
+  })
+})
+
+describe('shortDateTime', () => {
+  const now = new Date(2026, 10, 16, 22, 0)
+  it('hoje, ontem e outros dias numa linha curta', () => {
+    expect(shortDateTime(new Date(2026, 10, 16, 21, 29), now)).toBe('hoje às 21:29')
+    expect(shortDateTime(new Date(2026, 10, 15, 8, 5), now)).toBe('ontem às 08:05')
+    expect(shortDateTime(new Date(2026, 10, 9, 14, 40), now)).toBe('09/11 às 14:40')
+  })
+  it('sem data ou data invalida: vazio', () => {
+    expect(shortDateTime(null, now)).toBe('')
+    expect(shortDateTime('xx', now)).toBe('')
   })
 })

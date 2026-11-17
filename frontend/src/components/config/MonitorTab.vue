@@ -4,23 +4,19 @@
       <div class="menu-default config-card">
         <h5>Painel (monitor)</h5>
 
-        <div class="input-group input-group-sm mb-2">
-          <span class="input-group-text">Idioma</span>
-          <select v-model="displayLanguage" class="form-select" disabled>
-            <option value="0">Português</option>
-            <option value="1">English</option>
-          </select>
-        </div>
+        <label class="form-label" for="cfg-language">Idioma</label>
+        <select id="cfg-language" v-model="displayLanguage" class="form-select mb-3" disabled>
+          <option value="0">Português</option>
+          <option value="1">English</option>
+        </select>
 
-        <div class="input-group input-group-sm mb-3">
-          <span class="input-group-text">Modo do monitor</span>
-          <select v-model="monitorConfig.monitorMode" class="form-select" disabled>
-            <option value="0">Horizontal</option>
-            <option value="1">Vertical</option>
-          </select>
-        </div>
+        <label class="form-label" for="cfg-mode">Modo do monitor</label>
+        <select id="cfg-mode" v-model="monitorConfig.monitorMode" class="form-select mb-3" disabled>
+          <option value="0">Horizontal</option>
+          <option value="1">Vertical</option>
+        </select>
 
-        <div class="text-start">
+        <div>
           <div class="form-check form-switch">
             <input id="cfg-show-number" v-model="monitorConfig.showTicketNumber" class="form-check-input" type="checkbox" :disabled="buttonDisabled" />
             <label class="form-check-label" for="cfg-show-number">Mostrar número da senha no painel</label>
@@ -35,14 +31,14 @@
           </div>
         </div>
 
-        <div v-if="monitorConfig.soundCallTicket" class="input-group input-group-sm mt-2">
-          <span class="input-group-text">Tipo de voz</span>
-          <select v-model="monitorConfig.soundCallTicketVoice" class="form-select" :disabled="buttonDisabled">
+        <div v-if="monitorConfig.soundCallTicket" class="mt-3">
+          <label class="form-label" for="cfg-voice-type">Tipo de voz</label>
+          <select id="cfg-voice-type" v-model="monitorConfig.soundCallTicketVoice" class="form-select" :disabled="buttonDisabled">
             <option v-for="value in 21" :key="value - 1" :value="value - 1">{{ value - 1 }}</option>
           </select>
         </div>
 
-        <button type="button" class="btn btn-outline-primary mt-3" :disabled="buttonDisabled" @click="saveConfigs">
+        <button type="button" class="btn btn-primary mt-3" :disabled="buttonDisabled" @click="saveConfigs">
           Salvar
         </button>
       </div>
@@ -51,7 +47,7 @@
     <div class="col-12 col-md-auto">
       <div class="menu-default config-card">
         <h5>Numeração</h5>
-        <p class="small text-muted mb-3">Volta a numeração para a senha 1 e limpa as senhas exibidas no painel.</p>
+        <p class="small text-muted-qtm mb-3 numbering-hint">Volta a numeração para a senha 1 e limpa as senhas exibidas no painel.</p>
         <button type="button" class="btn btn-outline-danger" :disabled="buttonDisabled" @click="handleResetGlobalTicketData">
           Resetar painel de senhas
         </button>
@@ -109,3 +105,9 @@ onMounted(async () => {
   monitorConfig.value = await loadMonitorConfigs();
 });
 </script>
+
+<style scoped>
+.numbering-hint {
+  max-width: 38ch;
+}
+</style>

@@ -6,65 +6,44 @@
       <div v-if="transitionFade">
         <div class="container">
           <div class="row justify-content-md-center">
-            <div class="col-md-auto menu-default">
-              <!-- <h5 v-if="globalTicketData.currentNumber != -1">
-                Senha atual: {{ globalTicketData.currentNumber }} ({{
-                  globalTicketData.currentUser
-                }}) (Guichê: {{ globalTicketData.currentTable }})
-              </h5>
-              <br /> -->
-              <div class="input-group mb-1 justify-content-center">
-                <span class="input-group-text">Guichê:</span
-                ><input
-                  type="number"
-                  id="counter"
-                  min="01"
-                  max="99"
-                  maxlength="2"
-                  v-model="userTable"
-                />
-              </div>
-              <div class="form-check form-switch py-2">
-                <label class="form-check-label" for="svc-call-by-name">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="svc-call-by-name"
-                    v-model="callByName"
-                  />Chamar pelo nome</label
-                >
-              </div>
-              <div class="form-check form-switch py-2">
-                <label class="form-check-label" for="svc-show-attendant">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="svc-show-attendant"
-                    v-model="showAttendantName"
-                  />Exibir nome do(a) atendente</label
-                >
-              </div>
-              <span class="px-1"
-                ><button
-                  type="button"
-                  @click="callNextTicket"
-                  :disabled="buttonDisabled"
-                  class="btn btn-outline-primary"
-                >
-                  Chamar Próxima Senha
-                </button></span
-              >
+            <div class="col-md-auto menu-default service-card">
+              <label class="form-label" for="counter">Guichê</label>
+              <input
+                id="counter"
+                v-model="userTable"
+                type="number"
+                class="form-control counter-input"
+                min="1"
+                max="99"
+              />
 
-              <span class="px-1" v-if="userCalledTicket"
-                ><button
-                  type="button"
-                  @click="callSameTicket"
-                  :disabled="buttonDisabled || !userCalledTicket"
-                  class="btn btn-outline-primary"
-                >
-                  Chamar ultima senha novamente
-                </button></span
+              <div class="form-check form-switch mt-3">
+                <input id="svc-call-by-name" v-model="callByName" class="form-check-input" type="checkbox" />
+                <label class="form-check-label" for="svc-call-by-name">Chamar pelo nome</label>
+              </div>
+              <div class="form-check form-switch">
+                <input id="svc-show-attendant" v-model="showAttendantName" class="form-check-input" type="checkbox" />
+                <label class="form-check-label" for="svc-show-attendant">Exibir nome do(a) atendente</label>
+              </div>
+
+              <!-- A acao do dia: botao cheio e largo; o resto fica em contorno -->
+              <button
+                type="button"
+                class="btn btn-primary btn-lg w-100 mt-3"
+                :disabled="buttonDisabled"
+                @click="callNextTicket"
               >
+                <Bell :size="20" class="icon" /> Chamar próxima senha
+              </button>
+              <button
+                v-if="userCalledTicket"
+                type="button"
+                class="btn btn-outline-primary w-100 mt-2"
+                :disabled="buttonDisabled || !userCalledTicket"
+                @click="callSameTicket"
+              >
+                Chamar a última senha de novo
+              </button>
             </div>
           </div>
         </div>
@@ -82,6 +61,7 @@ import { callTicket } from "@/utils/callTicket.js";
 import topbar from "../components/topbar.vue";
 import config from "@/config.js";
 import { logClientEvent } from "@/controllers/activityController.js";
+import { Bell } from "lucide-vue-next";
 
 const transitionFade = ref(false);
 const callByName = useLocalStorage("callByName", true);
@@ -147,4 +127,14 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.service-card {
+  width: min(360px, 90vw);
+}
+
+.counter-input {
+  max-width: 120px;
+  font-size: var(--qtm-fs-heading);
+  font-weight: 600;
+}
+</style>

@@ -7,7 +7,7 @@
           <img v-if="logoUrl" :src="logoUrl" :alt="companyName || 'Logo atual'" />
           <span v-else class="text-body-secondary small">Nenhum logo importado. O topo das telas fica sem logo.</span>
         </div>
-        <p class="small text-body-secondary mb-3">
+        <p class="small text-muted-qtm mb-3">
           PNG, JPG ou WebP, até 2 MB. Aparece no topo das telas, no painel e no PDF do histórico.
         </p>
         <input ref="fileInput" type="file" class="d-none" accept="image/png,image/jpeg,image/webp" @change="handleFile" />
@@ -34,8 +34,8 @@
             class="form-control mb-2"
             placeholder="Ex.: Defensoria Pública da União"
             @keydown.enter.prevent="handleSaveName"></textarea>
-          <p class="small text-body-secondary mb-3">Aparece no cabeçalho do PDF do histórico.</p>
-          <button type="submit" class="btn btn-outline-primary" :disabled="busy || nameDraft.replace(/\s+/g, ' ').trim() === companyName">
+          <p class="small text-muted-qtm mb-3">Aparece no cabeçalho do PDF do histórico.</p>
+          <button type="submit" class="btn btn-primary" :disabled="busy || nameDraft.replace(/\s+/g, ' ').trim() === companyName">
             Salvar nome
           </button>
         </form>
@@ -114,14 +114,6 @@ async function handleSaveName() {
 
 .company-card form {
   width: min(400px, 80vw);
-  text-align: left;
-}
-
-.company-card form .btn,
-.company-card form p {
-  display: block;
-  margin-inline: auto;
-  text-align: center;
 }
 
 #company-name {

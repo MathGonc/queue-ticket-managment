@@ -6,7 +6,7 @@
       <div class="container" v-if="transitionFade">
         <div class="row justify-content-between table-utils">
           <div class="col-auto DatePicker">
-            <span class="text-sm-start"><b>Data de atendimento:</b></span>
+            <span class="filter-label">Data de atendimento</span>
             <VueDatePicker
               v-model="dateServiced"
               :dark="isDark"
@@ -59,10 +59,10 @@
         </div>
 
         <div id="tab" class="table-container">
-          <table class="table table-striped data-table">
+          <table class="table table-striped table-hover data-table">
             <thead>
               <tr class="text-nowrap">
-                <th v-for="(column, index) in columns.display" :key="column">
+                <th v-for="(column, index) in columns.display" :key="column" :class="{ 'text-end': NUMERIC_COLUMNS.includes(index) }">
                   <a
                     href="#"
                     @click.prevent="sortTable(columns.field[index])"
@@ -82,7 +82,7 @@
             </thead>
             <tbody>
               <tr v-for="ticket in ticketData" :key="ticket._id">
-                <td>{{ ticket.number }}</td>
+                <td class="text-end">{{ ticket.number }}</td>
                 <td>{{ ticket.name }}</td>
                 <td>{{ ticket.docNumber }}</td>
                 <td>{{ ticket.type }}</td>
@@ -90,7 +90,7 @@
                 <td>{{ convertDate(ticket.dateQueue) }}</td>
                 <td>{{ ticket.servicedBy }}</td>
                 <td>{{ convertDate(ticket.dateServiced) }}</td>
-                <td>
+                <td class="text-end">
                   <span v-if="ticket.dateServiced">
                     {{
                       convertHours(
@@ -158,6 +158,10 @@ const transitionFade = ref(false);
 const ticketData = ref([]);
 const currentPage = ref(1);
 
+// Colunas de numero alinhadas a direita: a Rawline nao tem algarismos de
+// largura fixa, entao alinhar pela direita e o que deixa as unidades em coluna
+const NUMERIC_COLUMNS = [0, 8];
+
 const columns = ref({
   display: [
     "Nº",
@@ -165,9 +169,9 @@ const columns = ref({
     "Documento",
     "Tipo",
     "Triagem",
-    "Horario",
+    "Cadastrada",
     "Atendente",
-    "Horario",
+    "Atendida",
     "Espera",
   ],
   field: [
@@ -345,21 +349,34 @@ onMounted(() => {
   align-items: center;
 }
 .table-utils .DatePicker {
-  background-color: #88888821;
-  padding: 5px 10px;
-  border-radius: 5px;
+  text-align: left;
+  background: var(--qtm-surface);
+  border: 1px solid var(--qtm-border);
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: var(--qtm-fs-small);
+  font-weight: 600;
+}
+
+#tab-summary {
+  margin-top: 6px;
+  color: var(--qtm-text-muted);
+  font-size: var(--qtm-fs-small);
 }
 
 .table-container {
   margin-top: 20px;
 }
 
-td:hover,
-th:hover {
-  transition: background 0.3s ease-out;
-  background: rgba(141, 141, 141, 0.596);
-  border-radius: 10px;
-  font-weight: bold;
+/* Realce da linha inteira, sem negrito (negrito mudava a largura e a
+   tabela "pulava" ao passar o mouse) */
+.data-table {
+  --bs-table-hover-bg: var(--qtm-row-hover);
 }
 
 input,
