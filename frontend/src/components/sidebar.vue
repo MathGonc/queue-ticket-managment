@@ -4,6 +4,7 @@
 
   <div class="sidebar">
     <div
+      class="side-left"
       :class="[collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']"
     >
       <div class="container head-buttons">
@@ -12,6 +13,9 @@
             <button
               class="btn btn-dark btn-sm"
               type="button"
+              :title="collapseMenu.all ? 'Abrir as barras laterais' : 'Recolher as barras laterais'"
+              :aria-label="collapseMenu.all ? 'Abrir as barras laterais' : 'Recolher as barras laterais'"
+              :aria-expanded="!collapseMenu.all"
               @click="toggleCollapseSidebar()"
             >
               <Menu :size="16" class="icon" color="white" />
@@ -137,11 +141,23 @@
   <!-- Sidebar Right -->
   <div class="sidebar">
     <div
-      class="end-0"
+      class="end-0 side-right"
       :class="[collapseMenu.all ? 'sidebar-collapsed' : 'sidebar-display']"
     >
       <div class="container head-buttons">
-        <div class="row justify-content-end">
+        <div class="row justify-content-between">
+          <div class="col-md-auto btn-sidebar">
+            <button
+              class="btn btn-outline-light btn-sm"
+              type="button"
+              :title="isDark ? 'Usar tema claro' : 'Usar tema escuro'"
+              :aria-label="isDark ? 'Usar tema claro' : 'Usar tema escuro'"
+              @click="toggleTheme()"
+            >
+              <Sun v-if="isDark" :size="16" class="icon" />
+              <Moon v-else :size="16" class="icon" />
+            </button>
+          </div>
           <div class="col-md-auto btn-sidebar">
             <div v-if="showInterface" class="text-white">
               <template v-if="auth.isAuth">
@@ -279,7 +295,8 @@ import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
 import { convertDate, calculateAge } from "@/utils/index.js";
 import { callTicket } from "@/utils/callTicket.js";
-import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Trash2, User, UserCheck, Users } from "lucide-vue-next";
+import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Moon, Sun, Trash2, User, UserCheck, Users } from "lucide-vue-next";
+import { useTheme } from "@/composables/useTheme.js";
 import config from "@/config.js";
 
 defineOptions({
@@ -289,6 +306,7 @@ defineOptions({
 const router = useRouter();
 const route = useRoute();
 const auth = useAuth();
+const { isDark, toggleTheme } = useTheme();
 
 // Reactive state
 const showInterface = ref(true);
@@ -463,40 +481,64 @@ watch(
   position: fixed;
 }
 
-.sidebar-collapsed {
-  transition: all 0.7s ease-out;
-  background: #2e2e2e;
+/* Sidebars: so a moldura muda de largura. O conteudo tem largura fixa e
+   desliza junto com a borda que fecha, esmaecendo: nada se reacomoda nem
+   espreme durante a animacao. */
+.sidebar-collapsed,
+.sidebar-display {
+  --sidebar-open: clamp(280px, 26vw, 400px);
+  --sidebar-speed: 0.45s;
+  --sidebar-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--qtm-sidebar-bg);
   min-height: 100vh !important;
-  max-width: 45px;
-  border-top-right-radius: 3px;
+  max-height: 100%;
   position: fixed;
   padding: 5px;
+  border-top-right-radius: 3px;
+  overflow-x: hidden;
+  transition: width var(--sidebar-speed) var(--sidebar-ease);
 }
 
 .sidebar-display {
-  transition: max-width 0.7s ease-out;
-  background: #2e2e2e;
-  min-height: 100vh !important;
-  max-width: 30%;
-  position: fixed;
-  padding: 5px 5px;
-  border-top-right-radius: 3px;
-  max-height: 100%;
+  width: var(--sidebar-open);
   overflow-y: auto;
-  overflow-x: hidden;
-  /* overflow: hidden; */
+}
+
+.sidebar-collapsed {
+  width: 45px;
+  overflow-y: hidden;
+}
+
+.sidebar .content {
+  /* 20px: padding da moldura + barra de rolagem */
+  width: calc(var(--sidebar-open) - 20px);
+  transition:
+    transform var(--sidebar-speed) var(--sidebar-ease),
+    opacity var(--sidebar-speed) ease,
+    visibility 0s linear 0s;
 }
 
 .sidebar-collapsed .content {
-  transition: opacity 0.7s ease-out, visibility 0.5s ease-out;
   opacity: 0;
   visibility: hidden;
+  transition:
+    transform var(--sidebar-speed) var(--sidebar-ease),
+    opacity var(--sidebar-speed) ease,
+    visibility 0s linear var(--sidebar-speed);
 }
 
-.sidebar-display .content {
-  transition: opacity 0.7s ease-out, visibility 0.5s ease-out;
-  opacity: 100;
-  visibility: visible;
+/* Esquerda: o conteudo acompanha a borda direita, que fecha para a esquerda.
+   Direita: a borda que se move e a esquerda, e o conteudo ja vai junto. */
+.side-left.sidebar-collapsed .content {
+  transform: translateX(calc(45px - var(--sidebar-open)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-collapsed,
+  .sidebar-display,
+  .sidebar .content {
+    transition: none;
+  }
 }
 
 /* .sidebar::-webkit-scrollbar {

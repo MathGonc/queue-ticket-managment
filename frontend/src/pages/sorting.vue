@@ -40,9 +40,10 @@
                   <div class="col-auto DatePicker">
                     <VueDatePicker
                       v-model="assistedAge"
+                      :dark="isDark"
                       :text-input="{ format: DATE_FORMAT }"
                       :locale="ptBR"
-                      :formats="{ input: DATE_FORMAT }"
+                      :formats="{ input: DATE_FORMAT, weekDay: WEEKDAY_FORMAT }"
                       :action-row="{ selectBtnLabel: 'Selecionar', cancelBtnLabel: 'Cancelar' }"
                     />
                   </div>
@@ -123,10 +124,14 @@ import config from "@/config.js";
 
 import { VueDatePicker } from "@vuepic/vue-datepicker";
 import { ptBR } from "date-fns/locale";
+import { useTheme } from "@/composables/useTheme.js";
 import "@vuepic/vue-datepicker/dist/main.css";
 
 // Formato das datas no seletor (exibicao e digitacao)
 const DATE_FORMAT = "dd/MM/yyyy";
+// Dias da semana com 1 letra (D S T Q Q S S), como nos calendarios brasileiros
+const WEEKDAY_FORMAT = "EEEEE";
+const { isDark } = useTheme();
 
 defineOptions({
   name: "page_sorting",

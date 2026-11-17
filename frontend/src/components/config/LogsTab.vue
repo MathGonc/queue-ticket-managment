@@ -191,7 +191,7 @@ onMounted(async () => {
 .log-table thead th {
   position: sticky;
   top: 0;
-  background: #f1f1f1;
+  background: var(--qtm-table-head);
 }
 
 .log-table code {

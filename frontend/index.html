@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" />
     <title>Sistema de Senhas</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Aplica o tema antes do Vue carregar (evita piscar branco no tema escuro).
+      // Mesma regra de src/composables/useTheme.js.
+      (function () {
+        try {
+          var theme = localStorage.getItem("theme");
+          if (location.pathname === "/monitor") theme = "light";
+          else if (theme !== "light" && theme !== "dark") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.setAttribute("data-bs-theme", theme);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

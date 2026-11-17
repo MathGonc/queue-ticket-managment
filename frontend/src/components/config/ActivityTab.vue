@@ -234,7 +234,7 @@ onMounted(() => {
 .scroll-table thead th {
   position: sticky;
   top: 0;
-  background: #f1f1f1;
+  background: var(--qtm-table-head);
 }
 
 .activity-table td,
