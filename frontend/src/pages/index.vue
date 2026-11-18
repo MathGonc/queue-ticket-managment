@@ -3,7 +3,7 @@
     <topbar></topbar>
     <span class="title_page">Sistema de atendimento</span>
     <transition-group>
-      <div v-if="transitionFade">
+      <div v-if="transitionFade" class="menu">
         <div class="buttons">
           <!-- Icone do lado de fora, a esquerda de cada botao -->
           <div v-for="item in MENU" :key="item.route" class="menu-row">
@@ -83,17 +83,26 @@ onBeforeUnmount(() => clearInterval(timer))
   align-items: center;
 }
 
+/* Botoes e status centralizados um embaixo do outro, cada um pela sua largura */
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .buttons {
   margin-top: 20px;
 }
 
+/* Icone | botao | espaco do tamanho do icone: o icone fica fora e o botao
+   fica exatamente no centro da tela */
 .menu-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 26px auto 26px;
   align-items: center;
   gap: 14px;
   margin: 10px 0;
-  /* O icone fica fora: o botao continua centralizado na tela */
-  margin-left: -40px;
 }
 
 .menu-icon {
@@ -116,6 +125,7 @@ onBeforeUnmount(() => clearInterval(timer))
   align-items: center;
   gap: 8px;
   margin-top: 18px;
+  max-width: 90vw;
 }
 
 .status-title {
