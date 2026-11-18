@@ -61,5 +61,6 @@ export async function callTicket(_id) {
   await socket.emit("signalUpdateValues");
   await socket.emit("signalUpdateMonitor", callByName);
 
-  localStorage.setItem("userCalledTicket", ticketData._id);
+  // Pelo useLocalStorage: o painel de atendimento aberto atualiza na hora
+  useLocalStorage("userCalledTicket", null).value = ticketData._id;
 }

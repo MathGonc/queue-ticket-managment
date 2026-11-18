@@ -55,12 +55,44 @@ O primeiro administrador de um banco novo é criado com `npm run create-admin` (
 
 | Método | Rota | Descrição | Acesso |
 |--------|------|-----------|--------|
-| GET | `/loadTicketsInQueue` | Senhas dos últimos 7 dias (fila + atendidas) | Login |
-| GET | `/loadTicket/:id` | Buscar senha por ID | Login |
-| PUT | `/updateTicketCalled/:id` | Marcar senha como chamada | Login |
-| POST | `/insertTicket` | Emitir senha (triagem) | Atendente |
-| GET | `/loadTicketHistory` | Histórico paginado (`page`, `limit`, `search`, `startDate`, `endDate`, `sortField`, `sortOrder`) | Atendente |
-| DELETE | `/deleteTicket/:id` | Excluir senha | Admin |
+| GET | `/loadTicketsInQueue` | Senhas dos últimos 7 dias (fila + atendidas), com a pessoa (`name`, `docNumber`, `assistedAge`, vindos do cadastro) e as `visitas` | Login |
+| GET | `/loadTicket/:id` | Buscar senha por ID (com a pessoa e as anotações) | Login |
+| PUT | `/updateTicketCalled/:id` | Marcar senha como chamada (só grava `status`, `servicedBy`, `dateServiced`, `servicedTable`) | Login |
+| POST | `/insertTicket` | Emitir senha: `assistidoId` (pessoa escolhida) ou `cpf`/`nome`/`nascimento` (pessoa nova), `type` (tipo oficial), `notaTriagem`. CPF com 2+ cadastros = 409 (pendência) | Atendente |
+| PUT | `/tickets/:id/notaAtendimento` | Anotação do atendimento (painel de atendimento) | Atendente |
+| GET | `/loadTicketHistory` | Histórico paginado (`page`, `limit`, `search`, `startDate`, `endDate`, `sortField`, `sortOrder`). A busca procura também no nome/CPF do cadastro e nas anotações | Atendente |
+| DELETE | `/deleteTicket/:id` | Excluir senha: **só oculta** (grava `deletedAt` e `deletedBy`; continua no banco) | Admin |
+
+### Assistidos (`assistidoRoutes`)
+
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/assistidos/sugestoes?cpf=` ou `?nome=` | Sugestões enquanto digita (3+ dígitos/letras): CPF pelo começo; nome por palavras, sem acento. Até 8, com as pendências | Atendente |
+| GET | `/assistidos/triagem?id=`, `?cpf=` ou `?nome=` | Candidatos (cadastros da pessoa, do CPF ou do nome exato) com visitas e pendências, e as senhas de hoje (aviso de duplicidade) | Atendente |
+| POST | `/assistidos/resolver` | "Confirmar" do bloco de pendências: `{ manterId?, juntarIds?, nome, cpf \| semCpf }`. Junta os cadastros indicados e os do mesmo CPF | Atendente |
+
+### Sistema (`systemRoutes`)
+
+| Método | Rota | Descrição | Acesso |
+|--------|------|-----------|--------|
+| GET | `/tiposAtendimento` | Tipos de atendimento em uso (os de Configurações; sem eles, a lista padrão) | Login |
+| PUT | `/tiposAtendimento` | Salvar a lista: `{ tipos, renomear: [{ de, para }] }`. Renomear troca o tipo também nas senhas antigas; avisa as triagens abertas | Admin |
+| GET | `/api/status` | Status da página inicial: usuários conectados (com login, cada um conta uma vez) e monitor OK (alguma tela do monitor aberta sem parar há mais de 1 minuto, `PANEL_OK_MS`) | Admin |
+
+## Assistidos (pessoas)
+
+O ticket é uma **visita**: guarda só o `assistidoId`, o tipo oficial e as anotações (`notaTriagem`, `notaAtendimento`). Nome, CPF e nascimento ficam no **assistido** (coleção `assistidos`). As rotas devolvem `name`/`docNumber`/`assistedAge` calculados a partir do cadastro. Os campos antigos dos tickets ficaram como `legacy_name`, `legacy_docNumber` e `legacy_assistedAge`, sem uso no sistema.
+
+- **Chave:** o `_id` do assistido. Para encontrar a pessoa na triagem, nesta ordem: **CPF → nome + nascimento → só o nome** (este nunca junta sozinho: a triagem confirma).
+- **CPF:** opcional, mas tem que ser escolhido: válido (dígito verificador conferido) ou "Sem CPF" marcado. O mesmo CPF pode ter mais de um cadastro enquanto há dúvida.
+- **Pendências** ("Para resolver antes da triagem", travam a emissão até confirmar): CPF com 2+ cadastros (a triagem escolhe o nome certo e os outros são juntados a ele), CPF inválido no cadastro (corrigir ou marcar "Sem CPF") e nome a confirmar (cadastros sem CPF juntados pelo nome). Cadastro juntado fica com `mescladoEm` (não é apagado) e os tickets passam para o escolhido com "Registrado como: NOME" na anotação.
+- **Triagem em duas partes**, separadas por uma divisória: dados da pessoa (CPF, nome, nascimento) e atendimento (tipo, anotação, preferencial, emissão). Pessoa nova: tudo liberado e "Cadastrar senha" salva tudo. Pessoa já cadastrada: CPF e nome ficam travados, com lápis (editar) e "x" (trocar a pessoa); qualquer dado alterado mostra "Confirmar dados" acima da divisória, e o atendimento só libera depois de confirmar ou desfazer. O tipo de atendimento aceita busca digitando ou a lista inteira.
+- **Visitas** = dias com atendimento (duas senhas no mesmo dia contam uma visita). Aparecem no aviso azul da triagem e no (i) da barra lateral e do histórico ("3ª de 7 visitas"), junto com as anotações.
+- **Nome:** sempre em maiúsculas. Recados escritos no nome ("(QUER FALAR COM...)", "- THIAGO") vão para a anotação da triagem.
+- **Nascimento:** guardado só como dia (12:00 UTC, o mesmo dia em qualquer fuso do Brasil). Alterado na triagem = correção do cadastro.
+- **Tipos oficiais:** lista em `backend/src/tipos.js` (e `frontend/src/utils/tipos.js`). Texto livre de uma tela antiga vira o tipo mais próximo (ou OUTROS) e o texto vai para a anotação.
+- **Senhas excluídas** ficam ocultas: somem da fila, do histórico, das estatísticas e das visitas.
+- **Migração** dos tickets antigos: `npm run migrate-assistidos` (simulação + listas das pendências criadas em `data/`) e `-- --apply` para gravar; só mexe em tickets sem `assistidoId`. Para voltar ao código antigo: `npm run rollback-assistidos -- --confirm` (devolve `name`/`docNumber`/`assistedAge` aos tickets).
 
 ### Configurações Globais (`globalRoutes`)
 
@@ -133,12 +165,15 @@ O próprio servidor emite `receiveUpdateBranding` quando o logo ou o nome da emp
 queue-ticket-managment/
 ├── backend/
 │   ├── server.js              # Entry point (Express + Socket.io)
-│   ├── scripts/create-admin.js
+│   ├── scripts/               # create-admin, backup-db, restore-db, migrate-assistidos, rollback-assistidos
 │   └── src/
 │       ├── config/            # Variáveis de ambiente, conexão DB, logger
 │       ├── middleware/        # auth (JWT/cargos), rateLimit, validate
-│       ├── models/            # Mongoose schemas (ticket, user, global, history)
-│       └── routes/            # ticket, user, global, activity, branding
+│       ├── models/            # Mongoose schemas (ticket, assistido, user, global, activity)
+│       ├── assistidos.js      # Regras dos assistidos (nome, nascimento, vinculo, visitas)
+│       ├── cpf.js             # Validacao de CPF
+│       ├── tipos.js           # Tipos de atendimento oficiais
+│       └── routes/            # ticket, assistido, user, global, activity, branding
 ├── frontend/
 │   ├── index.html
 │   ├── vite.config.js
@@ -153,7 +188,7 @@ queue-ticket-managment/
 │       ├── utils/             # Funções puras + callTicket.js
 │       ├── socket.js          # Socket.io (público para escutar, autenticado para emitir)
 │       └── main.js
-├── data/                      # Logo importado (fora do git)
+├── data/                      # Logo importado e listas da migracao (fora do git)
 ├── infra/
 │   ├── standalone/            # Scripts para Windows sem Docker
 │   └── docker/                # Compose + Dockerfiles + nginx

@@ -83,8 +83,11 @@
             <tbody>
               <tr v-for="ticket in ticketData" :key="ticket._id">
                 <td class="text-end">{{ ticket.number }}</td>
-                <td>{{ ticket.name }}</td>
-                <td>{{ ticket.docNumber }}</td>
+                <td>
+                  {{ ticket.name }}
+                  <VisitInfo v-if="infoText(ticket)" :text="infoText(ticket)" :size="14" />
+                </td>
+                <td class="text-nowrap">{{ formatCpf(ticket.docNumber) }}</td>
                 <td>{{ ticket.type }}</td>
                 <td>{{ ticket.queuedBy }}</td>
                 <td>{{ convertDate(ticket.dateQueue) }}</td>
@@ -136,7 +139,8 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useAuth } from "@/stores/auth.js";
 import topbar from "@/components/topbar.vue";
 import { loadTicketHistory } from "@/controllers/ticketController.js";
-import { convertDate, convertHours, escapeHtml } from "@/utils/index.js";
+import { convertDate, convertHours, escapeHtml, visitHistoryText, notesText, formatCpf } from "@/utils/index.js";
+import VisitInfo from "@/components/VisitInfo.vue";
 import { VueDatePicker } from "@vuepic/vue-datepicker";
 import { ptBR } from "date-fns/locale";
 import { useTheme } from "@/composables/useTheme.js";
@@ -153,6 +157,11 @@ const { isDark } = useTheme();
 const { companyName, logoUrl } = useBranding();
 
 const auth = useAuth();
+
+// (i) da linha: visitas ("3a de 7") e anotacoes da triagem e do atendimento
+function infoText(ticket) {
+  return [ticket.visitas && visitHistoryText(ticket.visitas), notesText(ticket)].filter(Boolean).join("\n");
+}
 
 const transitionFade = ref(false);
 const ticketData = ref([]);

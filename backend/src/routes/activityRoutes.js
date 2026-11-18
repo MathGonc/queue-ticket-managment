@@ -96,7 +96,8 @@ router.get('/api/stats/daily', authMiddleware, requireRole(ROLE_ADMIN), async (r
     const wait = { $subtract: ['$dateServiced', '$dateQueue'] }
 
     const days = await TicketModel.aggregate([
-      { $match: { dateQueue: { $gte: from, $lte: to } } },
+      // deletedAt: ticket excluido so fica oculto e nao conta
+      { $match: { dateQueue: { $gte: from, $lte: to }, deletedAt: null } },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$dateQueue', timezone } },

@@ -274,6 +274,16 @@ body {
   color: var(--qtm-text-muted);
 }
 
+/* Asterisco de campo obrigatorio */
+.required-mark {
+  color: #c62828;
+  font-weight: 700;
+}
+
+[data-bs-theme="dark"] .required-mark {
+  color: #ff7b72;
+}
+
 .title_page {
   display: block;
   text-align: center;

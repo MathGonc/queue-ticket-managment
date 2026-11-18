@@ -78,6 +78,17 @@ O primeiro comando só mostra o que seria feito. Antes de restaurar, o estado at
 
 Se você esquecer o passo 3, o `start-frontend` percebe que o código mudou e refaz o build sozinho. Mas dependências novas só entram com o `setup`.
 
+### Atualização com os assistidos (uma vez)
+
+A versão que separa os assistidos (pessoas por CPF) dos tickets precisa migrar os tickets antigos. Com tudo parado (`stop-all.cmd`), depois do `setup.cmd`:
+
+1. `backup.cmd`
+2. Na pasta `backend`: `npm run migrate-assistidos` (simulação: mostra os números e grava as listas das pendências em `data\migracao-assistidos-*`).
+3. `npm run migrate-assistidos -- --apply`
+4. `start-all.cmd` e **F5 nas telas que ficaram abertas** (triagem, atendimento): a tela antiga não usa as sugestões nem o bloco de pendências.
+
+Para voltar à versão anterior: `npm run rollback-assistidos -- --confirm` (devolve nome/CPF/nascimento aos tickets) e o código antigo. Se restaurar um backup de **antes** da migração, apague também a coleção `assistidos`, senão uma nova migração cria cadastros em dobro.
+
 ## Migrando da versão antiga (Vue CLI)
 
 - **Feche as janelas antigas** (`npm run serve` e `nodemon`). Elas usam as mesmas portas 8080 e 3030.

@@ -6,7 +6,9 @@ const { logActivity, clientIp } = require('./activity')
 // daquele IP nao voltar em GRACE_MS, e a volta nesse intervalo nao gera
 // um novo "conectado".
 const GRACE_MS = parseInt(process.env.PANEL_GRACE_MS) || 60 * 1000
-const panels = new Map() // ip -> { sockets: Set, since: Date, user, pendingOffline }
+const panels = new Map() // ip -> { sockets: Set, since: Date, liveSince, user, pendingOffline }
+// Status do sistema: monitor OK = alguma tela do monitor aberta sem parar ha OK_MS
+const OK_MS = parseInt(process.env.PANEL_OK_MS) || 60 * 1000
 
 function details(ip, panel) {
   return { ip, usuario: panel.user || '' }
@@ -24,6 +26,9 @@ function online(socket, info = {}) {
     clearTimeout(panel.pendingOffline)
     panel.pendingOffline = null
   }
+  // Aberto sem parar desde... (zera quando a ultima tela daquele IP fecha)
+  if (!panel.sockets.size) panel.liveSince = Date.now()
+  if (info.usuario) panel.user = String(info.usuario).slice(0, 60)
   panel.sockets.add(socket.id)
   socket.panelIp = ip
 }
@@ -35,6 +40,7 @@ function offline(socket) {
   const panel = panels.get(ip)
   if (!panel) return
   panel.sockets.delete(socket.id)
+  if (!panel.sockets.size) panel.liveSince = null
   if (panel.sockets.size > 0 || panel.pendingOffline) return
   panel.pendingOffline = setTimeout(() => {
     panels.delete(ip)
@@ -43,4 +49,16 @@ function offline(socket) {
   }, GRACE_MS)
 }
 
-module.exports = { online, offline, GRACE_MS }
+// Monitor que esta aberto ha mais tempo (OK se passou de OK_MS)
+function monitorStatus(now = Date.now()) {
+  const live = [...panels.values()].filter((p) => p.sockets.size && p.liveSince).sort((a, b) => a.liveSince - b.liveSince)
+  const first = live[0]
+  return {
+    ok: !!first && now - first.liveSince >= OK_MS,
+    usuario: first?.user || '',
+    abertoHaMs: first ? now - first.liveSince : 0,
+    telas: live.length,
+  }
+}
+
+module.exports = { online, offline, monitorStatus, GRACE_MS, OK_MS }

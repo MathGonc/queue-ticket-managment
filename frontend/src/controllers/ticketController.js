@@ -63,3 +63,9 @@ export async function loadTicketHistory(params = {}) {
     throw error;
   }
 }
+
+// Anotacao do atendimento (painel de atendimento)
+export async function saveNotaAtendimento(ticketID, notaAtendimento) {
+  const response = await api.put(`/tickets/${ticketID}/notaAtendimento`, { notaAtendimento });
+  return response;
+}

@@ -25,7 +25,8 @@
 
     <div class="col-12 col-lg">
       <div class="menu-default config-card">
-        <h5>Usuários ({{ users.length }})</h5>
+        <h5>Usuários ({{ search.trim() ? `${shownUsers.length} de ${users.length}` : users.length }})</h5>
+        <SearchField id="users-search" v-model="search" class="mb-2" placeholder="Pesquisar por nome, login ou função" />
         <div class="table-responsive users-table">
           <table class="table table-sm table-hover align-middle mb-0">
             <thead>
@@ -37,7 +38,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in users" :key="user._id" :class="{ 'table-active': editingUser?._id === user._id }">
+              <tr v-for="user in shownUsers" :key="user._id" :class="{ 'table-active': editingUser?._id === user._id }">
                 <td>{{ user.username }}</td>
                 <td>{{ user.login }}</td>
                 <td>{{ ROLES[user.role] || "Desconhecido" }}</td>
@@ -51,6 +52,9 @@
                     Excluir
                   </button>
                 </td>
+              </tr>
+              <tr v-if="search.trim() && !shownUsers.length">
+                <td colspan="4" class="text-muted-qtm">Nenhum usuário encontrado</td>
               </tr>
             </tbody>
           </table>
@@ -115,16 +119,21 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onDeactivated } from "vue";
+import { ref, computed, watch, onMounted, onDeactivated } from "vue";
 import { useScrollLock } from "@vueuse/core";
 import { toast } from "@/services/notify.js";
 import { useAuth } from "@/stores/auth.js";
 import { registerUser, getUsers, updateUser, deleteUser } from "@/controllers/userController.js";
+import { matchesSearch } from "@/utils/index.js";
+import SearchField from "@/components/SearchField.vue";
 
 const ROLES = { 1: "Monitor", 2: "Atendente", 3: "Administrador" };
 
 const auth = useAuth();
 const users = ref([]);
+// Busca que filtra enquanto digita (nome, login e funcao)
+const search = ref("");
+const shownUsers = computed(() => users.value.filter((u) => matchesSearch([u.username, u.login, ROLES[u.role]], search.value)));
 const editingUser = ref(null);
 const saving = ref(false);
 const dialogEl = ref(null);

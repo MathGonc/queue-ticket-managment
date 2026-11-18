@@ -49,3 +49,20 @@ export async function resetGlobalTicketData() {
     throw error;
   }
 }
+
+// Tipos de atendimento (lista em uso) e edicao (so admin)
+export async function getTiposAtendimento() {
+  const response = await api.get(`/tiposAtendimento`);
+  return response.data.tipos;
+}
+
+export async function saveTiposAtendimento(tipos, renomear = []) {
+  const response = await api.put(`/tiposAtendimento`, { tipos, renomear });
+  return response.data.tipos;
+}
+
+// Status do sistema (pagina inicial, so admin)
+export async function getSystemStatus() {
+  const response = await api.get(`/api/status`);
+  return response.data;
+}

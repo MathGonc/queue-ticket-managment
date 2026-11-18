@@ -9,6 +9,7 @@ const { connect } = require('./src/config/db.js')
 const logger = require('./src/config/logger.js')
 const { logActivity, logActivityThrottled, clientIp } = require('./src/activity.js')
 const panelPresence = require('./src/panelPresence.js')
+const presence = require('./src/presence.js')
 const { version } = require('./package.json')
 
 const app = express()
@@ -72,7 +73,9 @@ const ticketRoutes = require('./src/routes/ticketRoutes.js')
 const globalRoutes = require('./src/routes/globalRoutes.js')
 const activityRoutes = require('./src/routes/activityRoutes.js')
 const brandingRoutes = require('./src/routes/brandingRoutes.js')
-app.use('/', userRoutes, globalRoutes, ticketRoutes, activityRoutes, brandingRoutes)
+const assistidoRoutes = require('./src/routes/assistidoRoutes.js')
+const systemRoutes = require('./src/routes/systemRoutes.js')
+app.use('/', userRoutes, globalRoutes, ticketRoutes, activityRoutes, brandingRoutes, assistidoRoutes, systemRoutes)
 // As rotas avisam as telas abertas (ex.: logo trocado) por aqui
 app.set('io', io)
 
@@ -102,6 +105,8 @@ io.use((socket, next) => {
 // WebSocket events
 io.on('connection', (socket) => {
   logger.info('Novo cliente conectado')
+  // Status do sistema: usuarios conectados (conexoes com login)
+  presence.add(socket)
 
   // Eventos de controle requerem autenticação. Tentativas sem token valido
   // entram no registro (no maximo 1 por IP e evento a cada 10 min).
@@ -130,6 +135,7 @@ io.on('connection', (socket) => {
   socket.on('painelOffline', () => panelPresence.offline(socket))
 
   socket.on('disconnect', () => {
+    presence.remove(socket)
     panelPresence.offline(socket)
     logger.info('Cliente desconectado')
   })

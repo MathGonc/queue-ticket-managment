@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { convertDate, convertHours, isValidDate, calculateAge, shortDateTime } from '@/utils/index.js'
+import { convertDate, convertHours, isValidDate, calculateAge, shortDateTime, toDateOnly, fromDateOnly, visitText, visitHistoryText, formatCpf, notesText, matchesSearch, timeWithDay, firstWord } from '@/utils/index.js'
 
 describe('Utils', () => {
   describe('convertDate', () => {
@@ -122,5 +122,78 @@ describe('shortDateTime', () => {
   it('sem data ou data invalida: vazio', () => {
     expect(shortDateTime(null, now)).toBe('')
     expect(shortDateTime('xx', now)).toBe('')
+  })
+})
+
+describe('data de nascimento como dia (AAAA-MM-DD)', () => {
+  it('ida e volta pela data local, sem mudar de dia', () => {
+    const d = new Date(1950, 2, 3, 23, 30)
+    expect(toDateOnly(d)).toBe('1950-03-03')
+    const back = fromDateOnly('1950-03-03')
+    expect([back.getFullYear(), back.getMonth(), back.getDate()]).toEqual([1950, 2, 3])
+  })
+
+  it('vazio ou invalido vira null', () => {
+    expect(toDateOnly(null)).toBe(null)
+    expect(toDateOnly('xx')).toBe(null)
+    expect(fromDateOnly('')).toBe(null)
+    expect(fromDateOnly('03/03/1950')).toBe(null)
+  })
+})
+
+describe('textos de visitas', () => {
+  const anterior = { data: new Date(2026, 9, 3, 10), tipo: 'RETORNO' }
+
+  it('triagem e barra lateral', () => {
+    expect(visitText({ numero: 4, anterior })).toBe('4ª visita · última em 03/10/2026 (RETORNO)')
+    expect(visitText({ numero: 1 })).toBe('1ª visita (primeira vez)')
+    // Senha antiga na barra: a pessoa ja voltou depois
+    expect(visitText({ numero: 2, total: 3, anterior: { ...anterior, tipo: '' } })).toBe('2ª de 3 visitas · última em 03/10/2026')
+  })
+
+  it('historico: esta visita e o total de hoje', () => {
+    expect(visitHistoryText({ numero: 3, total: 7, primeira: new Date(2023, 6, 17, 9), ultima: new Date(2026, 10, 10, 9) }))
+      .toBe('3ª de 7 visitas · primeira em 17/07/2023 · última em 10/11/2026')
+    expect(visitHistoryText({ numero: 1, total: 1, primeira: new Date(), ultima: new Date() })).toBe('Única visita')
+  })
+})
+
+describe('CPF formatado e anotacoes do (i)', () => {
+  it('formata 11 digitos e deixa o resto como veio', () => {
+    expect(formatCpf('07787808136')).toBe('077.878.081-36')
+    expect(formatCpf('136068')).toBe('136068')
+  })
+
+  it('uma linha por anotacao, so as preenchidas', () => {
+    expect(notesText({ notaTriagem: 'chegou cedo', notaAtendimento: 'trouxe RG' })).toBe('Triagem: chegou cedo\nAtendimento: trouxe RG')
+    expect(notesText({ notaTriagem: '', notaAtendimento: 'x' })).toBe('Atendimento: x')
+    expect(notesText({})).toBe('')
+  })
+})
+
+describe('busca que filtra enquanto digita', () => {
+  const campos = ['MARIA DA CONCEIÇÃO', '12345678901', 54, 'RETORNO']
+  it('cada palavra em algum campo, sem acento nem maiuscula', () => {
+    expect(matchesSearch(campos, 'conceicao maria')).toBe(true)
+    expect(matchesSearch(campos, 'retorno')).toBe(true)
+    expect(matchesSearch(campos, 'joao')).toBe(false)
+    expect(matchesSearch(campos, '')).toBe(true)
+  })
+  it('CPF com ou sem pontuacao e numero da senha', () => {
+    expect(matchesSearch(campos, '123.456')).toBe(true)
+    expect(matchesSearch(campos, '54')).toBe(true)
+  })
+})
+
+describe('cartoes da barra lateral', () => {
+  const now = new Date(2026, 10, 17, 18, 0)
+  it('hora com o dia entre parenteses', () => {
+    expect(timeWithDay(new Date(2026, 10, 17, 17, 35), now)).toBe('17:35 (hoje)')
+    expect(timeWithDay(new Date(2026, 10, 16, 16, 0), now)).toBe('16:00 (ontem)')
+    expect(timeWithDay(new Date(2026, 10, 9, 14, 40), now)).toBe('14:40 (09/11)')
+  })
+  it('so o primeiro nome', () => {
+    expect(firstWord('Andre de Lima')).toBe('Andre')
+    expect(firstWord('')).toBe('')
   })
 })

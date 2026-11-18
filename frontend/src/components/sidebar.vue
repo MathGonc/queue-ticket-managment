@@ -73,28 +73,30 @@
                   <div v-if="ticketsInQueue == 0" class="details">
                     A fila está vazia
                   </div>
+                  <template v-else>
+                    <SearchField v-model="searchQueued" dark class="list-search" placeholder="Pesquisar na fila" />
+                    <div v-if="!queuedTickets.length" class="details list-note">Nenhuma senha encontrada</div>
+                  </template>
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
-                      v-for="(ticket, index) in filteredTickets"
-                      :key="index"
+                      v-for="ticket in queuedTickets"
+                      :key="ticket.ticketList._id"
                     >
-                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 1">
-                        <div class="ticket-main">
-                          <div class="ticket-head">
-                            <span class="ticket-number">{{ ticket.ticketList.number }}</span>
-                            <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
-                            <span v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2" class="tag tag-elderly" title="80 anos ou mais">80+</span>
-                            <span class="ticket-name">{{ ticket.ticketList.name }}</span>
-                          </div>
-                          <div class="details">
-                            <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
-                            <div v-if="ticket.ticketList.docNumber">CPF {{ ticket.ticketList.docNumber }}</div>
-                            <div v-if="ticket.ticketList.assistedAge">{{ calculateAge(ticket.ticketList.assistedAge) }} anos</div>
-                            <div>Cadastrada {{ shortDateTime(ticket.ticketList.dateQueue) }}</div>
-                          </div>
+                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }">
+                        <!-- Numero e nome na linha inteira; dados embaixo; botoes por ultimo, a direita -->
+                        <div class="ticket-head">
+                          <span class="ticket-number">{{ ticket.ticketList.number }}</span>
+                          <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
+                          <span v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2" class="tag tag-elderly" title="80 anos ou mais">80+</span>
+                          <span class="ticket-name">{{ ticket.ticketList.name }}</span>
                         </div>
-                        <!-- Chamar em destaque; excluir pequeno, afastado e com confirmacao -->
+                        <div class="details">
+                          <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
+                          <div v-if="ticket.ticketList.docNumber">CPF {{ formatCpf(ticket.ticketList.docNumber) }}</div>
+                          <div v-if="ticket.ticketList.assistedAge">{{ calculateAge(ticket.ticketList.assistedAge) }} anos</div>
+                          <div>Cadastrada: {{ timeWithDay(ticket.ticketList.dateQueue) }}<template v-if="ticket.ticketList.queuedBy"> por {{ firstWord(ticket.ticketList.queuedBy) }}</template></div>
+                        </div>
                         <div class="ticket-actions">
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
@@ -115,6 +117,7 @@
                           >
                             <Trash2 :size="16" class="icon" />
                           </button>
+                          <VisitInfo v-if="infoText(ticket.ticketList)" :text="infoText(ticket.ticketList)" />
                         </div>
                       </div>
                     </li>
@@ -207,29 +210,32 @@
                   id="collapseServiced"
                   @transitionend="onTransitionEndServiced"
                 >
+                  <template v-if="ticketsServiced">
+                    <SearchField v-model="searchServiced" dark class="list-search" placeholder="Pesquisar nas atendidas" />
+                    <div v-if="!servicedTickets.length" class="details list-note">Nenhuma senha encontrada</div>
+                  </template>
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
-                      v-for="(ticket, index) in filteredTickets"
-                      :key="index"
+                      v-for="ticket in servicedTickets"
+                      :key="ticket.ticketList._id"
                     >
-                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }" v-if="ticket.ticketList.status == 2">
-                        <div class="ticket-main">
-                          <div class="ticket-head">
-                            <span class="ticket-number">{{ ticket.ticketList.number }}</span>
-                            <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
-                            <span class="ticket-name">{{ ticket.ticketList.name }}</span>
-                          </div>
-                          <div class="details">
-                            <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
-                            <div v-if="ticket.ticketList.docNumber">CPF {{ ticket.ticketList.docNumber }}</div>
-                            <div>Cadastrada {{ shortDateTime(ticket.ticketList.dateQueue) }}</div>
-                            <div>Atendida {{ shortDateTime(ticket.ticketList.dateServiced) }}<template v-if="ticket.ticketList.servicedBy"> por {{ ticket.ticketList.servicedBy }}</template></div>
-                          </div>
+                      <div class="ticket" :class="{ 'ticket-called': ticket.ticketList._id === lastCalledTicketId }">
+                        <div class="ticket-head">
+                          <span class="ticket-number">{{ ticket.ticketList.number }}</span>
+                          <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
+                          <span class="ticket-name">{{ ticket.ticketList.name }}</span>
+                        </div>
+                        <div class="details">
+                          <div v-if="ticket.ticketList.type">{{ ticket.ticketList.type }}</div>
+                          <div v-if="ticket.ticketList.docNumber">CPF {{ formatCpf(ticket.ticketList.docNumber) }}</div>
+                          <div>Cadastrada: {{ timeWithDay(ticket.ticketList.dateQueue) }}<template v-if="ticket.ticketList.queuedBy"> por {{ firstWord(ticket.ticketList.queuedBy) }}</template></div>
+                          <div>Atendida: {{ timeWithDay(ticket.ticketList.dateServiced) }}<template v-if="ticket.ticketList.servicedBy"> por {{ firstWord(ticket.ticketList.servicedBy) }}</template></div>
                         </div>
                         <div class="ticket-actions">
+                          <!-- Ja atendida: chamar de novo pede confirmacao -->
                           <button
-                            @click="handleCallTicket(ticket.ticketList._id)"
+                            @click="recallTarget = ticket.ticketList"
                             type="button"
                             class="btn btn-outline-light btn-sm"
                             :disabled="buttonDisabled"
@@ -248,6 +254,7 @@
                           >
                             <Trash2 :size="16" class="icon" />
                           </button>
+                          <VisitInfo v-if="infoText(ticket.ticketList)" :text="infoText(ticket.ticketList)" />
                         </div>
                       </div>
                     </li>
@@ -262,6 +269,14 @@
       </div>
     </div>
   </div>
+  <ConfirmDialog
+    :open="!!recallTarget"
+    title="Chamar de novo?"
+    :message="recallTarget ? `A senha ${recallTarget.number} (${recallTarget.name}) já foi chamada. Chamar de novo no painel?` : ''"
+    confirm-text="Chamar de novo"
+    @confirm="confirmRecall()"
+    @cancel="recallTarget = null"
+  />
   <div><router-view></router-view></div>
   <!-- </div> -->
   <!-- </div> -->
@@ -276,7 +291,10 @@ import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
 import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
-import { calculateAge, shortDateTime } from "@/utils/index.js";
+import { calculateAge, timeWithDay, firstWord, visitText, notesText, formatCpf, matchesSearch } from "@/utils/index.js";
+import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import VisitInfo from "@/components/VisitInfo.vue";
+import SearchField from "@/components/SearchField.vue";
 import { callTicket } from "@/utils/callTicket.js";
 import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Moon, Sun, Trash2, User, UserCheck, Users } from "lucide-vue-next";
 import { useTheme } from "@/composables/useTheme.js";
@@ -307,6 +325,11 @@ const collapseMenu = useLocalStorage("collapseMenu", {
   serviced: true,
 });
 
+// (i) da senha: visitas da pessoa e anotacoes da triagem e do atendimento
+function infoText(ticket) {
+  return [ticket.visitas && visitText(ticket.visitas), notesText(ticket)].filter(Boolean).join("\n");
+}
+
 // Computed
 // Derivados do store (o guard carrega userData antes de abrir a tela), entao
 // reagem quando o cargo chega: corrige o F5 que escondia opcoes por cargo.
@@ -314,11 +337,15 @@ const username = computed(() => auth.userData?.username || "");
 const userRole = computed(() => auth.userData?.role || 0);
 const userRoleToDeleteTickets = computed(() => config.userRoleToDeleteTickets);
 
-const filteredTickets = computed(() =>
-  ticketData.value.map((getTicket) => ({
-    ticketList: getTicket,
-  }))
-);
+// Busca de cada lista: nome, CPF, numero da senha e tipo
+const searchQueued = ref("");
+const searchServiced = ref("");
+const ticketFields = (t) => [t.name, t.docNumber, t.number, t.type];
+const listOf = (status, query) => ticketData.value
+  .filter((t) => t.status === status && matchesSearch(ticketFields(t), query))
+  .map((getTicket) => ({ ticketList: getTicket }));
+const queuedTickets = computed(() => listOf(1, searchQueued.value));
+const servicedTickets = computed(() => listOf(2, searchServiced.value));
 
 const ticketsServiced = computed(() => ticketData.value.filter((t) => t.status === 2).length);
 
@@ -330,6 +357,14 @@ async function logout() {
   auth.clearToken();
   auth.setIsAuth(false);
   router.push({ name: "login" });
+}
+
+// Senha ja atendida: "Chamar" abre a confirmacao antes de chamar de novo
+const recallTarget = ref(null);
+function confirmRecall() {
+  const id = recallTarget.value?._id;
+  recallTarget.value = null;
+  if (id) handleCallTicket(id);
 }
 
 function handleCallTicket(_id) {
@@ -490,6 +525,8 @@ watch(
 .sidebar-display {
   width: var(--sidebar-open);
   overflow-y: auto;
+  /* Firefox: barra fina */
+  scrollbar-width: thin;
 }
 
 .sidebar-collapsed {
@@ -498,8 +535,8 @@ watch(
 }
 
 .sidebar .content {
-  /* 20px: padding da moldura + barra de rolagem */
-  width: calc(var(--sidebar-open) - 20px);
+  /* 15px: padding da moldura (10) + barra de rolagem fina (5) */
+  width: calc(var(--sidebar-open) - 15px);
   transition:
     transform var(--sidebar-speed) var(--sidebar-ease),
     opacity var(--sidebar-speed) ease,
@@ -610,7 +647,8 @@ watch(
   margin-bottom: 5px;
   padding: 2px;
   border: 1px solid #4a5563;
-  border-radius: 999px;
+  /* Mesmo arredondado dos outros botoes da barra (um pouco mais quadrado) */
+  border-radius: var(--bs-border-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
 }
@@ -642,7 +680,7 @@ watch(
   left: 2px;
   width: var(--cell);
   height: var(--cell);
-  border-radius: 50%;
+  border-radius: 3px;
   background: #e6ebf0;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -750,8 +788,6 @@ watch(
 
 /* Cartao da senha: dados a esquerda, acoes numa coluna a direita */
 .sidebar .ticket {
-  display: flex;
-  gap: 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 10px 12px;
@@ -762,11 +798,6 @@ watch(
 .sidebar .ticket:hover {
   transition: background 0.3s ease-out;
   background: rgba(255, 255, 255, 0.05);
-}
-
-.sidebar .ticket-main {
-  flex: 1;
-  min-width: 0;
 }
 
 /* Numero e etiquetas fixos a esquerda; o nome quebra so dentro do proprio
@@ -781,6 +812,12 @@ watch(
 .sidebar .ticket-number,
 .sidebar .tag {
   flex-shrink: 0;
+}
+
+/* (i) das visitas, no fim da linha do nome */
+/* (i) junto dos botoes, embaixo a direita */
+.sidebar .ticket-actions .visit-info {
+  align-self: center;
 }
 
 .sidebar .ticket-number {
@@ -805,13 +842,20 @@ watch(
   text-align: center;
 }
 
+/* Busca logo abaixo do titulo da lista (Fila / Atendidas) */
+.sidebar .list-search {
+  padding-inline: 12px;
+  margin: 4px 0 10px;
+}
+
 /* Chamar em cima; excluir embaixo, so icone, longe do clique principal */
+/* Botoes abaixo dos dados, alinhados a direita */
 .sidebar .ticket-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .sidebar .ticket-actions .btn {
@@ -833,7 +877,7 @@ watch(
 }
 
 .sidebar ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 .sidebar ::-webkit-scrollbar-thumb {

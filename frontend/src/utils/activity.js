@@ -19,6 +19,8 @@ export const ACTIVITY_LABELS = {
   logo_alterado: "Logo importado",
   logo_removido: "Logo removido",
   empresa_alterada: "Nome da empresa",
+  cadastro_resolvido: "Cadastro resolvido na triagem",
+  tipos_alterados: "Tipos de atendimento",
   pdf_historico: "PDF do histórico",
   painel_conectado: "Painel conectado",
   painel_desconectado: "Painel desconectado",
@@ -119,6 +121,15 @@ export function describeActivity(activity) {
       return `"${d.de || "(vazio)"}" → "${d.para || "(vazio)"}"`;
     case "erro_servidor":
       return `${d.metodo} ${d.rota} (${d.status})`;
+    case "tipos_alterados": {
+      const parts = [];
+      if (d.incluidos?.length) parts.push(`incluídos: ${d.incluidos.join(", ")}`);
+      if (d.removidos?.length) parts.push(`removidos: ${d.removidos.join(", ")}`);
+      if (d.renomeados?.length) parts.push(`renomeados: ${d.renomeados.map((r) => `${r.de} → ${r.para} (${r.senhas} senhas)`).join(", ")}`);
+      return parts.join("; ") || "ordem alterada";
+    }
+    case "cadastro_resolvido":
+      return `${d.novo ? "cadastro novo" : "cadastro existente"}, ${d.comCpf ? "com CPF" : "sem CPF"}${d.juntados ? `, ${d.juntados} cadastro(s) juntado(s)` : ""}`;
     default:
       return "";
   }

@@ -164,6 +164,8 @@ onBeforeUnmount(() => {
 .monitor {
   text-align: center;
   line-height: 1.1;
+  /* Tudo em maiusculas, como os nomes no cadastro */
+  text-transform: uppercase;
 }
 
 .monitor .menu-default {

@@ -12,6 +12,7 @@ const TYPES = [
   'backup_concluido', 'backup_falhou',
   'pdf_historico', 'guiche_alterado',
   'logo_alterado', 'logo_removido', 'empresa_alterada',
+  'cadastro_resolvido', 'tipos_alterados',
 ]
 
 function clientIp(req) {

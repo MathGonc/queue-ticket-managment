@@ -8,6 +8,8 @@
     "create-admin": "node scripts/create-admin.js",
     "backup-db": "node scripts/backup-db.js",
     "restore-db": "node scripts/restore-db.js",
+    "migrate-assistidos": "node scripts/migrate-assistidos.js",
+    "rollback-assistidos": "node scripts/rollback-assistidos.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
   },
   "dependencies": {

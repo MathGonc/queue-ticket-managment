@@ -17,6 +17,8 @@ const globalSchema = new mongoose.Schema(
     },
     // Nome da empresa (cabecalho do PDF do historico). Definido em Configuracoes.
     companyName: { type: String, default: '' },
+    // Tipos de atendimento (Configuracoes). Vazio = lista padrao de src/tipos.js
+    tiposAtendimento: { type: [String], default: undefined },
     monitorMode: { type: Number, default: 0 },
     // false = comportamento que ja estava em producao (numero oculto no painel)
     showTicketNumber: { type: Boolean, default: false },

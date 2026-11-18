@@ -24,6 +24,19 @@ export function shortDateTime(date, now = new Date()) {
   return `${day} às ${time}`;
 }
 
+// Hora com o dia entre parenteses, para os cartoes da barra lateral:
+// "16:00 (hoje)", "08:05 (ontem)", "14:40 (09/11)"
+export function timeWithDay(date, now = new Date()) {
+  const text = shortDateTime(date, now);
+  const m = /^(.*) às (\d{2}:\d{2})$/.exec(text);
+  return m ? `${m[2]} (${m[1]})` : text;
+}
+
+// So o primeiro nome (atendente na barra lateral: "por Andre")
+export function firstWord(name) {
+  return String(name ?? "").trim().split(/\s+/)[0] || "";
+}
+
 // Texto seguro para escrever em HTML (ex.: janela do PDF)
 export function escapeHtml(text) {
   return String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c]);
@@ -46,6 +59,65 @@ export function isValidCpf(value) {
     if (((sum * 10) % 11) % 10 !== Number(cpf[len])) return false;
   }
   return true;
+}
+
+// Data de nascimento <-> "AAAA-MM-DD". A triagem envia so o dia (sem hora e
+// sem fuso) e o cadastro devolve assim; aqui vira a data local do seletor.
+export function toDateOnly(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d)) return null;
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+export function fromDateOnly(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+}
+
+const day = (date) => new Date(date).toLocaleDateString("pt-BR");
+
+// Visitas de uma pessoa (dias com atendimento), no texto da triagem, da
+// barra lateral e do historico
+//   visitText({ numero: 4, anterior: { data, tipo } }) -> "4ª visita · última em 03/10/2026 (RETORNO)"
+export function visitText({ numero, total = numero, anterior = null }) {
+  const head = total > numero ? `${numero}ª de ${total} visitas` : `${numero}ª visita`;
+  if (!anterior) return numero === 1 ? `${head} (primeira vez)` : head;
+  return `${head} · última em ${day(anterior.data)}${anterior.tipo ? ` (${anterior.tipo})` : ""}`;
+}
+
+//   visitHistoryText(...) -> "3ª de 7 visitas · primeira em 17/07/2023 · última em 10/11/2026"
+export function visitHistoryText({ numero, total, primeira, ultima }) {
+  const head = total > 1 ? `${numero}ª de ${total} visitas` : "Única visita";
+  return total > 1 ? `${head} · primeira em ${day(primeira)} · última em ${day(ultima)}` : head;
+}
+
+// "12345678901" -> "123.456.789-01" (outros tamanhos ficam como vieram)
+export function formatCpf(value) {
+  const digits = onlyDigits(value);
+  return digits.length === 11 ? digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4") : digits;
+}
+
+// Anotacoes da senha para o (i): uma linha para a triagem, outra para o atendimento
+export function notesText(ticket) {
+  return [
+    ticket?.notaTriagem && `Triagem: ${ticket.notaTriagem}`,
+    ticket?.notaAtendimento && `Atendimento: ${ticket.notaAtendimento}`,
+  ].filter(Boolean).join("\n");
+}
+
+// Filtro das buscas da tela: cada palavra digitada tem que aparecer em algum
+// dos campos, sem diferenciar acento nem maiuscula. So numeros tambem casam
+// com o CPF digitado com ou sem pontuacao.
+const searchable = (value) => String(value ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+export function matchesSearch(fields, query) {
+  const words = searchable(query).split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const text = fields.map(searchable).join(" ");
+  const digits = fields.map(onlyDigits).join(" ");
+  return words.every((w) => text.includes(w) || (/^[\d.-]+$/.test(w) && onlyDigits(w) && digits.includes(onlyDigits(w))));
 }
 
 export function convertHours(ms) {

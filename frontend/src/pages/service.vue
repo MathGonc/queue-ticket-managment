@@ -65,6 +65,37 @@
               >
                 Chamar a última senha de novo
               </button>
+
+              <!-- Anotacoes da ultima senha chamada por este atendente -->
+              <div v-if="calledTicket" class="called-notes mt-4">
+                <div class="called-head">
+                  Senha {{ calledTicket.number }} · {{ calledTicket.name }}
+                </div>
+                <label class="form-label" for="svc-note-sorting">Anotação da triagem</label>
+                <textarea
+                  id="svc-note-sorting"
+                  class="form-control note-readonly mb-3"
+                  rows="2"
+                  :value="calledTicket.notaTriagem || 'Sem anotação'"
+                  disabled
+                ></textarea>
+                <label class="form-label" for="svc-note-service">Anotação do atendimento</label>
+                <textarea
+                  id="svc-note-service"
+                  v-model="noteService"
+                  class="form-control mb-2"
+                  rows="3"
+                  maxlength="1000"
+                ></textarea>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  :disabled="savingNote || noteService.trim() === (calledTicket.notaAtendimento || '')"
+                  @click="saveNote"
+                >
+                  Salvar anotação
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -77,7 +108,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { toast } from "@/services/notify.js";
 import { useLocalStorage } from "@vueuse/core";
-import { loadTicketsInQueue } from "../controllers/ticketController";
+import { loadTicketsInQueue, loadTicket, saveNotaAtendimento } from "../controllers/ticketController";
 import { callTicket } from "@/utils/callTicket.js";
 import topbar from "../components/topbar.vue";
 import config from "@/config.js";
@@ -152,8 +183,43 @@ async function callSameTicket() {
   await callTicket(userCalledTicket.value);
 }
 
+// Ultima senha chamada por este atendente: anotacoes da triagem e do atendimento
+const calledTicket = ref(null);
+const noteService = ref("");
+const savingNote = ref(false);
+
+async function loadCalledTicket() {
+  if (!userCalledTicket.value) {
+    calledTicket.value = null;
+    return;
+  }
+  try {
+    const response = await loadTicket(userCalledTicket.value);
+    calledTicket.value = response.data.ticket[0] || null;
+    noteService.value = calledTicket.value?.notaAtendimento || "";
+  } catch {
+    calledTicket.value = null;
+  }
+}
+watch(userCalledTicket, loadCalledTicket);
+
+async function saveNote() {
+  if (!calledTicket.value) return;
+  savingNote.value = true;
+  try {
+    await saveNotaAtendimento(calledTicket.value._id, noteService.value);
+    calledTicket.value.notaAtendimento = noteService.value.trim();
+    toast.success("Anotação salva");
+  } catch {
+    toast.error("Não foi possível salvar a anotação");
+  } finally {
+    savingNote.value = false;
+  }
+}
+
 onMounted(() => {
   transitionFade.value = true;
+  loadCalledTicket();
 });
 </script>
 
@@ -164,6 +230,23 @@ onMounted(() => {
 
 .counter-group {
   width: 180px;
+}
+
+.called-notes {
+  text-align: left;
+}
+
+.called-head {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* So leitura, mas com a cor normal do texto (o cinza do disabled apagava) */
+.note-readonly:disabled {
+  background: var(--qtm-surface);
+  color: var(--qtm-text);
+  opacity: 1;
+  resize: none;
 }
 
 .counter-input {
