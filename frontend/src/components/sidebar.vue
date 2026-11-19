@@ -97,6 +97,7 @@
                           <div v-if="ticket.ticketList.assistedAge">{{ calculateAge(ticket.ticketList.assistedAge) }} anos</div>
                           <div>Cadastrada: {{ timeWithDay(ticket.ticketList.dateQueue) }}<template v-if="ticket.ticketList.queuedBy"> por {{ firstWord(ticket.ticketList.queuedBy) }}</template></div>
                         </div>
+                        <TicketNotes :ticket="ticket.ticketList" />
                         <div class="ticket-actions">
                           <button
                             @click="handleCallTicket(ticket.ticketList._id)"
@@ -117,7 +118,7 @@
                           >
                             <Trash2 :size="16" class="icon" />
                           </button>
-                          <VisitInfo v-if="infoText(ticket.ticketList)" :text="infoText(ticket.ticketList)" />
+                          <VisitInfo v-if="ticket.ticketList.visitas" :text="visitText(ticket.ticketList.visitas)" label="Visitas" />
                         </div>
                       </div>
                     </li>
@@ -232,6 +233,7 @@
                           <div>Cadastrada: {{ timeWithDay(ticket.ticketList.dateQueue) }}<template v-if="ticket.ticketList.queuedBy"> por {{ firstWord(ticket.ticketList.queuedBy) }}</template></div>
                           <div>Atendida: {{ timeWithDay(ticket.ticketList.dateServiced) }}<template v-if="ticket.ticketList.servicedBy"> por {{ firstWord(ticket.ticketList.servicedBy) }}</template></div>
                         </div>
+                        <TicketNotes :ticket="ticket.ticketList" />
                         <div class="ticket-actions">
                           <!-- Ja atendida: chamar de novo pede confirmacao -->
                           <button
@@ -254,7 +256,7 @@
                           >
                             <Trash2 :size="16" class="icon" />
                           </button>
-                          <VisitInfo v-if="infoText(ticket.ticketList)" :text="infoText(ticket.ticketList)" />
+                          <VisitInfo v-if="ticket.ticketList.visitas" :text="visitText(ticket.ticketList.visitas)" label="Visitas" />
                         </div>
                       </div>
                     </li>
@@ -291,9 +293,10 @@ import { useAuth } from "@/stores/auth.js";
 import { createSocket, publicSocket } from "@/socket.js";
 import { logoutUser } from "@/controllers/userController.js";
 import { loadTicketsInQueue, deleteTicket } from "@/controllers/ticketController.js";
-import { calculateAge, timeWithDay, firstWord, visitText, notesText, formatCpf, matchesSearch } from "@/utils/index.js";
+import { calculateAge, timeWithDay, firstWord, visitText, formatCpf, matchesSearch } from "@/utils/index.js";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import VisitInfo from "@/components/VisitInfo.vue";
+import TicketNotes from "@/components/TicketNotes.vue";
 import SearchField from "@/components/SearchField.vue";
 import { callTicket } from "@/utils/callTicket.js";
 import { ArrowLeft, Bell, ChevronLeft, LogOut, Menu, Moon, Sun, Trash2, User, UserCheck, Users } from "lucide-vue-next";
@@ -324,11 +327,6 @@ const collapseMenu = useLocalStorage("collapseMenu", {
   queued: false,
   serviced: true,
 });
-
-// (i) da senha: visitas da pessoa e anotacoes da triagem e do atendimento
-function infoText(ticket) {
-  return [ticket.visitas && visitText(ticket.visitas), notesText(ticket)].filter(Boolean).join("\n");
-}
 
 // Computed
 // Derivados do store (o guard carrega userData antes de abrir a tela), entao
@@ -814,8 +812,8 @@ watch(
   flex-shrink: 0;
 }
 
-/* (i) das visitas, no fim da linha do nome */
-/* (i) junto dos botoes, embaixo a direita */
+/* (i) das visitas junto dos botoes, embaixo a direita (as anotacoes ficam
+   no bloco de Observacoes, logo acima) */
 .sidebar .ticket-actions .visit-info {
   align-self: center;
 }
