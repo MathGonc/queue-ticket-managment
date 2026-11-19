@@ -198,11 +198,14 @@
                       v-model="preferentialBool"
                       class="form-check-input"
                       type="checkbox"
-                      :disabled="calculateAge(assistedAge) >= 60"
+                      aria-describedby="sort-preferential-hint"
+                      @change="preferentialAuto = false"
                     />
                     <label class="form-check-label" for="sort-preferential">Preferencial</label>
                     <!-- Ordem de preferencia: 80+ >>> Preferencial (gravidas, 60+, crianças de colo, etc...) >>>> Sem preferencia -->
                     <!-- Dentro desses 3, ordenar por ordem de chegada -->
+                    <!-- A idade so sugere: liga sozinho, mas pode ser desligado -->
+                    <div v-if="ageSuggestion" id="sort-preferential-hint" class="form-text">{{ ageSuggestion }}</div>
                   </div>
                   <button
                     type="submit"
@@ -280,7 +283,6 @@ const assistedAge = ref(null);
 const ticketGlobalData = ref({});
 const tipo = ref("");
 const notaTriagem = ref("");
-const inputTicket = reactive({ preferential: 0 });
 
 // Nomes sempre em maiusculas (o backend tambem padroniza)
 const upper = (text) => String(text || "").trim().replace(/\s+/g, " ").toLocaleUpperCase("pt-BR");
@@ -642,33 +644,33 @@ const visitNotice = computed(() => {
   return visitText({ numero, anterior: p.ultima }) + (p.ultima?.atendente ? ` · atendida por ${p.ultima.atendente}` : "");
 });
 
-// Watchers
-watch(preferentialBool, (newValue) => {
-  if (newValue) {
-    updatePreferentialAge();
-  }
+// Preferencial: a idade (60+) so sugere, ligando a chave; quem decide e a
+// chave. Nivel gravado: 2 = ligada e 80+, 1 = ligada, 0 = desligada.
+const preferentialAuto = ref(false); // ligada pela idade, nao pela pessoa
+const preferentialLevel = computed(() => {
+  if (!preferentialBool.value) return 0;
+  return calculateAge(assistedAge.value) >= 80 ? 2 : 1;
+});
+const ageSuggestion = computed(() => {
+  const age = calculateAge(assistedAge.value);
+  if (age >= 80) return "Sugerido pela idade (80 anos ou mais): vai antes dos outros preferenciais";
+  if (age >= 60) return "Sugerido pela idade (60 anos ou mais)";
+  return "";
 });
 
-watch(assistedAge, (newValue) => {
-  if (newValue) {
-    updatePreferentialAge();
+// Mudou o nascimento: 60+ liga a chave; se foi a idade que ligou e agora
+// nao e mais 60+ (data corrigida ou apagada), desliga. Escolha manual fica.
+watch(assistedAge, (value) => {
+  if (calculateAge(value) >= 60) {
+    preferentialBool.value = true;
+    preferentialAuto.value = true;
+  } else if (preferentialAuto.value) {
+    preferentialBool.value = false;
+    preferentialAuto.value = false;
   }
 });
 
 // Methods
-function updatePreferentialAge() {
-  if (calculateAge(assistedAge.value) >= 80) {
-    inputTicket.preferential = 2;
-    preferentialBool.value = true;
-  } else if (calculateAge(assistedAge.value) >= 60) {
-    inputTicket.preferential = 1;
-    preferentialBool.value = true;
-  } else if (preferentialBool.value === true) {
-    inputTicket.preferential = 1;
-  } else if (preferentialBool.value === false) {
-    inputTicket.preferential = 0;
-  }
-}
 
 function setButtonDisabled() {
   if (config.dev == 1) return 0;
@@ -688,10 +690,10 @@ function resetForm() {
   clearPerson();
   tipo.value = "";
   notaTriagem.value = "";
-  inputTicket.preferential = 0;
   // Sem limpar, o nascimento e a preferencia passavam para a proxima pessoa
   assistedAge.value = null;
   preferentialBool.value = false;
+  preferentialAuto.value = false;
 }
 
 async function handleRegisterTicket() {
@@ -724,7 +726,7 @@ async function handleRegisterTicket() {
       status: 1,
       type: tipo.value,
       queuedBy: auth.userData.username,
-      preferential: inputTicket.preferential,
+      preferential: preferentialLevel.value,
       dateQueue: Date.now(),
       notaTriagem: notaTriagem.value.trim(),
       // So o dia (AAAA-MM-DD): sem hora, nao muda de dia com o fuso

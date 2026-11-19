@@ -88,7 +88,7 @@
                         <div class="ticket-head">
                           <span class="ticket-number">{{ ticket.ticketList.number }}</span>
                           <span v-if="ticket.ticketList.preferential" class="tag tag-pref" title="Preferencial">P</span>
-                          <span v-if="calculateAge(ticket.ticketList.assistedAge) >= 80 || ticket.ticketList.preferential == 2" class="tag tag-elderly" title="80 anos ou mais">80+</span>
+                          <span v-if="ticket.ticketList.preferential == 2" class="tag tag-elderly" title="80 anos ou mais">80+</span>
                           <span class="ticket-name">{{ ticket.ticketList.name }}</span>
                         </div>
                         <div class="details">
